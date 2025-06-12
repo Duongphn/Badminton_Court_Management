@@ -4,42 +4,24 @@
  */
 package Model;
 
-import java.sql.Time;
-
 /**
  *
  * @author admin
  */
 public class Courts {
     private int court_id;
-    private String court_number;
-    private String type;
-    private String floor_material;
-    private String lighting;
-    private String description;
-    private String image_url;
+    private int court_number;
     private String status;
     private int area_id;
-    private Time open_time;
-    private Time close_time;
 
     public Courts() {
     }
 
-    public Courts(int court_id, String court_number, String type, String floor_material,
-                  String lighting, String description, String image_url,
-                  String status, int area_id, Time open_time, Time close_time) {
+    public Courts(int court_id, int court_number, String status, int area_id) {
         this.court_id = court_id;
         this.court_number = court_number;
-        this.type = type;
-        this.floor_material = floor_material;
-        this.lighting = lighting;
-        this.description = description;
-        this.image_url = image_url;
         this.status = status;
         this.area_id = area_id;
-        this.open_time = open_time;
-        this.close_time = close_time;
     }
 
     public int getCourt_id() {
@@ -50,52 +32,12 @@ public class Courts {
         this.court_id = court_id;
     }
 
-    public String getCourt_number() {
+    public int getCourt_number() {
         return court_number;
     }
 
-    public void setCourt_number(String court_number) {
+    public void setCourt_number(int court_number) {
         this.court_number = court_number;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getFloor_material() {
-        return floor_material;
-    }
-
-    public void setFloor_material(String floor_material) {
-        this.floor_material = floor_material;
-    }
-
-    public String getLighting() {
-        return lighting;
-    }
-
-    public void setLighting(String lighting) {
-        this.lighting = lighting;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getImage_url() {
-        return image_url;
-    }
-
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
     }
 
     public String getStatus() {
@@ -112,22 +54,6 @@ public class Courts {
 
     public void setArea_id(int area_id) {
         this.area_id = area_id;
-    }
-
-    public Time getOpen_time() {
-        return open_time;
-    }
-
-    public void setOpen_time(Time open_time) {
-        this.open_time = open_time;
-    }
-
-    public Time getClose_time() {
-        return close_time;
-    }
-
-    public void setClose_time(Time close_time) {
-        this.close_time = close_time;
     }
 
    

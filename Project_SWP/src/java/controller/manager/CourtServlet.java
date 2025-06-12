@@ -44,7 +44,7 @@ public class CourtServlet extends HttpServlet {
         HttpSession session = request.getSession();
         if (action.equals("add")) {
             Courts court = new Courts();
-            court.setCourt_number(request.getParameter("courtNumber"));
+            court.setCourt_number(Integer.parseInt(request.getParameter("courtNumber")));
             court.setStatus(request.getParameter("status"));
             court.setArea_id(Integer.parseInt(request.getParameter("areaId")));
             courtDAO.addCourt(court);
@@ -54,7 +54,7 @@ public class CourtServlet extends HttpServlet {
         } else if (action.equals("update")) {
             Courts court = new Courts();
             court.setCourt_id(Integer.parseInt(request.getParameter("courtId")));
-            court.setCourt_number(request.getParameter("courtNumber"));
+            court.setCourt_number(Integer.parseInt(request.getParameter("courtNumber")));
             court.setStatus(request.getParameter("status"));
             int areaId = Integer.parseInt(request.getParameter("areaId"));
             court.setArea_id(Integer.parseInt(request.getParameter("areaId")));
