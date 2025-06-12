@@ -5,7 +5,7 @@
 
 <html>
 <head>
-    <title>🏙 Danh sách thiết bị</title>
+    <title></title>
     <style>
         body {
             margin: 0;
@@ -226,7 +226,7 @@
 %>
 
 <div class="header">
-    <h3>Trang quản lý thiết bị</h3>
+    <h3></h3>
     <a href="login" class="logout-button">Logout</a>
 </div>
 

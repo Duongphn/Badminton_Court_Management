@@ -69,8 +69,10 @@
     </head>
     <body>
         <div class="sidebar">
-            <div class="sidebar-logo">
-                <img src="badminton.jpg" alt="Logo">
+            <div class="sidebar-logo" >
+                <a href="host_dashboard.jsp">
+                    <img src="badminton.jpg" alt="Logo" >
+                </a> 
             </div>
             <ul>
                 <li class="nav-item">

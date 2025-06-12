@@ -17,116 +17,22 @@
                 padding: 0 2rem;
             }
 
-            .search-section {
-                background: white;
-                padding: 2rem;
-                border-radius: 15px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                margin-bottom: 2rem;
-            }
-
-            .search-filters {
-                display: grid;
-                grid-template-columns: 1fr 200px 200px 200px auto;
-                gap: 1rem;
-                align-items: end;
-            }
-
-            .filter-group {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .filter-group label {
-                margin-bottom: 0.5rem;
-                font-weight: 500;
-                color: #333;
-            }
-
-            .filter-group input,
-            .filter-group select {
-                padding: 0.75rem;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                font-size: 1rem;
-            }
-
-            .search-main-btn {
-                background: #ff4757;
-                color: white;
-                border: none;
-                padding: 0.75rem 2rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 1rem;
-                transition: all 0.3s;
-            }
-
-            .search-main-btn:hover {
-                background: #ff3838;
-                transform: translateY(-2px);
-            }
-
-            /* Featured Section */
-            .featured {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 2rem;
-                margin-bottom: 3rem;
-            }
-
-            .featured-card {
-                background: linear-gradient(135deg, #ffd700, #ffed4e);
-                padding: 2rem;
-                border-radius: 15px;
-                position: relative;
+            .hero-banner {
+                border-radius: 20px;
                 overflow: hidden;
+                margin-bottom: 3rem;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             }
 
-            .featured-card::after {
-                content: "🏸";
-                position: absolute;
-                right: -10px;
-                top: -10px;
-                font-size: 8rem;
-                opacity: 0.1;
+            .hero-banner img {
+                width: 100%;
+                height: 400px;
+                object-fit: cover;
+                display: block;
             }
-
-            .featured-card h3 {
-                font-size: 1.5rem;
-                margin-bottom: 1rem;
-                color: #333;
-            }
-
-            .featured-card p {
-                font-size: 1.1rem;
-                color: #666;
-                margin-bottom: 1.5rem;
-            }
-
-            .featured-btn {
-                background: #ff4757;
-                color: white;
-                border: none;
-                padding: 0.75rem 1.5rem;
-                border-radius: 25px;
-                cursor: pointer;
-                font-weight: 500;
-                transition: all 0.3s;
-            }
-
-            .featured-btn:hover {
-                background: #ff3838;
-                transform: translateY(-2px);
-            }
-
-            .pricing-card {
-                background: linear-gradient(135deg, #74b9ff, #0984e3);
-                color: white;
-            }
-
-            .pricing-card::after {
-                content: "💰";
+            
+            .title {
+                text-align: center;
             }
 
             /* Courts Grid */
@@ -201,60 +107,12 @@
 
         <main class="main">
 
-            <!-- Search Section -->
-            <div class="search-section">
-                <div class="search-filters">
-                    <div class="filter-group">
-                        <label>Tìm sân</label>
-                        <input type="text" placeholder="Nhập tên sân hoặc địa điểm...">
-                    </div>
-                    <div class="filter-group">
-                        <label>Khu vực</label>
-                        <select>
-                            <option>Tất cả</option>
-                            <option>Hà Nội</option>
-                            <option>TP. Hồ Chí Minh</option>
-                            <option>Đà Nẵng</option>
-                            <option>Hải Phòng</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Mức giá</label>
-                        <select>
-                            <option>Tất cả</option>
-                            <option>50k - 100k</option>
-                            <option>100k - 200k</option>
-                            <option>200k - 300k</option>
-                            <option>Trên 300k</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Thời gian</label>
-                        <select>
-                            <option>Tất cả</option>
-                            <option>Sáng (6h-12h)</option>
-                            <option>Chiều (12h-18h)</option>
-                            <option>Tối (18h-22h)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <button class="search-main-btn">🔍 Tìm sân</button>
-                    </div>
-                </div>
+            <div class="hero-banner">
+                <img src="./images/logo/hinh_nen.jpg" alt="Badminton Court Banner" />
             </div>
 
-            <!-- Featured Section -->
-            <div class="featured">
-                <div class="featured-card">
-                    <h3>Có 8.386 Sân cầu lông</h3>
-                    <p>Đa dạng các sân cầu lông chất lượng cao trên toàn quốc</p>
-                    <button class="featured-btn">Đăng ký ngay</button>
-                </div>
-                <div class="featured-card pricing-card">
-                    <h3>Dụng cụ chất lượng cao</h3>
-                    <p>Dịch vụ thuê dụng cụ cầu lông chất lượng</p>
-                    <button class="featured-btn">Thuê ngay</button>
-                </div>
+            <div class="title">
+                <h1>Danh sách sân nổi bật</h1>
             </div>
 
             <!-- Courts Grid -->

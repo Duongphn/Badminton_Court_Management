@@ -163,7 +163,7 @@
                     <button class="search-btn">Tìm</button>
                 </div>
                 <div class="header-actions">
-                    <!--<img src="./images/avt/avt.jpg" alt="avt" />-->
+                    
                     <span>
                         <a href="viewprofile.jsp" class="header-btn"><%=user.getUsername()%></a>
                     </span>
@@ -176,10 +176,9 @@
         <nav class="nav">
             <div class="nav-container">
                 <div class="nav-item active"><a href="homepageUser.jsp">Trang Chủ</a></div>
-                <div class="nav-item"><a href="#">Danh Sách Sân Bãi</a></div>
-                <div class="nav-item"><a href="GioiThieu.jsp">Giới Thiệu</a></div>
-                <div class="nav-item"><a href="#">Điều Khoản</a></div>
-                <div class="nav-item"><a href="#">Danh Sách Chủ Sân</a></div>
+                <div class="nav-item"><a href="ListCourt">Danh Sách Sân Bãi</a></div>
+                <div class="nav-item"><a href="booking_list.jsp">Danh Sách Đặt Sân</a></div>
+                <div class="nav-item"><a href="AboutUs.jsp">Giới Thiệu</a></div>
                 <div class="nav-item">Liên Hệ</div>
             </div>
         </nav>

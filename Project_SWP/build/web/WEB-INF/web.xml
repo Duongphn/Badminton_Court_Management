@@ -6,7 +6,7 @@
     </servlet>
     <servlet>
         <servlet-name>ViewRegion</servlet-name>
-        <servlet-class>controller.manager.ViewRegion</servlet-class>
+        <servlet-class>controller.manager.ViewBranch</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>java</servlet-name>
@@ -16,7 +16,8 @@
         <servlet-name>ViewRegion</servlet-name>
         <url-pattern>/view</url-pattern>
     </servlet-mapping>
-   <welcome-file-list>
+    <welcome-file-list>
         <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
+    
 </web-app>
