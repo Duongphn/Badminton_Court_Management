@@ -336,6 +336,7 @@
                             <input type="number" class="form-control" id="updateAreaId" name="areaId" required min="1">
                             <small class="form-text text-muted">Nhập ID khu vực hợp lệ</small>
                         </div>
+
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success">Cập Nhật</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
