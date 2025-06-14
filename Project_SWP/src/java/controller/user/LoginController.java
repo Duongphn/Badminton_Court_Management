@@ -78,18 +78,15 @@ public class LoginController extends HttpServlet {
         String remember = request.getParameter("rememberMe");
 
         UserDAO userDAO = new UserDAO();
-        
+
         String hashedPassword = PasswordUtil.hashPassword(password);
-        
+
         User user = userDAO.login(username, hashedPassword);
 
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 
-          
-
-           
             if ("on".equals(remember)) {
                 Cookie cUser = new Cookie("username", username);
                 Cookie cPass = new Cookie("password", password);
@@ -103,7 +100,7 @@ public class LoginController extends HttpServlet {
                 response.addCookie(cPass);
                 response.addCookie(cRemember);
             } else {
-              
+
                 Cookie cUser = new Cookie("username", null);
                 Cookie cPass = new Cookie("password", null);
                 Cookie cRemember = new Cookie("remember", null);
@@ -115,14 +112,16 @@ public class LoginController extends HttpServlet {
                 response.addCookie(cRemember);
             }
 
-                      if ("staff".equalsIgnoreCase(user.getRole())) {
+            if ("staff".equalsIgnoreCase(user.getRole())) {
                 response.sendRedirect("view-region");
+            } else if ("admin".equalsIgnoreCase(user.getRole())) {
+                response.sendRedirect("user_manager.jsp");
             } else {
                 response.sendRedirect("homepageUser.jsp");
             }
 
         } else {
-           
+
             request.setAttribute("error", "Invalid username or password!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }

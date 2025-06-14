@@ -1,13 +1,11 @@
 package controller.user;
 
 import DAO.UserDAO;
-import Model.Staff;
 import Model.User;
 import utils.PasswordUtil;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.sql.Date;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -34,16 +32,6 @@ public class RegisterController extends HttpServlet {
         String confirmPassword = request.getParameter("confirm_password");
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phone_number");
-        String role = request.getParameter("role");
-
-        // Lấy thêm các field Staff (nếu có)
-        String fullName = request.getParameter("full_name");
-        String gender = request.getParameter("gender");
-        String dateOfBirthStr = request.getParameter("date_of_birth");
-        String address = request.getParameter("address");
-        String idCardNumber = request.getParameter("id_card_number");
-        String educationLevel = request.getParameter("education_level");
-        String personalNotes = request.getParameter("personal_notes");
 
         // Validate password
         String passwordPattern = "^(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).{6,}$";
@@ -81,11 +69,6 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
-        // Validate role
-        if (role == null || (!role.equalsIgnoreCase("user") && !role.equalsIgnoreCase("staff"))) {
-            role = "user";  // Default role
-        }
-
         // Validate password confirm
         if (password == null || confirmPassword == null || !password.equals(confirmPassword)) {
             request.setAttribute("error", "Passwords do not match!");
@@ -99,37 +82,16 @@ public class RegisterController extends HttpServlet {
         newUser.setPassword(PasswordUtil.hashPassword(password));
         newUser.setEmail(email != null ? email : "");
         newUser.setPhone_number(phoneNumber);
-        newUser.setRole(role.toLowerCase());
+        newUser.setRole("user");
         newUser.setCreatedAt(LocalDateTime.now());
 
         // Đăng ký User
         boolean checkRegister = userDAO.register(newUser);
 
         if (checkRegister) {
-            // Nếu là staff → lưu thêm bảng Staff
-            if (role.equalsIgnoreCase("staff")) {
-                Staff newStaff = new Staff();
-                newStaff.setUserId(userDAO.getUserByUsername(username)); // Lấy User object
-
-                newStaff.setFullName(fullName != null ? fullName : "");
-                newStaff.setGender(gender != null ? gender : "");
-                if (dateOfBirthStr != null && !dateOfBirthStr.trim().isEmpty()) {
-                    newStaff.setDateOfBirth(Date.valueOf(dateOfBirthStr));
-                }
-                newStaff.setAddress(address != null ? address : "");
-                newStaff.setPhoneNumber(phoneNumber);
-                newStaff.setIdCardNumber(idCardNumber != null ? idCardNumber : "");
-                newStaff.setEducationLevel(educationLevel != null ? educationLevel : "");
-                newStaff.setPersonalNotes(personalNotes != null ? personalNotes : "");
-
-                boolean check = userDAO.registerStaff(newStaff);
-            }
-
-            // Đăng ký thành công → chuyển hướng
             request.getSession().setAttribute("message", "Registration successful! You can now login.");
             response.sendRedirect("login");
         } else {
-            // Đăng ký thất bại → hiển thị lỗi
             request.setAttribute("error", "Username or email already exists, please enter another!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
@@ -137,6 +99,6 @@ public class RegisterController extends HttpServlet {
 
     @Override
     public String getServletInfo() {
-        return "RegisterController - handles user registration and staff registration";
+        return "RegisterController - handles user registration only (no staff)";
     }
 }

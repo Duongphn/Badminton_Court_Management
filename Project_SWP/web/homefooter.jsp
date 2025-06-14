@@ -121,7 +121,6 @@
                         <li><a href="#">Giới thiệu</a></li>
                         <li><a href="#">Tuyển dụng</a></li>
                         <li><a href="#">Liên hệ</a></li>
-                        <li><a href="#">Tin tức</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -135,8 +134,6 @@
                     <h4>Hỗ trợ</h4>
                     <ul>
                         <li><a href="#">Hướng dẫn đặt sân</a></li>
-                        <li><a href="#">Chính sách hoàn tiền</a></li>
-                        <li><a href="#">Câu hỏi thường gặp</a></li>
                         <li><a href="#">Hotline: 1900-8386</a></li>
                     </ul>
                 </div>
@@ -146,7 +143,6 @@
                         <li><a href="#">📘 Facebook</a></li>
                         <li><a href="#">📷 Instagram</a></li>
                         <li><a href="#">🐦 Twitter</a></li>
-                        <li><a href="#">📺 YouTube</a></li>
                     </ul>
                 </div>
             </div>

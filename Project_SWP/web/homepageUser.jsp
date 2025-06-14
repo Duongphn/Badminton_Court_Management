@@ -3,7 +3,7 @@
     Created on : May 26, 2025, 10:48:19 PM
     Author     : sangn
 --%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -38,7 +38,7 @@
             /* Courts Grid */
             .courts-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                grid-template-columns: repeat(3, 1fr);
                 gap: 2rem;
                 margin-top: 2rem;
             }
@@ -60,6 +60,10 @@
                 width: 100%;
                 height: 180px;
                 object-fit: cover;
+            }
+            
+            .court-info p{
+                margin-bottom: 0.5rem;
             }
 
             .court-info {
@@ -115,73 +119,25 @@
                 <h1>Danh sách sân nổi bật</h1>
             </div>
 
-            <!-- Courts Grid -->
+           <!-- Courts Grid -->
             <div class="courts-grid">
-                <div class="court-card">
-                    <div class="logo-san">
-                        <img src="./images/san/san.jpg" alt="Sân A" />
+                <c:forEach var="top" items="${listTop3}">
+                    <div class="court-card">
+                        <div class="logo-san">
+                            <img src="images/san/san.jpg" alt="${top.name}" />
+                        </div>
+                        <div class="court-info">
+                            <div class="court-name">${top.name}</div>
+                            <div class="court-location">${top.location}</div>
+                            <p>Giờ mở cửa: ${top.openTime} - ${top.closeTime}</p>
+                            <p>Mô tả: ${top.description}</p>
+                            <form action="areaDetail" method="get">
+                                <input type="hidden" name="area_id" value="${top.area_id}" />
+                                <button type="submit" class="book-btn">Xem chi tiết</button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="court-info">
-                        <div class="court-name">Sân cầu lông Hoàng Gia</div>
-                        <div class="court-location">Quận Ba Đình, Hà Nội</div>   
-                        <button class="book-btn">Đặt sân ngay</button>
-                    </div>
-                </div>
-
-                <div class="court-card">
-                    <div class="logo-san">
-                        <img src="./images/san/san.jpg" alt="Sân A" />
-                    </div>
-                    <div class="court-info">
-                        <div class="court-name">CLB Cầu lông Thăng Long</div>
-                        <div class="court-location">Quận Cầu Giấy, Hà Nội</div>
-                        <button class="book-btn">Đặt sân ngay</button>
-                    </div>
-                </div>
-
-                <div class="court-card">
-                    <div class="logo-san">
-                        <img src="./images/san/san.jpg" alt="Sân A" />
-                    </div>
-                    <div class="court-info">
-                        <div class="court-name">Sân cầu lông Vinasport</div>
-                        <div class="court-location">Quận Hai Bà Trưng, Hà Nội</div>
-                        <button class="book-btn">Đặt sân ngay</button>
-                    </div>
-                </div>
-
-                <div class="court-card">
-                    <div class="logo-san">
-                        <img src="./images/san/san.jpg" alt="Sân A" />
-                    </div>
-                    <div class="court-info">
-                        <div class="court-name">Trung tâm cầu lông Hà Đông</div>
-                        <div class="court-location">Quận Hà Đông, Hà Nội</div>
-                        <button class="book-btn">Đặt sân ngay</button>
-                    </div>
-                </div>
-
-                <div class="court-card">
-                    <div class="logo-san">
-                        <img src="./images/san/san.jpg" alt="Sân A" />
-                    </div>
-                    <div class="court-info">
-                        <div class="court-name">Sân cầu lông Olympic</div>
-                        <div class="court-location">Quần Thanh Xuân, Hà Nội</div>
-                        <button class="book-btn">Đặt sân ngay</button>
-                    </div>
-                </div>
-
-                <div class="court-card">
-                    <div class="logo-san">
-                        <img src="./images/san/san.jpg" alt="Sân A" />
-                    </div>
-                    <div class="court-info">
-                        <div class="court-name">CLB Cầu lông Thể Thao</div>
-                        <div class="court-location">Quận Long Biên, Hà Nội</div>
-                        <button class="book-btn">Đặt sân ngay</button>
-                    </div>
-                </div>
+                </c:forEach>
             </div>
         </main>
 

@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Time;
+import java.time.LocalDate;
 
 /**
  *
@@ -83,7 +84,7 @@ public class BookFieldServlet extends HttpServlet {
         }
 
         int courtId = Integer.parseInt(request.getParameter("courtId"));
-        String date = request.getParameter("date");
+        LocalDate date = LocalDate.parse(request.getParameter("date"));
         Time startTime = Time.valueOf(request.getParameter("startTime") + ":00");
         Time endTime = Time.valueOf(request.getParameter("endTime") + ":00");
 

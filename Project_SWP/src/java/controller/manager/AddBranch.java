@@ -73,12 +73,16 @@ public class AddBranch extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.sendRedirect("login");
+            return;
+        }
+
         User user = (User) session.getAttribute("user");
         if (user == null || !user.getRole().equals("staff")) {
             response.sendRedirect("login");
@@ -87,17 +91,17 @@ public class AddBranch extends HttpServlet {
 
         String name = request.getParameter("regionName");
         String address = request.getParameter("address");
-        
+
         Time openTime = Time.valueOf(request.getParameter("openTime") + ":00");
         Time closeTime = Time.valueOf(request.getParameter("closeTime") + ":00");
         String description = request.getParameter("description");
         int empty = 0;
 
-                try {
-                    empty = Integer.parseInt(request.getParameter("emptyCourt"));
-                } catch (NumberFormatException e) {
-                    System.out.println("Lỗi chuyển đổi số lượng sân: " + e.getMessage());
-                }
+        try {
+            empty = Integer.parseInt(request.getParameter("emptyCourt"));
+        } catch (NumberFormatException e) {
+            System.out.println("Lỗi chuyển đổi số lượng sân: " + e.getMessage());
+        }
         Branch area = new Branch();
         area.setName(name);
         area.setLocation(address);
@@ -117,8 +121,6 @@ public class AddBranch extends HttpServlet {
 
         response.sendRedirect("view-region");
     }
-
-
 
     /**
      * Returns a short description of the servlet.

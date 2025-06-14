@@ -4,8 +4,6 @@
  */
 package DAO;
 
-import Dal.DBContext;
-import Model.Courts;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import Dal.DBContext;
+import Model.Courts;
 
 /**
  *
@@ -43,7 +44,6 @@ public class CourtDAO extends DBContext{
             ps.setString(7, court.getStatus());
             ps.setInt(8, court.getArea_id());
             ps.executeUpdate();
-            dao.updateEmptyCourtByAreaId(court.getArea_id(), 1);
         } catch (SQLException e) {
             e.printStackTrace();
         }

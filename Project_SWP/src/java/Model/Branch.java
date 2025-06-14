@@ -12,6 +12,7 @@ import java.util.logging.Logger;
  * @author admin
  */
 public class Branch {
+    private String managerName;
     private int area_id;
     private String name;
     private String location;
@@ -104,6 +105,14 @@ public class Branch {
 
     public void setCloseTime(Time closeTime) {
         this.closeTime = closeTime;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
     
     
