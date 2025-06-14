@@ -4,7 +4,7 @@
  */
 package Model;
 
-import java.sql.Time;
+
 
 /**
  *
@@ -20,15 +20,13 @@ public class Courts {
     private String image_url;
     private String status;
     private int area_id;
-    private Time open_time;
-    private Time close_time;
 
     public Courts() {
     }
 
     public Courts(int court_id, String court_number, String type, String floor_material,
                   String lighting, String description, String image_url,
-                  String status, int area_id, Time open_time, Time close_time) {
+                  String status, int area_id) {
         this.court_id = court_id;
         this.court_number = court_number;
         this.type = type;
@@ -38,8 +36,6 @@ public class Courts {
         this.image_url = image_url;
         this.status = status;
         this.area_id = area_id;
-        this.open_time = open_time;
-        this.close_time = close_time;
     }
 
     public int getCourt_id() {
@@ -114,21 +110,7 @@ public class Courts {
         this.area_id = area_id;
     }
 
-    public Time getOpen_time() {
-        return open_time;
-    }
 
-    public void setOpen_time(Time open_time) {
-        this.open_time = open_time;
-    }
-
-    public Time getClose_time() {
-        return close_time;
-    }
-
-    public void setClose_time(Time close_time) {
-        this.close_time = close_time;
-    }
 
    
 }

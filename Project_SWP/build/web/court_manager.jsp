@@ -277,14 +277,6 @@
                             <input type="number" class="form-control" id="addAreaId" name="areaId" required min="1">
                             <small class="form-text text-muted">Nhập ID khu vực hợp lệ</small>
                         </div>
-                        <div class="form-group">
-                            <label>Giờ Mở Cửa</label>
-                            <input type="time" class="form-control" name="openTime">
-                        </div>
-                        <div class="form-group">
-                            <label>Giờ Đóng Cửa</label>
-                            <input type="time" class="form-control" name="closeTime">
-                        </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success">Lưu</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
@@ -344,14 +336,6 @@
                             <input type="number" class="form-control" id="updateAreaId" name="areaId" required min="1">
                             <small class="form-text text-muted">Nhập ID khu vực hợp lệ</small>
                         </div>
-                        <div class="form-group">
-                            <label>Giờ Mở Cửa</label>
-                            <input type="time" class="form-control" id="updateOpenTime" name="openTime">
-                        </div>
-                        <div class="form-group">
-                            <label>Giờ Đóng Cửa</label>
-                            <input type="time" class="form-control" id="updateCloseTime" name="closeTime">
-                        </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success">Cập Nhật</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
@@ -379,8 +363,6 @@
                         <th>Ảnh</th>
                         <th>Trạng Thái</th>
                         <th>Khu Vực ID</th>
-                        <th>Giờ Mở</th>
-                        <th>Giờ Đóng</th>
                         <th>Hành Động</th>
                     </tr>
                     </thead>
@@ -396,8 +378,6 @@
                             <td>${court.image_url}</td>
                             <td>${court.status}</td>
                             <td>${court.area_id}</td>
-                            <td>${court.open_time}</td>
-                            <td>${court.close_time}</td>
                             <td>
                                 <button class="btn btn-sm btn-warning edit-btn"
                                         data-id="${court.court_id}"
@@ -409,8 +389,7 @@
                                         data-image="${court.image_url}"
                                         data-status="${court.status}"
                                         data-area="${court.area_id}"
-                                        data-open="${court.open_time}"
-                                        data-close="${court.close_time}"><i class="fas fa-edit"></i> Sửa</button>
+                                        ><i class="fas fa-edit"></i> Sửa</button>
                                 <form action="courts" method="post" style="display: inline;">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="courtId" value="${court.court_id}">
@@ -478,8 +457,6 @@
             document.getElementById('updateImageUrl').value = this.dataset.image || '';
             document.getElementById('updateStatus').value = this.dataset.status;
             document.getElementById('updateAreaId').value = this.dataset.area;
-            document.getElementById('updateOpenTime').value = this.dataset.open || '';
-            document.getElementById('updateCloseTime').value = this.dataset.close || '';
             $('#updateCourtModal').modal('show');
         });
     });
