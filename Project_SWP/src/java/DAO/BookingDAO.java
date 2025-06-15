@@ -243,4 +243,41 @@ public Bookings getBookingById(int bookingId) {
         return false;
     }
 
+    public boolean updateBooking(int bookingId, LocalDate date, Time startTime, Time endTime, String status) {
+        String sql = "UPDATE Bookings SET date = ?, start_time = ?, end_time = ?, status = ? WHERE booking_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(date));
+            ps.setTime(2, startTime);
+            ps.setTime(3, endTime);
+            ps.setString(4, status);
+            ps.setInt(5, bookingId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean checkSlotAvailableForUpdate(int bookingId, int courtId, LocalDate date, Time startTime, Time endTime) {
+        String sql = "SELECT COUNT(*) FROM Bookings WHERE court_id = ? AND date = ? AND booking_id <> ? " +
+                     "AND ((start_time < ? AND end_time > ?) OR (start_time >= ? AND start_time < ?))";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, courtId);
+            ps.setDate(2, java.sql.Date.valueOf(date));
+            ps.setInt(3, bookingId);
+            ps.setTime(4, endTime);
+            ps.setTime(5, startTime);
+            ps.setTime(6, startTime);
+            ps.setTime(7, endTime);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) == 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
