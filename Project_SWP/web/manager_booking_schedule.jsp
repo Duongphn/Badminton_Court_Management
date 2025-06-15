@@ -81,6 +81,7 @@
                                     <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
                                 </form>
                             </c:if>
+                            <a href="update-booking?bookingId=${b.booking_id}" class="btn btn-primary btn-sm" style="margin-left:5px;">Edit</a>
                         </td>
                     </tr>
                 </c:forEach>
