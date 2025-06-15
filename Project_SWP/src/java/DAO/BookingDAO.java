@@ -69,8 +69,9 @@ public int countBookingsByArea(int areaId)  {
     return 0; 
 }
 public boolean checkSlotAvailable(int courtId, LocalDate date, Time startTime, Time endTime) {
-    String sql = "SELECT COUNT(*) FROM Bookings WHERE court_id = ? AND date = ? " +
-                 "AND ((start_time < ? AND end_time > ?) OR (start_time >= ? AND start_time < ?))";
+        String sql = "SELECT COUNT(*) FROM Bookings WHERE court_id = ? AND date = ? " +
+                     "AND ((start_time < ? AND end_time > ?) OR (start_time >= ? AND start_time < ?))" +
+                     " AND status <> 'cancelled'";
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
         ps.setInt(1, courtId);
            ps.setDate(2, java.sql.Date.valueOf(date)); 
@@ -260,7 +261,8 @@ public Bookings getBookingById(int bookingId) {
 
     public boolean checkSlotAvailableForUpdate(int bookingId, int courtId, LocalDate date, Time startTime, Time endTime) {
         String sql = "SELECT COUNT(*) FROM Bookings WHERE court_id = ? AND date = ? AND booking_id <> ? " +
-                     "AND ((start_time < ? AND end_time > ?) OR (start_time >= ? AND start_time < ?))";
+                     "AND ((start_time < ? AND end_time > ?) OR (start_time >= ? AND start_time < ?))" +
+                     " AND status <> 'cancelled'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, courtId);
             ps.setDate(2, java.sql.Date.valueOf(date));
