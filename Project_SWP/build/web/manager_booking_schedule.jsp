@@ -19,7 +19,8 @@
             <jsp:include page="Sidebar.jsp" />
         </div>
         <div class="col-md-10">
-            <h3 class="mb-3">Booking Schedule</h3>
+            <h3 class="mb-1">Booking Schedule</h3>
+            <p class="text-muted mb-3">${start} - ${end}</p>
             <form class="row g-2 mb-3" method="get" action="manager-booking-schedule">
                 <div class="col-auto">
                     <select name="areaId" class="form-select">
@@ -44,7 +45,7 @@
                     <button type="submit" class="btn btn-primary">Filter</button>
                 </div>
             </form>
-            <table class="table table-bordered text-center">
+            <table class="table table-bordered table-striped table-hover text-center">
                 <thead class="table-light">
                     <tr>
                         <th>Time</th>
