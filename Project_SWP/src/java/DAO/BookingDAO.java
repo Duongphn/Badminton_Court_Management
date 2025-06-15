@@ -163,7 +163,7 @@ public Bookings getBookingById(int bookingId) {
     public List<BookingScheduleDTO> getManagerBookings(int managerId, Integer areaId, LocalDate start, LocalDate end, String status) {
         List<BookingScheduleDTO> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT b.booking_id, b.user_id, b.court_id, b.date, b.start_time, b.end_time, b.status, u.username, c.court_number, c.area_id "
+        sql.append("SELECT b.booking_id, b.user_id, b.court_id, b.date, b.start_time, b.end_time, b.status, u.username, c.court_number, c.area_id, a.name AS area_name "
                 + "FROM Bookings b JOIN Courts c ON b.court_id = c.court_id "
                 + "JOIN Areas a ON c.area_id = a.area_id "
                 + "JOIN Users u ON b.user_id = u.user_id "
@@ -210,6 +210,7 @@ public Bookings getBookingById(int bookingId) {
                 dto.setCustomerName(rs.getString("username"));
                 dto.setCourtNumber(rs.getString("court_number"));
                 dto.setArea_id(rs.getInt("area_id"));
+                dto.setAreaName(rs.getString("area_name"));
                 list.add(dto);
             }
         } catch (SQLException e) {
