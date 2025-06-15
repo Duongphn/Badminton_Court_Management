@@ -15,6 +15,36 @@
         </div>
         <div class="col-md-9">
             <h3 class="mb-3">Booking Schedule</h3>
+            <div class="d-flex justify-content-between mb-3">
+                <form class="row g-2" method="get" action="manager-booking-schedule">
+                    <div class="col-auto">
+                        <select name="areaId" class="form-select">
+                            <option value="">All Areas</option>
+                            <c:forEach var="a" items="${areas}">
+                                <option value="${a.area_id}" <c:if test="${areaId == a.area_id}">selected</c:if>>${a.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <input type="date" name="startDate" value="${startDate}" class="form-control" />
+                    </div>
+                    <div class="col-auto">
+                        <input type="date" name="endDate" value="${endDate}" class="form-control" />
+                    </div>
+                    <div class="col-auto">
+                        <select name="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="pending" <c:if test="${status eq 'pending'}">selected</c:if>>Pending</option>
+                            <option value="confirmed" <c:if test="${status eq 'confirmed'}">selected</c:if>>Confirmed</option>
+                            <option value="cancelled" <c:if test="${status eq 'cancelled'}">selected</c:if>>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </form>
+                <a href="add-booking" class="btn btn-success">Add Booking</a>
+            </div>
             <table class="table table-bordered">
                 <thead>
                 <tr>
