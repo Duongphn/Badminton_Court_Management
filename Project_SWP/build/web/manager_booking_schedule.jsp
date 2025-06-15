@@ -63,6 +63,7 @@
                             <td>
                                 <c:forEach var="b" items="${schedule[d][h]}">
                                     <div class="booking-block booking-${b.status}">
+                                        ${b.areaName} - Court ${b.courtNumber}<br/>
                                         ${b.customerName} - ${b.status}
                                     </div>
                                 </c:forEach>

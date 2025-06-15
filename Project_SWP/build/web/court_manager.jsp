@@ -25,57 +25,7 @@
             font-family: 'Roboto', sans-serif;
         }
 
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: #1e1e2f;
-            color: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-
-        .sidebar-logo {
-            text-align: center;
-            padding: 20px;
-            border-bottom: 1px solid #444;
-        }
-
-        .sidebar-logo img {
-            width: 100px;
-            border-radius: 50%;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            flex: 1;
-        }
-
-        .nav-item {
-            border-bottom: 1px solid #333;
-        }
-
-        .nav-link {
-            display: block;
-            padding: 15px 20px;
-            color: #bbb;
-            text-decoration: none;
-            transition: background 0.3s ease;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background-color: #343454;
-            color: #fff;
-        }
-
         .main-content {
-            margin-left: 270px;
             padding: 30px;
             background-color: #fff;
             margin-top: 20px;
@@ -171,13 +121,7 @@
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-            }
             .main-content {
-                margin-left: 0;
                 padding: 15px;
             }
             .search-bar {
@@ -199,34 +143,28 @@
 <body>
 <jsp:include page="navigation_court.jsp" />
 
-<!-- Thông báo -->
-<c:if test="${not empty sessionScope.successMessage}">
-    <div id="notification" class="notification success">
-        <i class="fas fa-check-circle"></i> ${sessionScope.successMessage}
-        <button class="close-btn" onclick="closeNotification()">&times;</button>
-    </div>
-</c:if>
+<div class="container-fluid">
+    <div class="row mt-4">
+        <div class="col-md-2 mb-4">
+            <jsp:include page="Sidebar.jsp" />
+        </div>
+        <div class="col-md-10">
+            <!-- Thông báo -->
+            <c:if test="${not empty sessionScope.successMessage}">
+                <div id="notification" class="notification success">
+                    <i class="fas fa-check-circle"></i> ${sessionScope.successMessage}
+                    <button class="close-btn" onclick="closeNotification()">&times;</button>
+                </div>
+            </c:if>
 
-<c:if test="${not empty sessionScope.errorMessage}">
-    <div id="notification" class="notification error">
-        <i class="fas fa-exclamation-circle"></i> ${sessionScope.errorMessage}
-        <button class="close-btn" onclick="closeNotification()">&times;</button>
-    </div>
-</c:if>
+            <c:if test="${not empty sessionScope.errorMessage}">
+                <div id="notification" class="notification error">
+                    <i class="fas fa-exclamation-circle"></i> ${sessionScope.errorMessage}
+                    <button class="close-btn" onclick="closeNotification()">&times;</button>
+                </div>
+            </c:if>
 
-<div class="sidebar">
-    <div class="sidebar-logo">
-        <img src="badminton.jpg" alt="Logo">
-    </div>
-    <ul>
-        <li class="nav-item"><a class="nav-link" href="view-region">REGION MANAGEMENT</a></li>
-        <li class="nav-item"><a class="nav-link active" href="courts">COURT MANAGEMENT</a></li>
-        <li class="nav-item"><a class="nav-link" href="ViewEquipments">SERVICE MANAGEMENT</a></li>
-        <li class="nav-item"><a class="nav-link" href="manage-request">COURT REQUEST</a></li>
-    </ul>
-</div>
-
-<div class="main-content">
+            <div class="main-content">
     <h1 class="text-center mb-4"><i class="fas fa-building"></i> Quản Lý Sân Cầu Lông</h1>
 
     <div class="search-bar">
@@ -413,6 +351,8 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
         </div>
     </div>
 </div>
