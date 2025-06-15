@@ -56,7 +56,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                <c:forEach begin="${openHour}" end="${closeHour - 1}" var="h">
+                <c:forEach begin="${openHour}" end="${endHour}" var="h">
                     <tr>
                         <th>${h}:00</th>
                         <c:forEach var="d" items="${weekDays}">

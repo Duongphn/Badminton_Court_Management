@@ -115,6 +115,12 @@ public class ManagerBookingScheduleServlet extends HttpServlet {
             }
         }
 
+        if (openHour >= closeHour) {
+            openHour = 6;
+            closeHour = 22;
+        }
+        int endHour = closeHour - 1;
+
         request.setAttribute("areas", areas);
         request.setAttribute("bookings", bookings);
         request.setAttribute("schedule", schedule);
@@ -123,6 +129,7 @@ public class ManagerBookingScheduleServlet extends HttpServlet {
         request.setAttribute("end", endDate);
         request.setAttribute("openHour", openHour);
         request.setAttribute("closeHour", closeHour);
+        request.setAttribute("endHour", endHour);
         request.getRequestDispatcher("manager_booking_schedule.jsp").forward(request, response);
     }
 }
