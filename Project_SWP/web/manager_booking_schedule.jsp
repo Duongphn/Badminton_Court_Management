@@ -59,7 +59,7 @@
                         <th>${h}:00</th>
                         <c:forEach var="d" items="${weekDays}">
                             <td>
-                                <c:forEach var="b" items="${schedule[d.toString()][h]}">
+                                <c:forEach var="b" items="${schedule[d][h]}">
                                     <div class="booking-block booking-${b.status}">
                                         ${b.customerName} - ${b.status}
                                     </div>
