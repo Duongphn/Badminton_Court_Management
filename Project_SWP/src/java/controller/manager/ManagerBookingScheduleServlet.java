@@ -35,6 +35,9 @@ public class ManagerBookingScheduleServlet extends HttpServlet {
         int managerId = user.getUser_Id();
 
         String areaParam = request.getParameter("areaId");
+        if (areaParam == null) {
+            areaParam = request.getParameter("area_id");
+        }
         Integer areaId = null;
         try {
             if (areaParam != null && !areaParam.isEmpty()) {
@@ -44,7 +47,13 @@ public class ManagerBookingScheduleServlet extends HttpServlet {
         }
 
         String startParam = request.getParameter("start");
+        if (startParam == null) {
+            startParam = request.getParameter("startDate");
+        }
         String endParam = request.getParameter("end");
+        if (endParam == null) {
+            endParam = request.getParameter("endDate");
+        }
         LocalDate startDate = null;
         LocalDate endDate = null;
         if (startParam != null && !startParam.isEmpty()) {
@@ -63,6 +72,9 @@ public class ManagerBookingScheduleServlet extends HttpServlet {
         }
 
         String status = request.getParameter("status");
+        if (status == null) {
+            status = request.getParameter("bookingStatus");
+        }
 
         BookingDAO dao = new BookingDAO();
         List<BookingScheduleDTO> bookings = dao.getManagerBookings(managerId, areaId, startDate, endDate, status);
