@@ -220,15 +220,27 @@ public Bookings getBookingById(int bookingId) {
     }
 
 
-public boolean cancelBookingById(int bookingId) {
-    String sql = "UPDATE Bookings SET status = 'cancelled' WHERE booking_id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, bookingId);
-        return ps.executeUpdate() > 0;
-    } catch (SQLException e) {
-        e.printStackTrace();
+    public boolean cancelBookingById(int bookingId) {
+        String sql = "UPDATE Bookings SET status = 'cancelled' WHERE booking_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
-    return false;
-}
+
+    public boolean updateBookingStatus(int bookingId, String status) {
+        String sql = "UPDATE Bookings SET status = ? WHERE booking_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, bookingId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 }
