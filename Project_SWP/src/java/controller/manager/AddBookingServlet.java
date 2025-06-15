@@ -54,26 +54,58 @@ public class AddBookingServlet extends HttpServlet {
             return;
         }
 
-        int userId = Integer.parseInt(request.getParameter("userId"));
-        int courtId = Integer.parseInt(request.getParameter("courtId"));
-        LocalDate date = LocalDate.parse(request.getParameter("date"));
-        Time startTime = Time.valueOf(request.getParameter("startTime") + ":00");
-        Time endTime = Time.valueOf(request.getParameter("endTime") + ":00");
+        // Lấy các tham số từ form
+        String dateStr = request.getParameter("date");
+        String startStr = request.getParameter("startTime");
+        String endStr = request.getParameter("endTime");
+        String courtIdStr = request.getParameter("courtId");
+        String userIdStr = request.getParameter("userId"); // nếu có
 
+        // 1. Kiểm tra dữ liệu đầu vào
+        if (dateStr == null || dateStr.isEmpty()
+                || startStr == null || startStr.isEmpty()
+                || endStr == null || endStr.isEmpty()
+                || courtIdStr == null || courtIdStr.isEmpty()) {
+            request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin ngày, giờ và sân.");
+            request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+            return;
+        }
+
+        int courtId, userId = 0;
+        LocalDate date;
+        Time startTime, endTime;
+        try {
+            date = LocalDate.parse(dateStr);  // yyyy-MM-dd
+            startTime = Time.valueOf(startStr.length() == 5 ? startStr + ":00" : startStr); // HH:mm
+            endTime = Time.valueOf(endStr.length() == 5 ? endStr + ":00" : endStr);         // HH:mm
+            courtId = Integer.parseInt(courtIdStr);
+            if (userIdStr != null && !userIdStr.isEmpty()) {
+                userId = Integer.parseInt(userIdStr);
+            }
+        } catch (Exception e) {
+            request.setAttribute("error", "Định dạng ngày hoặc giờ không hợp lệ!");
+            request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+            return;
+        }
+
+        // 2. Kiểm tra logic thời gian
         if (!startTime.before(endTime)) {
             request.setAttribute("error", "Giờ bắt đầu phải trước giờ kết thúc.");
-            doGet(request, response);
+            request.getRequestDispatcher("add_booking.jsp").forward(request, response);
             return;
         }
 
-        BookingDAO bookingDAO = new BookingDAO();
-        boolean available = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
+        // 3. Kiểm tra trùng slot booking
+        BookingDAO dao = new BookingDAO();
+        boolean available = dao.checkSlotAvailable(courtId, date, startTime, endTime);
         if (!available) {
-            request.setAttribute("error", "Khoảng thời gian đã được đặt.");
-            doGet(request, response);
+            request.setAttribute("error", "Sân này đã được đặt trong thời gian này. Vui lòng chọn thời gian khác.");
+            request.getRequestDispatcher("add_booking.jsp").forward(request, response);
             return;
         }
-        bookingDAO.insertBooking(userId, courtId, date, startTime, endTime, "confirmed");
-        response.sendRedirect("manager-booking-schedule");
+
+        // 4. Thêm booking mới (status: pending hoặc booked tuỳ logic của bạn)
+        dao.insertBooking(userId, courtId, date, startTime, endTime, "pending");
+        response.sendRedirect("manager_booking_schedule.jsp?msg=Đặt sân thành công!");
     }
 }

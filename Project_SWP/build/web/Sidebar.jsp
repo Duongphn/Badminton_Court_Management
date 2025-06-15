@@ -88,7 +88,7 @@
                     <a class="nav-link" href="manage-request">COURT REQUEST</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/manager-booking-schedule">BOOKING SCHEDULE</a>
+                    <a class="nav-link" href="manager-booking-schedule">BOOKING SCHEDULE</a>
                 </li>
             </ul>
         </div>
