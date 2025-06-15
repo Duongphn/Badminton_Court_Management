@@ -133,6 +133,31 @@ public class CourtDAO extends DBContext{
             Logger.getLogger(CourtDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public List<Courts> getCourtsByManager(int managerId) {
+        List<Courts> courts = new ArrayList<>();
+        String sql = "SELECT c.* FROM Courts c JOIN Areas a ON c.area_id = a.area_id WHERE a.manager_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Courts court = new Courts();
+                court.setCourt_id(rs.getInt("court_id"));
+                court.setCourt_number(rs.getString("court_number"));
+                court.setType(rs.getString("type"));
+                court.setFloor_material(rs.getString("floor_material"));
+                court.setLighting(rs.getString("lighting"));
+                court.setDescription(rs.getString("description"));
+                court.setImage_url(rs.getString("image_url"));
+                court.setStatus(rs.getString("status"));
+                court.setArea_id(rs.getInt("area_id"));
+                courts.add(court);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return courts;
+    }
     public int countCourtsByArea(int areaId) {
     String sql = "SELECT COUNT(*) FROM Courts WHERE area_id = ?";
     

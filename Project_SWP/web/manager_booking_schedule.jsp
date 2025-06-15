@@ -21,6 +21,7 @@
         <div class="col-md-10">
             <h3 class="mb-1">Booking Schedule</h3>
             <p class="text-muted mb-3">${start} - ${end}</p>
+            <a href="add-booking" class="btn btn-success mb-3">Add Booking</a>
             <form class="row g-2 mb-3" method="get" action="manager-booking-schedule">
                 <div class="col-auto">
                     <select name="areaId" class="form-select">
