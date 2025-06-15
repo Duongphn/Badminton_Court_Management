@@ -88,6 +88,15 @@ public class BookFieldServlet extends HttpServlet {
         Time startTime = Time.valueOf(request.getParameter("startTime") + ":00");
         Time endTime = Time.valueOf(request.getParameter("endTime") + ":00");
 
+        if (!startTime.before(endTime)) {
+            CourtDAO courtDAO = new CourtDAO();
+            Courts court = courtDAO.getCourtById(courtId);
+            request.setAttribute("message", "Giờ bắt đầu phải trước giờ kết thúc.");
+            request.setAttribute("court", court);
+            request.getRequestDispatcher("book_field.jsp").forward(request, response);
+            return;
+        }
+
         BookingDAO bookingDAO = new BookingDAO();
         CourtDAO courtDAO = new CourtDAO();
         Courts court = courtDAO.getCourtById(courtId);
