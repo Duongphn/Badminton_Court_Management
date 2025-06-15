@@ -60,6 +60,12 @@ public class AddBookingServlet extends HttpServlet {
         Time startTime = Time.valueOf(request.getParameter("startTime") + ":00");
         Time endTime = Time.valueOf(request.getParameter("endTime") + ":00");
 
+        if (!startTime.before(endTime)) {
+            request.setAttribute("error", "Giờ bắt đầu phải trước giờ kết thúc.");
+            doGet(request, response);
+            return;
+        }
+
         BookingDAO bookingDAO = new BookingDAO();
         boolean available = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
         if (!available) {
