@@ -39,7 +39,7 @@
             position: relative;
             text-align: left;
         }
-        .input-field, select, textarea {
+        .input-field {
             width: 100%;
             padding: 12px 12px 12px 40px;
             border: 1px solid #ccc;
@@ -48,7 +48,7 @@
             font-size: 14px;
             transition: border-color 0.3s;
         }
-        .input-field:focus, select:focus, textarea:focus {
+        .input-field:focus {
             outline: none;
             border-color: #1da1f2;
         }
@@ -86,23 +86,6 @@
         .login-link:hover {
             text-decoration: underline;
         }
-        .role-group {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-        .role-group label {
-            font-size: 14px;
-            margin-right: 20px;
-        }
-        .staff-fields {
-            display: none; /* Mặc định ẩn */
-            margin-top: 10px;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
     </style>
 </head>
 <body>
@@ -111,7 +94,6 @@
     <h2>Register</h2>
 
     <form action="register" method="post">
-        <!-- Grid 2 cột -->
         <div class="form-grid">
 
             <!-- Username -->
@@ -144,79 +126,18 @@
                 <input type="text" class="input-field" name="phone_number" placeholder="Phone Number" required>
             </div>
 
-            <!-- Role -->
-            <div class="role-group" style="grid-column: span 2;">
-                <label><input type="radio" name="role" value="user" checked onclick="toggleStaffFields()"> User</label>
-                <label><input type="radio" name="role" value="staff" onclick="toggleStaffFields()"> Staff</label>
-            </div>
         </div>
 
-        <!-- Staff fields (full width dưới) -->
-        <div class="staff-fields" id="staffFields">
-            <div class="form-grid">
+        <!-- Hidden role input -->
+        <input type="hidden" name="role" value="user"/>
 
-                <div class="input-group">
-                    <span class="input-icon">&#128100;</span>
-                    <input type="text" class="input-field" name="full_name" placeholder="Full Name">
-                </div>
-
-                <div class="input-group">
-                    <span class="input-icon">&#9794;&#9792;</span>
-                    <select name="gender" class="input-field">
-                        <option value="">Select Gender</option>
-                        <option value="Nam">Nam</option>
-                        <option value="Nữ">Nữ</option>
-                        <option value="Khác">Khác</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <span class="input-icon">&#128197;</span>
-                    <input type="date" class="input-field" name="date_of_birth" placeholder="Date of Birth">
-                </div>
-
-                <div class="input-group">
-                    <span class="input-icon">&#127968;</span>
-                    <input type="text" class="input-field" name="address" placeholder="Address">
-                </div>
-
-                <div class="input-group">
-                    <span class="input-icon">&#128179;</span>
-                    <input type="text" class="input-field" name="id_card_number" placeholder="ID Card Number">
-                </div>
-
-                <div class="input-group">
-                    <span class="input-icon">&#127891;</span>
-                    <input type="text" class="input-field" name="education_level" placeholder="Education Level">
-                </div>
-
-                <div class="input-group" style="grid-column: span 2;">
-                    <span class="input-icon">&#9998;</span>
-                    <textarea name="personal_notes" class="input-field" placeholder="Personal Notes" rows="3" style="resize: none; padding-left: 12px;"></textarea>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Button -->
+        <!-- Submit -->
         <button type="submit" class="btn">Register</button>
     </form>
+    <span>${error}</span>
 
     <a href="login" class="login-link">Login here</a>
 </div>
-
-<script>
-    function toggleStaffFields() {
-        var staffFields = document.getElementById("staffFields");
-        var roleStaff = document.querySelector('input[name="role"][value="staff"]').checked;
-
-        if (roleStaff) {
-            staffFields.style.display = "block";
-        } else {
-            staffFields.style.display = "none";
-        }
-    }
-</script>
 
 </body>
 </html>

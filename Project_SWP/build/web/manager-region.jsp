@@ -77,10 +77,11 @@
                         <h3 class="mb-4 text-primary">🏙 Quản lí địa điểm</h3>
 
                         <!-- Search Bar -->
-                        <div class="form-inline mb-4">
-                            <input type="text" id="searchInput" class="form-control mr-2 w-50" placeholder="🔍 Search by region name">
-                            <button class="btn btn-primary" onclick="searchDorms()">Tìm kiếm</button>
-                        </div>
+                        <form action="search-branch" method="POST" class="form-inline mb-4">
+                            <input type="text" name="searchInput" value="${searchKeyword}" class="form-control mr-2 w-50" placeholder="🔍 Search by branch name">
+                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        </form>
+
 
                         <!-- Regions Table -->
                         <div class="table-responsive">
@@ -108,7 +109,8 @@
                                             <td>${a.description}</td>
                                             <td>
                                                 <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#updateModal${loop.index}">Update</button>
-                                                <a href="detailBranch?id=${a.area_id}" class="btn btn-info btn-sm">Detail</a>
+                                                <a href="detailBranch?area_id=${a.area_id}" class="btn btn-info btn-sm">Detail</a>
+
                                                 <a href="delete?regionId=${a.area_id}" class="btn btn-danger btn-sm" onclick="return confirmDelete()">Delete</a>
 
 
@@ -141,7 +143,7 @@
                                                                     <div class="form-group">
                                                                         <label>Giờ đóng cửa</label>
 
-                                                                        <input type="time" name="closeTime" class="form-control" value="${a.closeTime}">
+                                                                        <input type="time" name="closeTime" class="form-control" value="${a.closeTime }">
 
                                                                     </div>
                                                                     <div class="form-group">
@@ -243,15 +245,7 @@
     </script>-->
 
         <script>
-            function searchDorms() {
-                let input = document.getElementById("searchInput").value.toUpperCase().trim();
-                let rows = document.querySelectorAll("table tbody tr");
-                rows.forEach(row => {
-                    let name = row.cells[0].textContent.toUpperCase();
-                    row.style.display = name.includes(input) ? "" : "none";
-                });
-            }
-
+           
             function confirmDelete() {
                 return confirm("Do you want to delete this?");
             }

@@ -116,6 +116,7 @@
                 margin: 0 auto;
                 padding: 0 2rem;
                 display: flex;
+                justify-content: center;
                 gap: 2rem;
             }
 
@@ -167,7 +168,7 @@
                     <span>
                         <a href="viewprofile.jsp" class="header-btn"><%=user.getUsername()%></a>
                     </span>
-                    <a href="homepage.jsp" class="header-btn">Thoát</a>
+                    <a href="HomePage" class="header-btn">Thoát</a>
                 </div>
             </div>
         </header>
@@ -175,9 +176,10 @@
         <!-- Navigation -->
         <nav class="nav">
             <div class="nav-container">
-                <div class="nav-item active"><a href="homepageUser.jsp">Trang Chủ</a></div>
-                <div class="nav-item"><a href="ListCourt">Danh Sách Sân Bãi</a></div>
-                <div class="nav-item"><a href="booking_list.jsp">Danh Sách Đặt Sân</a></div>
+                <div class="nav-item active"><a href="HomePageUser">Trang Chủ</a></div>
+
+                <div class="nav-item"><a href="listBranch">Danh Sách Sân Bãi</a></div>
+                <div class="nav-item"><a href="booking_list.jsp">Danh sách đặt sân</a></div>
                 <div class="nav-item"><a href="AboutUs.jsp">Giới Thiệu</a></div>
                 <div class="nav-item">Liên Hệ</div>
             </div>
