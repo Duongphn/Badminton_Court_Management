@@ -96,12 +96,33 @@ public class ManagerBookingScheduleServlet extends HttpServlet {
         AreaDAO areaDAO = new AreaDAO();
         List<Branch> areas = areaDAO.getAreasByManager(managerId);
 
+        int openHour = 6;
+        int closeHour = 22;
+        if (areaId != null) {
+            Branch a = areaDAO.getAreaByIdWithManager(areaId);
+            if (a != null) {
+                openHour = a.getOpenTime().toLocalTime().getHour();
+                closeHour = a.getCloseTime().toLocalTime().getHour();
+            }
+        } else if (!areas.isEmpty()) {
+            openHour = 24;
+            closeHour = 0;
+            for (Branch a : areas) {
+                int oh = a.getOpenTime().toLocalTime().getHour();
+                int ch = a.getCloseTime().toLocalTime().getHour();
+                if (oh < openHour) openHour = oh;
+                if (ch > closeHour) closeHour = ch;
+            }
+        }
+
         request.setAttribute("areas", areas);
         request.setAttribute("bookings", bookings);
         request.setAttribute("schedule", schedule);
         request.setAttribute("weekDays", days);
         request.setAttribute("start", startDate);
         request.setAttribute("end", endDate);
+        request.setAttribute("openHour", openHour);
+        request.setAttribute("closeHour", closeHour);
         request.getRequestDispatcher("manager_booking_schedule.jsp").forward(request, response);
     }
 }
