@@ -23,6 +23,10 @@ public class ManagerBookingScheduleServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.sendRedirect("login");
+            return;
+        }
         User user = (User) session.getAttribute("user");
         if (user == null || !"staff".equals(user.getRole())) {
             response.sendRedirect("login");
@@ -63,9 +67,9 @@ public class ManagerBookingScheduleServlet extends HttpServlet {
         BookingDAO dao = new BookingDAO();
         List<BookingScheduleDTO> bookings = dao.getManagerBookings(managerId, areaId, startDate, endDate, status);
 
-        java.util.Map<String, java.util.Map<Integer, List<BookingScheduleDTO>>> schedule = new java.util.HashMap<>();
+        java.util.Map<LocalDate, java.util.Map<Integer, List<BookingScheduleDTO>>> schedule = new java.util.HashMap<>();
         for (BookingScheduleDTO b : bookings) {
-            String d = b.getDate().toString();
+            LocalDate d = b.getDate();
             int hour = b.getStart_time().toLocalTime().getHour();
             schedule.computeIfAbsent(d, k -> new java.util.HashMap<>())
                     .computeIfAbsent(hour, k -> new ArrayList<>())
