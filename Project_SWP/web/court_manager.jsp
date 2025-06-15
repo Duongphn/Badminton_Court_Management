@@ -1,5 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="DAO.CourtDAO,java.util.List,Model.Courts" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%
+    if (request.getAttribute("courts") == null) {
+        CourtDAO dao = new CourtDAO();
+        List<Courts> courts = dao.getAllCourts();
+        request.setAttribute("courts", courts);
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
