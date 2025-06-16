@@ -184,7 +184,7 @@
                     <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <form action="courts" method="post">
+                    <form action="courts" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="add">
                         <div class="form-group">
                             <label>Tên Sân</label>
@@ -207,8 +207,8 @@
                             <input type="text" class="form-control" name="description">
                         </div>
                         <div class="form-group">
-                            <label>Ảnh URL</label>
-                            <input type="text" class="form-control" name="imageUrl">
+                            <label>Ảnh</label>
+                            <input type="file" class="form-control" name="image" accept="image/*">
                         </div>
                         <div class="form-group">
                             <label>Trạng Thái</label>
@@ -242,7 +242,7 @@
                     <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <form action="courts" method="post">
+                    <form action="courts" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="courtId" id="updateCourtId">
                         <div class="form-group">
@@ -265,9 +265,10 @@
                             <label>Mô Tả</label>
                             <input type="text" class="form-control" id="updateDescription" name="description">
                         </div>
+                        <input type="hidden" name="currentImage" id="currentImage">
                         <div class="form-group">
-                            <label>Ảnh URL</label>
-                            <input type="text" class="form-control" id="updateImageUrl" name="imageUrl">
+                            <label>Ảnh</label>
+                            <input type="file" class="form-control" id="updateImage" name="image" accept="image/*">
                         </div>
                         <div class="form-group">
                             <label>Trạng Thái</label>
@@ -307,7 +308,6 @@
                         <th>Chất Liệu</th>
                         <th>Chiếu Sáng</th>
                         <th>Mô Tả</th>
-                        <th>Ảnh</th>
                         <th>Trạng Thái</th>
                         <th>Khu Vực ID</th>
                         <th>Hành Động</th>
@@ -322,7 +322,6 @@
                             <td>${court.floor_material}</td>
                             <td>${court.lighting}</td>
                             <td>${court.description}</td>
-                            <td>${court.image_url}</td>
                             <td>${court.status}</td>
                             <td>${court.area_id}</td>
                             <td>
@@ -333,7 +332,6 @@
                                         data-floor="${court.floor_material}"
                                         data-lighting="${court.lighting}"
                                         data-description="${court.description}"
-                                        data-image="${court.image_url}"
                                         data-status="${court.status}"
                                         data-area="${court.area_id}"
                                         ><i class="fas fa-edit"></i> Sửa</button>
@@ -403,7 +401,7 @@
             document.getElementById('updateFloorMaterial').value = this.dataset.floor || '';
             document.getElementById('updateLighting').value = this.dataset.lighting || '';
             document.getElementById('updateDescription').value = this.dataset.description || '';
-            document.getElementById('updateImageUrl').value = this.dataset.image || '';
+            document.getElementById('currentImage').value = this.dataset.image || '';
             document.getElementById('updateStatus').value = this.dataset.status;
             document.getElementById('updateAreaId').value = this.dataset.area;
             $('#updateCourtModal').modal('show');
