@@ -46,7 +46,7 @@
     </style>
 </head>
 <body>
-
+  <jsp:include page="homehead.jsp" />
 <div class="container booking-container">
     <h2 class="booking-title">Đặt sân: ${court.court_number}</h2>
 
@@ -64,12 +64,12 @@
 
         <div class="mb-3">
             <label for="startTime">Giờ bắt đầu</label>
-            <input type="time" id="startTime" name="startTime" class="form-control" required>
+            <input type="time" id="startTime" name="startTime" class="form-control"  required >
         </div>
 
         <div class="mb-3">
             <label for="endTime">Giờ kết thúc</label>
-            <input type="time" id="endTime" name="endTime" class="form-control" required>
+            <input type="time" id="endTime" name="endTime" class="form-control" required >
         </div>
 
         <div class="d-grid">

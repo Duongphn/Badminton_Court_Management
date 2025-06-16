@@ -65,7 +65,7 @@ public class ViewService extends HttpServlet {
         request.setAttribute("service", service);
 
         String status = request.getParameter("status"); 
-        request.setAttribute("status", status);
+        
 
         request.getRequestDispatcher("ServiceView.jsp").forward(request, response);
     }

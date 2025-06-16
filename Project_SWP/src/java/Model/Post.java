@@ -4,34 +4,41 @@
  */
 package Model;
 
+import java.util.Date;
+
 /**
  *
  * @author admin
  */
 public class Post {
-    private String post_id;
+
+    private int postId;
     private String title;
     private String content;
-    private String created_by;
-    private String created_at;
+    private int createdBy;
+    private Date createdAt;
+    private String postType;
+    private String status;
 
     public Post() {
     }
 
-    public Post(String post_id, String title, String content, String created_by, String created_at) {
-        this.post_id = post_id;
+    public Post(int postId, String title, String content, int createdBy, Date createdAt, String postType, String status) {
+        this.postId = postId;
         this.title = title;
         this.content = content;
-        this.created_by = created_by;
-        this.created_at = created_at;
+        this.createdBy = createdBy;
+        this.createdAt = createdAt;
+        this.postType = postType;
+        this.status = status;
     }
 
-    public String getPost_id() {
-        return post_id;
+    public int getPostId() {
+        return postId;
     }
 
-    public void setPost_id(String post_id) {
-        this.post_id = post_id;
+    public void setPostId(int postId) {
+        this.postId = postId;
     }
 
     public String getTitle() {
@@ -50,20 +57,36 @@ public class Post {
         this.content = content;
     }
 
-    public String getCreated_by() {
-        return created_by;
+    public int getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCreated_by(String created_by) {
-        this.created_by = created_by;
+    public void setCreatedBy(int createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
-    
+
+    public String getPostType() {
+        return postType;
+    }
+
+    public void setPostType(String postType) {
+        this.postType = postType;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

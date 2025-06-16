@@ -97,15 +97,21 @@ public class AddBookingServlet extends HttpServlet {
 
         // 3. Kiểm tra trùng slot booking
         BookingDAO dao = new BookingDAO();
-        boolean available = dao.checkSlotAvailable(courtId, date, startTime, endTime);
+        boolean available = dao.checkSlotAvailableAdmin(courtId, date, startTime, endTime);
         if (!available) {
             request.setAttribute("error", "Sân này đã được đặt trong thời gian này. Vui lòng chọn thời gian khác.");
-            request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+            request.getRequestDispatcher("manager_booking_schedule.jsp").forward(request, response);
             return;
         }
 
         // 4. Thêm booking mới (status: pending hoặc booked tuỳ logic của bạn)
-        dao.insertBooking(userId, courtId, date, startTime, endTime, "pending");
-        response.sendRedirect("manager_booking_schedule.jsp?msg=Đặt sân thành công!");
+        boolean success = dao.insertBooking(userId, courtId, date, startTime, endTime, "pending");
+        if (success) {
+            // Có thể redirect về lịch hoặc thông báo thành công
+            response.sendRedirect("manager_booking_schedule.jsp?msg=Đặt sân thành công!");
+        } else {
+            request.setAttribute("error", "Có lỗi xảy ra, vui lòng thử lại sau!");
+            request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+        }
     }
 }

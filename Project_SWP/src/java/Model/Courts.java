@@ -110,7 +110,10 @@ public class Courts {
         this.area_id = area_id;
     }
 
-
+    @Override
+    public String toString() {
+        return "Courts{" + "court_id=" + court_id + ", court_number=" + court_number + ", type=" + type + ", floor_material=" + floor_material + ", lighting=" + lighting + ", description=" + description + ", image_url=" + image_url + ", status=" + status + ", area_id=" + area_id + '}';
+    }
 
    
 }

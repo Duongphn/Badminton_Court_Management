@@ -31,6 +31,39 @@ public class CourtDAO extends DBContext{
         }
     }
     AreaDAO dao = new AreaDAO();
+    
+    public List<Courts> getCourtsByAreaId(int areaId) {
+
+        List<Courts> listCourt = new ArrayList<>();
+        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, open_time, close_time FROM Courts WHERE area_id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, areaId); // Set tham số ở đây
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int courtID = rs.getInt("court_id");
+                    String courtNumber = rs.getString("court_number");
+                    String type = rs.getString("type");
+                    String floorMaterial = rs.getString("floor_material");
+                    String lighting = rs.getString("lighting");
+                    String description = rs.getString("description");
+                    String imageUrl = rs.getString("image_url");
+                    String status = rs.getString("status");
+                    int areaID = rs.getInt("area_id");
+
+                    Courts court = new Courts(courtID, courtNumber, type, floorMaterial, lighting, description, imageUrl, status, areaID);
+                    listCourt.add(court);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return listCourt;
+    }
+    
     public void addCourt(Courts court) {
         String sql = "INSERT INTO Courts (court_number, type, floor_material, lighting, description, image_url, status, area_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {

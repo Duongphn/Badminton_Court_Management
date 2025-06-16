@@ -117,7 +117,7 @@ public class LoginController extends HttpServlet {
             } else if ("admin".equalsIgnoreCase(user.getRole())) {
                 response.sendRedirect("user_manager.jsp");
             } else {
-                response.sendRedirect("homepageUser.jsp");
+                response.sendRedirect("HomePageUser");
             }
 
         } else {

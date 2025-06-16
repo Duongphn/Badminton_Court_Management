@@ -7,6 +7,7 @@ package controller.manager;
 
 import DAO.AreaDAO;
 import DAO.Branch_ImageDAO;
+import DAO.CourtDAO;
 import DAO.ServiceDAO;
 import DAO.Service_BranchDAO;
 
@@ -15,6 +16,7 @@ import Model.Branch;
 
 import Model.Branch_Service;
 import Model.Branch_pictures;
+import Model.Courts;
 import Model.Service;
 import Model.User;
 import java.io.IOException;
@@ -80,7 +82,7 @@ throws ServletException, IOException {
             
             Service_BranchDAO sdao = new Service_BranchDAO();
             Branch_ImageDAO idao = new Branch_ImageDAO();
-
+            CourtDAO cdao = new CourtDAO();
             ServiceDAO eDao = new ServiceDAO();
 
            
@@ -92,7 +94,8 @@ throws ServletException, IOException {
             List<Branch_pictures> areaImages = idao.getRoomImagesByDormID(area_id);
             request.setAttribute("areaImages", areaImages);
 
-         
+            List<Courts> areaCourts = cdao.getCourtsByAreaId(area_id);
+            request.setAttribute("areaCourts", areaCourts);
 
             List<Branch_Service> areaAllServices = eDao.getAllAreaServices(area_id);
 

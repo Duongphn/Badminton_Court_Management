@@ -4,11 +4,14 @@
  */
 package controller.user;
 
-import DAO.BookingDAO;
+import DAO.AreaDAO;
 import DAO.CourtDAO;
-import DAO.CourtPricingDAO;
+
+import Model.Branch;
 import Model.Courts;
+
 import Model.User;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,16 +19,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import jakarta.servlet.http.HttpSession;
-import java.sql.Time;
-import java.time.LocalDate;
+
+//import java.awt.geom.Area;
+import java.util.List;
 
 /**
  *
- * @author admin
+ * @author sangn
  */
-@WebServlet(name = "BookFieldServlet", urlPatterns = {"/book-field"})
-public class BookFieldServlet extends HttpServlet {
+@WebServlet(name = "AreaDetail", urlPatterns = {"/AreaDetail"})
+public class AreaDetail extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +49,10 @@ public class BookFieldServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet BookFieldServlet</title>");
+            out.println("<title>Servlet AreaDetail</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet BookFieldServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AreaDetail at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,34 +67,30 @@ public class BookFieldServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-
         if (user == null) {
             response.sendRedirect("login");
             return;
         }
+        String areaIdParam = request.getParameter("area_id");
 
-        try {
-            String courtIdStr = request.getParameter("courtId");
-            if (courtIdStr == null || courtIdStr.isEmpty()) {
-                response.sendRedirect("home");
-                return;
-            }
+        if (areaIdParam != null) {
+            int areaId = Integer.parseInt(areaIdParam);
 
-            int courtId = Integer.parseInt(courtIdStr);
             CourtDAO courtDAO = new CourtDAO();
-            Courts court = courtDAO.getCourtById(courtId);
+            AreaDAO areaDAO = new AreaDAO();
+            Branch area = areaDAO.getAreaByIdWithManager(areaId);
 
-            request.setAttribute("court", court);
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
+            List<Courts> courts = courtDAO.getCourtsByAreaId(areaId);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendRedirect("error.jsp");
+            request.setAttribute("area", area);
+            request.setAttribute("courts", courts);
+            request.getRequestDispatcher("CourtDetail.jsp").forward(request, response);
+        } else {
+            response.sendRedirect("ListBranch");
         }
     }
 
@@ -104,48 +105,7 @@ public class BookFieldServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            response.sendRedirect("login");
-            return;
-        }
-
-        int courtId = Integer.parseInt(request.getParameter("courtId"));
-        LocalDate date = LocalDate.parse(request.getParameter("date"));
-        
-
-        BookingDAO bookingDAO = new BookingDAO();
-        CourtDAO courtDAO = new CourtDAO();
-        Courts court = courtDAO.getCourtById(courtId);
-        Time startTime,endTime;
-        
-try {
-             startTime = Time.valueOf(request.getParameter("startTime") + ":00");
-            endTime = Time.valueOf(request.getParameter("endTime") + ":00");
-        } catch (Exception e) {
-            request.setAttribute("message", "Lỗi định dạng giờ. Vui lòng kiểm tra lại.");
-            request.setAttribute("court", court);
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
-            return;
-        }
-        boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
-        if (isAvailable) {
-            request.setAttribute("message", "Khoảng thời gian này đã có người đặt.");
-            request.setAttribute("court", court);
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
-            return;
-        }
-
-        CourtPricingDAO pricingDAO = new CourtPricingDAO();
-        int totalPrice = pricingDAO.calculatePrice(court.getArea_id(), startTime, endTime);
-
-        request.setAttribute("court", court);
-        request.setAttribute("date", date);
-        request.setAttribute("startTime", startTime);
-        request.setAttribute("endTime", endTime);
-        request.setAttribute("totalPrice", totalPrice);
-        request.getRequestDispatcher("confirm_booking.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**

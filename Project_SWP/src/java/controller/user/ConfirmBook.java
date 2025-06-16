@@ -94,7 +94,7 @@ public class ConfirmBook extends HttpServlet {
             String[] selectedServices = request.getParameterValues("selectedServices");
 
             BookingDAO bookingDAO = new BookingDAO();
-            int bookingId = bookingDAO.insertBooking(userId, courtId, date, startTime, endTime, "pending");
+            int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending");
             BookingServiceDAO bookingserviceDao = new BookingServiceDAO();
            
             if (selectedServices != null && bookingId != -1) {

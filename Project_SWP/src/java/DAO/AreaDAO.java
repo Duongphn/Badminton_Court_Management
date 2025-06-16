@@ -304,25 +304,21 @@ public Branch getAreaByIdWithManager(int area_id) {
             Time.valueOf("22:00:00")   ,
                 "String"
         );
-        
         // Gọi phương thức addRegion để thêm mới
         areaDAO.addRegion(newArea);
-        
          System.out.println("Đã thêm khu vực mới thành công!");
 
         List<Branch> aa = areaDAO.getAreasByManager(1);
-
-
         for (Branch list : aa) {
             System.out.println(list);
         }
         
         List<Branch> top3Areas = areaDAO.getTop3();
-
         System.out.println("Danh sách 3 khu vực mới nhất:");
         for (Branch branch : top3Areas) {
             System.out.println(branch);
         }
+        
          int areaIdToUpdate = 4;
 
     // ✅ Dữ liệu mới cần cập nhật
