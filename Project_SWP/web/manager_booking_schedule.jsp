@@ -48,48 +48,54 @@
                 </form>
                 <a href="add-booking" class="btn btn-success">Add Booking</a>
             </div>
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Court</th>
-                    <th>Area</th>
-                    <th>Customer</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach var="b" items="${bookings}">
-                    <tr>
-                        <td>${b.booking_id}</td>
-                        <td>${b.courtNumber}</td>
-                        <td>${b.areaName}</td>
-                        <td>${b.customerName}</td>
-                        <td>${b.date}</td>
-                        <td>${b.start_time} - ${b.end_time}</td>
-                        <td>${b.status}</td>
-                        <td>
-                            <c:if test="${b.status eq 'pending'}">
-                                <form action="confirm-booking-manager" method="post" style="display:inline-block">
-                                    <input type="hidden" name="bookingId" value="${b.booking_id}" />
-                                    <input type="hidden" name="action" value="confirm" />
-                                    <button type="submit" class="btn btn-success btn-sm">Confirm</button>
-                                </form>
-                                <form action="confirm-booking-manager" method="post" style="display:inline-block;margin-left:5px;">
-                                    <input type="hidden" name="bookingId" value="${b.booking_id}" />
-                                    <input type="hidden" name="action" value="cancel" />
-                                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
-                                </form>
-                            </c:if>
-                            <a href="update-booking?bookingId=${b.booking_id}" class="btn btn-primary btn-sm" style="margin-left:5px;">Edit</a>
-                        </td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover mb-0">
+                            <thead class="table-light text-center">
+                            <tr>
+                                <th>ID</th>
+                                <th>Court</th>
+                                <th>Area</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach var="b" items="${bookings}">
+                                <tr class="text-center">
+                                    <td>${b.booking_id}</td>
+                                    <td>${b.courtNumber}</td>
+                                    <td>${b.areaName}</td>
+                                    <td>${b.customerName}</td>
+                                    <td>${b.date}</td>
+                                    <td>${b.start_time} - ${b.end_time}</td>
+                                    <td>${b.status}</td>
+                                    <td>
+                                        <c:if test="${b.status eq 'pending'}">
+                                            <form action="confirm-booking-manager" method="post" style="display:inline-block">
+                                                <input type="hidden" name="bookingId" value="${b.booking_id}" />
+                                                <input type="hidden" name="action" value="confirm" />
+                                                <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                                            </form>
+                                            <form action="confirm-booking-manager" method="post" style="display:inline-block;margin-left:5px;">
+                                                <input type="hidden" name="bookingId" value="${b.booking_id}" />
+                                                <input type="hidden" name="action" value="cancel" />
+                                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                            </form>
+                                        </c:if>
+                                        <a href="update-booking?bookingId=${b.booking_id}" class="btn btn-primary btn-sm" style="margin-left:5px;">Edit</a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
