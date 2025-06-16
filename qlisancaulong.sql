@@ -114,6 +114,7 @@ CREATE TABLE Bookings (
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     [status] NVARCHAR(50),
+    rating INT CHECK (rating BETWEEN 1 AND 5),
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (court_id) REFERENCES Courts(court_id),
     CONSTRAINT chk_booking_time CHECK (start_time < end_time)

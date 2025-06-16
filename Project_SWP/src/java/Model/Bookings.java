@@ -19,11 +19,12 @@ public class Bookings {
     private Time start_time;
     private Time end_time;
     private String status;
+    private int rating;
 
     public Bookings() {
     }
 
-    public Bookings(int booking_id, int user_id, int court_id, LocalDate date, Time start_time, Time end_time, String status) {
+    public Bookings(int booking_id, int user_id, int court_id, LocalDate date, Time start_time, Time end_time, String status, int rating) {
         this.booking_id = booking_id;
         this.user_id = user_id;
         this.court_id = court_id;
@@ -31,6 +32,7 @@ public class Bookings {
         this.start_time = start_time;
         this.end_time = end_time;
         this.status = status;
+        this.rating = rating;
     }
 
     public int getBooking_id() {
@@ -91,4 +93,12 @@ public class Bookings {
 
     
     
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
 }

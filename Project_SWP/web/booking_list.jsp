@@ -92,6 +92,7 @@
                             <th>Ngày</th>
                             <th>Thời gian</th>
                             <th>Trạng thái</th>
+                            <th>Đánh giá</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
@@ -102,6 +103,27 @@
                                 <td>${booking.date}</td>
                                 <td>${booking.start_time} - ${booking.end_time}</td>
                                 <td>${booking.status}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${booking.status eq 'confirmed'}">
+                                            <c:choose>
+                                                <c:when test="${booking.rating == 0}">
+                                                    <form action="submit-rating" method="post" class="d-flex">
+                                                        <input type="hidden" name="bookingId" value="${booking.booking_id}"/>
+                                                        <input type="number" name="rating" min="1" max="5" class="form-control form-control-sm me-2" required/>
+                                                        <button type="submit" class="btn btn-primary btn-sm">Đánh giá</button>
+                                                    </form>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    ${booking.rating}
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:out value="${booking.rating}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
                                 <td>
                                     <c:if test="${booking.status eq 'confirmed'}">
                                         <form action="cancel-booking" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy?');">
