@@ -23,7 +23,7 @@
             <tr><th>Chiếu sáng</th><td>${court.lighting}</td></tr>
             <tr><th>Mô tả</th><td>${court.description}</td></tr>
             <tr><th>Ảnh</th>
-                <td><c:if test='${not empty court.image_url}'><img src='${court.image_url}' width='300'/></c:if></td></tr>
+                <td><c:if test='${not empty court.image_url}'><img src='${pageContext.request.contextPath}/${court.image_url}' width='300'/></c:if></td></tr>
             <tr><th>Trạng thái</th><td>${court.status}</td></tr>
             <tr><th>Area ID</th><td>${court.area_id}</td></tr>
         </table>
