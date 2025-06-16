@@ -192,10 +192,11 @@ public Bookings getBookingById(int bookingId) {
             b.setBooking_id(rs.getInt("booking_id"));
             b.setUser_id(rs.getInt("user_id"));
             b.setCourt_id(rs.getInt("court_id"));
-            b.setDate(rs.getDate("date").toLocalDate());  
+            b.setDate(rs.getDate("date").toLocalDate());
             b.setStart_time(rs.getTime("start_time"));
             b.setEnd_time(rs.getTime("end_time"));
             b.setStatus(rs.getString("status"));
+            b.setRating(rs.getInt("rating"));
             return b;
         }
     } catch (Exception e) {
@@ -212,11 +213,12 @@ public List<Bookings> getBookingsByUserId(int userId) {
         while (rs.next()) {
             Bookings b = new Bookings();
             b.setBooking_id(rs.getInt("booking_id"));
-             b.setCourt_id(rs.getInt("court_id"));
+            b.setCourt_id(rs.getInt("court_id"));
             b.setDate(rs.getDate("date").toLocalDate());
             b.setStart_time(rs.getTime("start_time"));
             b.setEnd_time(rs.getTime("end_time"));
             b.setStatus(rs.getString("status"));
+            b.setRating(rs.getInt("rating"));
             list.add(b);
         }
     } catch (Exception e) {
@@ -342,6 +344,18 @@ public List<BookingScheduleDTO> getManagerBookings(int managerId, Integer areaId
             e.printStackTrace();
         }
         return true;
+    }
+
+    public boolean updateRating(int bookingId, int rating) {
+        String sql = "UPDATE Bookings SET rating = ? WHERE booking_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, rating);
+            ps.setInt(2, bookingId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }
