@@ -157,7 +157,7 @@
             .court-info {
                 padding: 1.5rem;
             }
-            
+
             .court-info p{
                 margin-bottom: 0.5rem;
             }
@@ -253,10 +253,6 @@
     </head>
     <body>
 
-
-
-
-
         <jsp:include page="homehead.jsp" />
 
         <!-- Main Content -->
@@ -318,7 +314,7 @@
                 </div>
             </div>
 
-           
+
             <div class="courts-grid">
                 <c:forEach var="area" items="${areaList}">
                     <div class="court-card">
@@ -330,10 +326,10 @@
                             <div class="court-location">${area.location}</div>
                             <p>Giờ mở cửa: ${area.openTime} - ${area.closeTime}</p>
                             <p>Mô tả: ${area.description}</p>
-                            <form action="areaDetail" method="get">
-                                <input type="hidden" name="area_id" value="${area.area_id}" />
-                                <button type="submit" class="book-btn">Xem chi tiết</button>
-                            </form>
+
+                            <a href="AreaDetail?area_id=${area.area_id}" class="book-btn btn" >Xem chi tiết</a>
+
+                          
                         </div>
                     </div>
                 </c:forEach>

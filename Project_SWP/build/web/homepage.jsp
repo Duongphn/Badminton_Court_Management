@@ -398,7 +398,7 @@
                             <div class="court-location">${top.location}</div>
                             <p>Giờ mở cửa: ${top.openTime} - ${top.closeTime}</p>
                             <p>Mô tả: ${top.description}</p>
-                            <form action="areaDetail" method="get">
+                            <form action="AreaDetail" method="get">
                                 <input type="hidden" name="area_id" value="${top.area_id}" />
                                 <button type="submit" class="book-btn">Xem chi tiết</button>
                             </form>

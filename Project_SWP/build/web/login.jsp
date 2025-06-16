@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Login</title>
+        <title>Đăng Nhập</title>
         <style>
             body {
                 display: flex;
@@ -114,7 +114,7 @@
         </div>
 
         <div class="login-container">
-            <h2>Login</h2>
+            <h2>Đăng nhập</h2>
 
             <form action="login" method="post">
                 <div class="input-group">
@@ -127,9 +127,9 @@
                 </div>
                 <div class="remember-me">
                     <input type="checkbox" name="rememberMe" id="remember">
-                    <label for="remember">Remember Me</label>
+                    <label for="remember">Lưu mật khẩu</label>
                 </div>
-                <button type="submit" class="btn">Submit</button>
+                <button type="submit" class="btn">Đăng nhập</button>
             </form>
 
             <div class="g-divider">hoặc</div>
@@ -156,7 +156,7 @@
             </div>
 
             <a href="${pageContext.request.contextPath}/forgotPassword" class="forgot-password">Forgot Password?</a>
-            <p>Don't have an account? <a href="${pageContext.request.contextPath}/register" class="register">Register</a></p>
+            <p>Bạn chưa có tài khoản<a href="${pageContext.request.contextPath}/register" class="register">Đăng kí</a></p>
         </div>
 
     </body>
