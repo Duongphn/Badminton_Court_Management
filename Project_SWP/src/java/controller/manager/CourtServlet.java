@@ -31,8 +31,16 @@ public class CourtServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
+        String areaParam = request.getParameter("area_id");
         if (action == null) {
-            List<Courts> courts = courtDAO.getAllCourts();
+            List<Courts> courts;
+            if (areaParam != null && !areaParam.isEmpty()) {
+                int areaId = Integer.parseInt(areaParam);
+                courts = courtDAO.getCourtsByAreaId(areaId);
+                request.setAttribute("areaId", areaId);
+            } else {
+                courts = courtDAO.getAllCourts();
+            }
             request.setAttribute("courts", courts);
             request.getRequestDispatcher("/court_manager.jsp").forward(request, response);
         } else if (action.equals("edit")) {
@@ -107,6 +115,11 @@ public class CourtServlet extends HttpServlet {
             session.setAttribute("successMessage", "Xóa sân thành công!");
             session.setAttribute("messageType", "success");
         }
-        response.sendRedirect("courts");
+        String redirectArea = request.getParameter("redirectAreaId");
+        String redirectUrl = "courts";
+        if (redirectArea != null && !redirectArea.isEmpty()) {
+            redirectUrl += "?area_id=" + redirectArea;
+        }
+        response.sendRedirect(redirectUrl);
     }
 }

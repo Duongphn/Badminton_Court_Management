@@ -103,7 +103,9 @@
                                         <tr>
                                             <td>${a.name}</td>
                                             <td>${a.location}</td>
-                                            <td>${a.emptyCourt}</td>
+                                            <td>
+                                                <a href="courts?area_id=${a.area_id}">${a.emptyCourt}</a>
+                                            </td>
                                             <td>${a.openTime}</td>
                                             <td>${a.closeTime}</td>
                                             <td>${a.description}</td>
