@@ -8,6 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<div class="notification-wrapper" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+    <jsp:include page="notification.jsp"/>
+</div>
 <div class="container-fluid mt-4">
     <div class="row">
         <div class="col-md-3">
