@@ -1,6 +1,8 @@
 package controller.user;
 
 import DAO.BookingDAO;
+import DAO.CourtDAO;
+import DAO.ReviewDAO;
 import Model.Bookings;
 import Model.User;
 import java.io.IOException;
@@ -40,7 +42,13 @@ public class SubmitRatingServlet extends HttpServlet {
                 response.sendRedirect("booking-list?error=invalid-status");
                 return;
             }
+            String comment = request.getParameter("comment");
             dao.updateRating(bookingId, rating);
+
+            CourtDAO cDao = new CourtDAO();
+            ReviewDAO rDao = new ReviewDAO();
+            int areaId = cDao.getCourtById(booking.getCourt_id()).getArea_id();
+            rDao.addReview(user.getUser_Id(), areaId, rating, comment);
         } catch (NumberFormatException e) {
             // ignore invalid number
         }

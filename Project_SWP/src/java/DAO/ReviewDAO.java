@@ -38,7 +38,21 @@ public int countReviewsByManager(int managerId) {
         System.out.println(e.getMessage());
     }
     return 0;
-}
+    }
+
+    public boolean addReview(int userId, int areaId, int rating, String comment) {
+        String sql = "INSERT INTO Reviews (user_id, area_id, rating, comment) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, areaId);
+            ps.setInt(3, rating);
+            ps.setString(4, comment);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
 BookingDAO dao = new BookingDAO();
 public int countByArea(int areaId) {
     return dao.countBookingsByArea(areaId);
