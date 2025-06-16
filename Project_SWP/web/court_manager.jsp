@@ -193,6 +193,9 @@
                 <div class="modal-body">
                     <form action="courts" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="add">
+                        <c:if test="${not empty areaId}">
+                            <input type="hidden" name="redirectAreaId" value="${areaId}">
+                        </c:if>
                         <div class="form-group">
                             <label>Tên Sân</label>
                             <input type="text" class="form-control" name="courtNumber" required>
@@ -227,7 +230,7 @@
                         </div>
                         <div class="form-group">
                             <label>Khu Vực ID</label>
-                            <input type="number" class="form-control" id="addAreaId" name="areaId" required min="1">
+                            <input type="number" class="form-control" id="addAreaId" name="areaId" required min="1" value="${areaId}">
                             <small class="form-text text-muted">Nhập ID khu vực hợp lệ</small>
                         </div>
                         <div class="modal-footer">
@@ -251,6 +254,9 @@
                 <div class="modal-body">
                     <form action="courts" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="update">
+                        <c:if test="${not empty areaId}">
+                            <input type="hidden" name="redirectAreaId" value="${areaId}">
+                        </c:if>
                         <input type="hidden" name="courtId" id="updateCourtId">
                         <div class="form-group">
                             <label>Tên Sân</label>
@@ -344,6 +350,9 @@
                                         ><i class="fas fa-edit"></i> Sửa</button>
                                 <form action="courts" method="post" style="display: inline;">
                                     <input type="hidden" name="action" value="delete">
+                                    <c:if test="${not empty areaId}">
+                                        <input type="hidden" name="redirectAreaId" value="${areaId}">
+                                    </c:if>
                                     <input type="hidden" name="courtId" value="${court.court_id}">
                                     <button type="submit" class="btn btn-sm btn-danger"
                                             onclick="return confirm('Bạn có chắc muốn xóa sân này?')">
