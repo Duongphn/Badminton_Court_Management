@@ -317,7 +317,7 @@
                     <c:forEach var="court" items="${courts}">
                         <tr>
                             <td>${court.court_id}</td>
-                            <td>${court.court_number}</td>
+                            <td><a href="staff-court-detail?courtId=${court.court_id}">${court.court_number}</a></td>
                             <td>${court.type}</td>
                             <td>${court.floor_material}</td>
                             <td>${court.lighting}</td>
