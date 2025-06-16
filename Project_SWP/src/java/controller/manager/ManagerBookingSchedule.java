@@ -31,6 +31,11 @@ public class ManagerBookingSchedule extends HttpServlet {
         }
         int managerId = user.getUser_Id();
 
+        String msgParam = request.getParameter("msg");
+        if (msgParam != null && !msgParam.isEmpty()) {
+            request.setAttribute("message", msgParam);
+        }
+
         Integer areaId = null;
         String areaParam = request.getParameter("areaId");
         if (areaParam != null && !areaParam.isEmpty()) {
