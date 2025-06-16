@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @WebServlet(name = "AddBookingServlet", urlPatterns = {"/add-booking"})
 public class AddBookingServlet extends HttpServlet {
@@ -108,7 +110,8 @@ public class AddBookingServlet extends HttpServlet {
         boolean success = dao.insertBooking(userId, courtId, date, startTime, endTime, "pending");
         if (success) {
             // Có thể redirect về lịch hoặc thông báo thành công
-            response.sendRedirect("manager_booking_schedule.jsp?msg=Đặt sân thành công!");
+            String msg = URLEncoder.encode("Đặt sân thành công!", StandardCharsets.UTF_8);
+            response.sendRedirect("manager-booking-schedule?msg=" + msg);
         } else {
             request.setAttribute("error", "Có lỗi xảy ra, vui lòng thử lại sau!");
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);

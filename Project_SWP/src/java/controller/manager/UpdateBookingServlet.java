@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @WebServlet("/update-booking")
 public class UpdateBookingServlet extends HttpServlet {
@@ -135,7 +137,8 @@ public class UpdateBookingServlet extends HttpServlet {
             boolean updateSuccess = dao.updateBooking(bookingId, date, startTime, endTime, status);
 
             if (updateSuccess) {
-                response.sendRedirect("manager_booking_schedule.jsp?msg=Cập nhật thành công!");
+                String msg = URLEncoder.encode("Cập nhật thành công!", StandardCharsets.UTF_8);
+                response.sendRedirect("manager-booking-schedule?msg=" + msg);
             } else {
                 request.setAttribute("error", "Cập nhật thất bại! Vui lòng thử lại.");
                 request.setAttribute("booking", currentBooking);
