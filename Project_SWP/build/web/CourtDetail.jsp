@@ -34,7 +34,7 @@
         <c:forEach var="court" items="${courts}">
             <div class="col-md-4">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="${court.image_url}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Ảnh sân ${court.court_number}">
+                    <img src="${pageContext.request.contextPath}/${court.image_url}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Ảnh sân ${court.court_number}">
                     <div class="card-body d-flex flex-column justify-content-between">
                         <div>
                             <h5 class="card-title fw-bold">Sân ${court.court_number}</h5>
