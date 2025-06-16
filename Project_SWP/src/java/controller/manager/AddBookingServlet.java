@@ -99,8 +99,8 @@ public class AddBookingServlet extends HttpServlet {
 
         // 3. Kiểm tra trùng slot booking
         BookingDAO dao = new BookingDAO();
-        boolean available = dao.checkSlotAvailableAdmin(courtId, date, startTime, endTime);
-        if (!available) {
+        boolean slotAvailable = dao.checkSlotAvailableAdmin(courtId, date, startTime, endTime);
+        if (!slotAvailable) {
             request.setAttribute("error", "Sân này đã được đặt trong thời gian này. Vui lòng chọn thời gian khác.");
             request.getRequestDispatcher("manager_booking_schedule.jsp").forward(request, response);
             return;

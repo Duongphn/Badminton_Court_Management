@@ -116,13 +116,13 @@ public boolean checkSlotAvailableAdmin(int courtId, LocalDate date, Time startTi
             ps.setTime(4, startTime);  // end_time > startTime mới
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                // Nếu count > 0 nghĩa là ĐÃ CÓ booking giao nhau => KHÔNG AVAILABLE
-                return rs.getInt(1) > 0;
+                // Trả về true nếu không có bản ghi giao nhau
+                return rs.getInt(1) == 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
 public int insertBooking1(int userId, int courtId, LocalDate date, Time startTime, Time endTime, String status) {
@@ -338,12 +338,13 @@ public List<BookingScheduleDTO> getManagerBookings(int managerId, Integer areaId
             ps.setTime(5, startTime);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getInt(1) > 0;
+                // true khi không có booking khác giao nhau
+                return rs.getInt(1) == 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
     public boolean updateRating(int bookingId, int rating) {

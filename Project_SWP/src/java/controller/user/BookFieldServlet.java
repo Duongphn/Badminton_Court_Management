@@ -130,7 +130,7 @@ try {
             return;
         }
         boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
-        if (isAvailable) {
+        if (!isAvailable) {
             request.setAttribute("message", "Khoảng thời gian này đã có người đặt.");
             request.setAttribute("court", court);
             request.getRequestDispatcher("book_field.jsp").forward(request, response);
