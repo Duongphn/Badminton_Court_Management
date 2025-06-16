@@ -124,7 +124,8 @@ public class UpdateBookingServlet extends HttpServlet {
             }
 
             // 5. Kiểm tra trùng lịch (loại trừ chính booking này)
-            if (!dao.checkSlotAvailableForUpdate(bookingId, courtId, date, startTime, endTime)) {
+            boolean slotAvailable = dao.checkSlotAvailableForUpdate(bookingId, courtId, date, startTime, endTime);
+            if (!slotAvailable) {
                 request.setAttribute("error", "Khung giờ này đã có người đặt, vui lòng chọn khung giờ khác.");
                 request.setAttribute("booking", currentBooking);
                 request.setAttribute("court", new CourtDAO().getCourtById(courtId));
