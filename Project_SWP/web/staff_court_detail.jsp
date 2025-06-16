@@ -12,7 +12,6 @@
     </style>
 </head>
 <body>
-<jsp:include page="Sidebar.jsp" />
 <div class="container">
     <h2 class="mb-4">Chi tiết sân</h2>
     <c:if test="${not empty court}">
