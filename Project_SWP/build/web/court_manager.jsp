@@ -141,7 +141,14 @@
     </style>
 </head>
 <body>
-<jsp:include page="navigation_court.jsp" />
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Manager</a>
+        <div class="d-flex">
+            <a class="nav-link text-light" href="login">Logout</a>
+        </div>
+    </div>
+</nav>
 
 <div class="container-fluid">
     <div class="row mt-4">
