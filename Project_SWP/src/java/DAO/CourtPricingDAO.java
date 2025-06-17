@@ -24,8 +24,8 @@ public class CourtPricingDAO extends DBContext{
             System.out.println("Connect failed");
         }
     }
-    public int calculatePrice(int areaId, Time start, Time end) {
-    int total = 0;
+    public double calculatePrice(int areaId, Time start, Time end) {
+    double total = 0;
     try {
         String sql = "SELECT * FROM Court_Pricing WHERE area_id = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -34,7 +34,7 @@ public class CourtPricingDAO extends DBContext{
         while (rs.next()) {
             Time pricingStart = rs.getTime("start_time");
             Time pricingEnd = rs.getTime("end_time");
-            int price = rs.getInt("price");
+            double price = rs.getDouble("price");
 
             // Nếu khoảng thời gian nằm trong khung giá
             if (!(end.before(pricingStart) || start.after(pricingEnd))) {

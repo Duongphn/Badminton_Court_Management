@@ -138,7 +138,7 @@ try {
         }
 
         CourtPricingDAO pricingDAO = new CourtPricingDAO();
-        int totalPrice = pricingDAO.calculatePrice(court.getArea_id(), startTime, endTime);
+        double totalPrice = pricingDAO.calculatePrice(court.getArea_id(), startTime, endTime);
 
         request.setAttribute("court", court);
         request.setAttribute("date", date);
