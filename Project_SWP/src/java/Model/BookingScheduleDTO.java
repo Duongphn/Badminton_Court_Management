@@ -15,6 +15,7 @@ public class BookingScheduleDTO {
     private String courtNumber;
     private int area_id;
     private String areaName;
+    private double totalPrice;
 
     public BookingScheduleDTO() {
     }
@@ -105,5 +106,13 @@ public class BookingScheduleDTO {
 
     public void setAreaName(String areaName) {
         this.areaName = areaName;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

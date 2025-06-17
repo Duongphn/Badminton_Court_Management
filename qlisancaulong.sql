@@ -80,6 +80,7 @@ CREATE TABLE Courts
     description NVARCHAR(255),
     image_url NVARCHAR(255),
     [status] NVARCHAR(50),
+    price DECIMAL(10,2),
     area_id INT NOT NULL,
     open_time TIME NULL,
     close_time TIME NULL,

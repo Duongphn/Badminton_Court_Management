@@ -35,7 +35,7 @@ public class CourtDAO extends DBContext{
     public List<Courts> getCourtsByAreaId(int areaId) {
 
         List<Courts> listCourt = new ArrayList<>();
-        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, open_time, close_time FROM Courts WHERE area_id = ?";
+        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price, open_time, close_time FROM Courts WHERE area_id = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, areaId); // Set tham số ở đây
@@ -51,8 +51,9 @@ public class CourtDAO extends DBContext{
                     String imageUrl = rs.getString("image_url");
                     String status = rs.getString("status");
                     int areaID = rs.getInt("area_id");
+                    double price = rs.getDouble("price");
 
-                    Courts court = new Courts(courtID, courtNumber, type, floorMaterial, lighting, description, imageUrl, status, areaID);
+                    Courts court = new Courts(courtID, courtNumber, type, floorMaterial, lighting, description, imageUrl, status, areaID, price);
                     listCourt.add(court);
                 }
             }
@@ -65,7 +66,7 @@ public class CourtDAO extends DBContext{
     }
     
     public void addCourt(Courts court) {
-        String sql = "INSERT INTO Courts (court_number, type, floor_material, lighting, description, image_url, status, area_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Courts (court_number, type, floor_material, lighting, description, image_url, status, area_id, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, court.getCourt_number());
@@ -76,6 +77,7 @@ public class CourtDAO extends DBContext{
             ps.setString(6, court.getImage_url());
             ps.setString(7, court.getStatus());
             ps.setInt(8, court.getArea_id());
+            ps.setDouble(9, court.getPrice());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -84,7 +86,7 @@ public class CourtDAO extends DBContext{
 
     public List<Courts> getAllCourts() {
         List<Courts> courts = new ArrayList<>();
-        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id FROM Courts";
+        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price FROM Courts";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
@@ -99,6 +101,7 @@ public class CourtDAO extends DBContext{
                 court.setImage_url(rs.getString("image_url"));
                 court.setStatus(rs.getString("status"));
                 court.setArea_id(rs.getInt("area_id"));
+                court.setPrice(rs.getDouble("price"));
                 courts.add(court);
             }
         } catch (SQLException e) {
@@ -111,7 +114,7 @@ public class CourtDAO extends DBContext{
 
     public Courts getCourtById(int courtId) {
         Courts court = null;
-        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id FROM Courts WHERE court_id = ?";
+        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price FROM Courts WHERE court_id = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, courtId);
             ResultSet rs = stmt.executeQuery();
@@ -126,6 +129,7 @@ public class CourtDAO extends DBContext{
                 court.setImage_url(rs.getString("image_url"));
                 court.setStatus(rs.getString("status"));
                 court.setArea_id(rs.getInt("area_id"));
+                court.setPrice(rs.getDouble("price"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -136,7 +140,7 @@ public class CourtDAO extends DBContext{
     }
 
     public void updateCourt(Courts court) {
-        String sql = "UPDATE Courts SET court_number = ?, type = ?, floor_material = ?, lighting = ?, description = ?, image_url = ?, status = ?, area_id = ? WHERE court_id = ?";
+        String sql = "UPDATE Courts SET court_number = ?, type = ?, floor_material = ?, lighting = ?, description = ?, image_url = ?, status = ?, area_id = ?, price = ? WHERE court_id = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, court.getCourt_number());
             stmt.setString(2, court.getType());
@@ -146,7 +150,8 @@ public class CourtDAO extends DBContext{
             stmt.setString(6, court.getImage_url());
             stmt.setString(7, court.getStatus());
             stmt.setInt(8, court.getArea_id());
-            stmt.setInt(9, court.getCourt_id());
+            stmt.setDouble(9, court.getPrice());
+            stmt.setInt(10, court.getCourt_id());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -184,6 +189,7 @@ public class CourtDAO extends DBContext{
                 court.setImage_url(rs.getString("image_url"));
                 court.setStatus(rs.getString("status"));
                 court.setArea_id(rs.getInt("area_id"));
+                court.setPrice(rs.getDouble("price"));
                 courts.add(court);
             }
         } catch (SQLException e) {
