@@ -323,13 +323,21 @@ public List<BookingScheduleDTO> getManagerBookings(int managerId, Integer areaId
     }
 
     public boolean updateBooking(int bookingId, LocalDate date, Time startTime, Time endTime, String status) {
-        String sql = "UPDATE Bookings SET date = ?, start_time = ?, end_time = ?, status = ? WHERE booking_id = ?";
+        String sql = "UPDATE Bookings SET date = ?, start_time = ?, end_time = ?, status = ?, total_price = ? WHERE booking_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(date));
             ps.setTime(2, startTime);
             ps.setTime(3, endTime);
             ps.setString(4, status);
-            ps.setInt(5, bookingId);
+
+            // Recalculate price based on the new time range
+            Bookings current = getBookingById(bookingId);
+            int areaId = new CourtDAO().getCourtById(current.getCourt_id()).getArea_id();
+            CourtPricingDAO pricingDAO = new CourtPricingDAO();
+            double total = pricingDAO.calculatePrice(areaId, startTime, endTime);
+            ps.setDouble(5, total);
+
+            ps.setInt(6, bookingId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
