@@ -10,7 +10,7 @@ public class DBContext {
         // Gắn toàn bộ thông tin kết nối vào URL
         String url = "jdbc:sqlserver://localhost:1433;"
 
-                   + "databaseName=SWP1;"
+                   + "databaseName=SWP_new;"
                    + "user=sa;"
                    + "password=123;"
                    + "encrypt=true;"

@@ -55,19 +55,6 @@ CREATE TABLE Area_Image
 );
 
 -- ==========================
--- BẢNG GIÁ THUÊ SÂN
--- ==========================
-CREATE TABLE Court_Pricing (
-    pricing_id INT PRIMARY KEY IDENTITY(1,1),
-    court_id INT NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (court_id) REFERENCES Courts(court_id),
-    CONSTRAINT chk_pricing_time CHECK (start_time < end_time)
-);
-
--- ==========================
 -- BẢNG SÂN
 -- ==========================
 CREATE TABLE Courts
@@ -88,6 +75,21 @@ CREATE TABLE Courts
     CONSTRAINT chk_court_time CHECK (open_time IS NULL OR close_time IS NULL OR open_time < close_time),
     CONSTRAINT uq_court_number UNIQUE (court_number, area_id)
 );
+
+-- ==========================
+-- BẢNG GIÁ THUÊ SÂN
+-- ==========================
+CREATE TABLE Court_Pricing (
+    pricing_id INT PRIMARY KEY IDENTITY(1,1),
+    court_id INT NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (court_id) REFERENCES Courts(court_id),
+    CONSTRAINT chk_pricing_time CHECK (start_time < end_time)
+);
+
+
 
 -- ==========================
 -- BẢNG ĐẶT SÂN
