@@ -3,6 +3,8 @@ package controller.manager;
 import DAO.BookingDAO;
 import DAO.CourtDAO;
 import DAO.UserDAO;
+import DAO.AreaDAO;
+import Model.Branch;
 import Model.Courts;
 import Model.User;
 import jakarta.servlet.ServletException;
@@ -14,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -93,6 +96,28 @@ public class AddBookingServlet extends HttpServlet {
         // 2. Kiểm tra logic thời gian
         if (!startTime.before(endTime)) {
             request.setAttribute("error", "Giờ bắt đầu phải trước giờ kết thúc.");
+            request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+            return;
+        }
+
+        CourtDAO courtDAO = new CourtDAO();
+        Courts court = courtDAO.getCourtById(courtId);
+        AreaDAO areaDAO = new AreaDAO();
+        Branch area = areaDAO.getAreaByIdWithManager(court.getArea_id());
+
+        if (area != null) {
+            Time open = area.getOpenTime();
+            Time close = area.getCloseTime();
+            if (startTime.before(open) || endTime.after(close)) {
+                request.setAttribute("error", "Thời gian đặt sân phải trong khoảng mở cửa: " + open + " - " + close);
+                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+                return;
+            }
+        }
+
+        LocalDateTime startDateTime = LocalDateTime.of(date, startTime.toLocalTime());
+        if (startDateTime.isBefore(LocalDateTime.now())) {
+            request.setAttribute("error", "Không thể đặt sân trong thời gian đã qua.");
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
             return;
         }
