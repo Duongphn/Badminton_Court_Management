@@ -35,7 +35,7 @@ public class CourtDAO extends DBContext{
     public List<Courts> getCourtsByAreaId(int areaId) {
 
         List<Courts> listCourt = new ArrayList<>();
-        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price, open_time, close_time FROM Courts WHERE area_id = ?";
+        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price FROM Courts WHERE area_id = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, areaId); // Set tham số ở đây
