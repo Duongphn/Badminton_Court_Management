@@ -17,19 +17,21 @@ public class Post {
     private String content;
     private int createdBy;
     private Date createdAt;
-    private String postType;
+    private String type;
     private String status;
+    private String createdByName;
+//    private String image;
 
     public Post() {
     }
 
-    public Post(int postId, String title, String content, int createdBy, Date createdAt, String postType, String status) {
+    public Post(int postId, String title, String content, int createdBy, Date createdAt, String type, String status) {
         this.postId = postId;
         this.title = title;
         this.content = content;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
-        this.postType = postType;
+        this.type = type;
         this.status = status;
     }
 
@@ -73,12 +75,12 @@ public class Post {
         this.createdAt = createdAt;
     }
 
-    public String getPostType() {
-        return postType;
+    public String getType() {
+        return type;
     }
 
-    public void setPostType(String postType) {
-        this.postType = postType;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getStatus() {
@@ -87,6 +89,14 @@ public class Post {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        this.createdByName = createdByName;
     }
 
 }

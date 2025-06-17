@@ -159,7 +159,7 @@
             }
 
             .court-info p{
-                margin-bottom: 0.5rem;
+                margin-bottom: 1.5rem;
             }
 
             .court-name {
@@ -191,6 +191,7 @@
                 cursor: pointer;
                 font-weight: 500;
                 transition: all 0.3s;
+                text-decoration: none;
             }
 
             .book-btn:hover {
@@ -303,7 +304,7 @@
             <!-- Featured Section -->
             <div class="featured">
                 <div class="featured-card">
-                    <h3>Có ${areaList.size()} Sân cầu lông</h3>
+                    <h3>Có ${areaList.size()} Khu vực sân cầu lông</h3>
                     <p>Đa dạng các sân cầu lông chất lượng cao trên toàn quốc</p>
                     <button class="featured-btn">Đăng ký ngay</button>
                 </div>
@@ -326,9 +327,7 @@
                             <div class="court-location">${area.location}</div>
                             <p>Giờ mở cửa: ${area.openTime} - ${area.closeTime}</p>
                             <p>Mô tả: ${area.description}</p>
-
                             <a href="AreaDetail?area_id=${area.area_id}" class="book-btn btn" >Xem chi tiết</a>
-
                           
                         </div>
                     </div>

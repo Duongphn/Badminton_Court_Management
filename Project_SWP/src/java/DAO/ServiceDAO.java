@@ -110,4 +110,66 @@ public class ServiceDAO extends DBContext {
         }
         return nextId;
     }
+
+    // Cập nhật thông tin dịch vụ theo service_id
+    public static boolean updateService(Service s) throws SQLException {
+        String sql = "UPDATE BadmintonService SET name = ?, price = ?, description = ?, image_url = ?, status = ? WHERE service_id = ?";
+        try (
+                Connection con = new DBContext().getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, s.getName());
+            ps.setDouble(2, s.getPrice());
+            ps.setString(3, s.getDescription());
+            ps.setString(4, s.getImage_url());
+            ps.setString(5, s.getStatus());
+            ps.setInt(6, s.getService_id());
+
+                int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException("Unknown error", e);
+        }
+    }
+
+    public static boolean deleteService(int service_id) throws SQLException {
+        String sql = "DELETE FROM BadmintonService WHERE service_id = ?";
+        try (
+                Connection con = new DBContext().getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, service_id);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException("Unknown error", e);
+        }
+    }
+
+    // Tìm kiếm dịch vụ theo tên
+    public static List<Service> searchServiceByName(String keyword) {
+        List<Service> list = new ArrayList<>();
+        String sql = "SELECT * FROM BadmintonService WHERE name LIKE ?";
+        try (
+                Connection con = new DBContext().getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Service(
+                        rs.getInt("service_id"),
+                        rs.getString("name"),
+                        rs.getDouble("price"),
+                        rs.getString("description"),
+                        rs.getString("image_url"),
+                        rs.getString("status")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

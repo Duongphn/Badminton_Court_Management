@@ -116,7 +116,7 @@
             </div>
 
             <div class="title">
-                <h1>Danh sách sân nổi bật</h1>
+                <h1>Danh sách khu vực nổi bật</h1>
             </div>
 
            <!-- Courts Grid -->

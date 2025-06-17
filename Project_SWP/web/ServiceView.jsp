@@ -225,7 +225,7 @@
                 <% } %>
 
                 <!-- Tìm kiếm -->
-                <form class="search-bar" method="get" action="searchEquipments">
+                <form class="search-bar" method="get" action="ViewEquipments">
                     <input type="text" name="keyword" placeholder="🔍 Tìm kiếm tên dịch vụ...">
                     <button type="submit">Tìm</button>
                 </form>
@@ -248,8 +248,8 @@
                                 <td><%= eq.getName() %></td>
                                 <td><%= eq.getPrice() %> VNĐ</td>
                                 <td class="action-buttons">
-                                    <a href="UpdateEquipments.jsp?id=<%= eq.getService_id() %>" class="btn btn-warning">Sửa</a>
-                                    <a href="deleteEquipment?id=<%= eq.getService_id() %>" class="btn btn-danger"
+                                    <a href="UpdateService.jsp?id=<%= eq.getService_id() %>" class="btn btn-warning">Sửa</a>
+                                    <a href="DeleteService?id=<%= eq.getService_id() %>" class="btn btn-danger"
                                        onclick="return confirm('Bạn có chắc chắn muốn xóa thiết bị này?');">Xóa</a>
                                 </td>
                             </tr>

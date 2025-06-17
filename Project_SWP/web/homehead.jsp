@@ -180,6 +180,7 @@
 
                 <div class="nav-item"><a href="listBranch">Danh Sách Sân Bãi</a></div>
                 <div class="nav-item"><a href="booking-list">Danh sách đặt sân</a></div>
+                <div class="nav-item"><a href="PostView.jsp">Bài Viết</a></div>
                 <div class="nav-item"><a href="AboutUs.jsp">Giới Thiệu</a></div>
                 <div class="nav-item">Liên Hệ</div>
             </div>

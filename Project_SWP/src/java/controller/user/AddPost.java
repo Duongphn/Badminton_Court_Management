@@ -2,27 +2,33 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.manager;
+package controller.user;
 
-
-import DAO.ServiceDAO;
-
-import Model.Service;
+import DAO.PostDAO;
+import Dal.DBContext;
+import Model.Post;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+//import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import jakarta.servlet.http.HttpSession;
+//import jakarta.servlet.http.Part;
+//import java.io.File;
+//import java.nio.file.Paths;
+import java.sql.Connection;
+//import java.sql.PreparedStatement;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name = "ViewEquipments", urlPatterns = {"/ViewEquipments"})
-public class ViewService extends HttpServlet {
+//@MultipartConfig
+@WebServlet(name = "AddPost", urlPatterns = {"/AddPost"})
+public class AddPost extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +47,10 @@ public class ViewService extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewEquipments</title>");
+            out.println("<title>Servlet AddPost</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ViewEquipments at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AddPost at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -52,7 +58,7 @@ public class ViewService extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method. 
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -62,26 +68,7 @@ public class ViewService extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ServiceDAO dao = new ServiceDAO();
-
-        // Lấy tham số từ ô search
-        String keyword = request.getParameter("keyword");
-        List<Service> service;
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            // Tìm kiếm theo tên
-            service = dao.searchServiceByName(keyword.trim());
-        } else {
-            service = dao.getAllService();
-        }
-        request.setAttribute("service", service);
-
-        // Truyền lại keyword để giữ giá trị trong ô input
-        request.setAttribute("keyword", keyword);
-
-        String status = request.getParameter("status");
-        request.setAttribute("status", status);
-
-        request.getRequestDispatcher("ServiceView.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -95,7 +82,60 @@ public class ViewService extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String title = request.getParameter("title");
+        String content = request.getParameter("content");
+        String isPartner = request.getParameter("isPartner");
+
+        String postType = "common";
+        if ("true".equals(isPartner)) {
+            postType = "partner";
+        }
+
+        String status = "pending";
+
+        // Lấy ID người dùng từ session (giả định đã đăng nhập)
+        HttpSession session = request.getSession();
+        Model.User user = (Model.User) session.getAttribute("user");
+        int userId = user.getUser_Id();
+
+//        Part filePart = request.getPart("image");
+//        String fileName = null;
+
+//        if (filePart != null && filePart.getSize() > 0) {
+//            fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+//
+//            String uploadPath = getServletContext().getRealPath("") + "uploads";
+//            File uploadDir = new File(uploadPath);
+//            if (!uploadDir.exists()) {
+//                uploadDir.mkdir();
+//            }
+//
+//            filePart.write(uploadPath + File.separator + fileName);
+//        }
+        try {
+            // Kết nối CSDL
+            DBContext db = new DBContext(); // dùng DAL riêng của bạn
+            Connection conn = db.getConnection();
+
+            PostDAO dao = new PostDAO(conn);
+            Post post = new Post();
+
+            post.setTitle(title);
+            post.setContent(content);
+            post.setCreatedBy(userId);
+            post.setType(postType);
+            post.setStatus(status);
+//            post.setImage(fileName);
+
+            dao.insertPost(post);
+            response.sendRedirect("PostView.jsp");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setContentType("text/plain");
+            response.getWriter().write("Lỗi: " + e.getMessage());
+        }
+
     }
 
     /**

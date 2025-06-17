@@ -139,18 +139,18 @@
                                                     </button>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    ${booking.rating}
+                                                    ${booking.rating}★
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:when>
                                         <c:otherwise>
-                                            <c:out value="${booking.rating}"/>
+                                            <c:out value="${booking.rating}★"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
                                 <td>
                                     <c:if test="${booking.status eq 'confirmed'}">
-                                        <form action="cancel-booking" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy?');">
+                                        <form action="cancel_booking" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy?');">
                                             <input type="hidden" name="bookingId" value="${booking.booking_id}">
                                             <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
                                         </form>

@@ -3,11 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.user;
+package controller.manager;
 
-import DAO.AreaDAO;
-import Model.Areas;
-import Model.Branch;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,14 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  *
- * @author sangn
+ * @author admin
  */
-@WebServlet(name="ListCourt", urlPatterns={"/ListCourt"})
-public class ListCourt extends HttpServlet {
+@WebServlet(name="DeletePostManager", urlPatterns={"/DeletePostManager"})
+public class DeletePostManager extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -39,10 +35,10 @@ public class ListCourt extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ListCourt</title>");  
+            out.println("<title>Servlet DeletePostManager</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ListCourt at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet DeletePostManager at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -59,12 +55,7 @@ public class ListCourt extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        AreaDAO areaDAO = new AreaDAO();
-        List<Branch> listCourt = areaDAO.getAllAreas();
-        System.out.println("List"+listCourt.size());
-        request.setAttribute("listCourt", listCourt);
-        request.getRequestDispatcher("listCourt.jsp").forward(request, response);
-
+        processRequest(request, response);
     } 
 
     /** 
@@ -77,7 +68,7 @@ public class ListCourt extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        
+        processRequest(request, response);
     }
 
     /** 

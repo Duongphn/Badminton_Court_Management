@@ -40,10 +40,10 @@ public class AddService extends HttpServlet {
 
         try {
             ServiceDAO.addService(s);
-            response.sendRedirect("ViewService?status=success");
+            response.sendRedirect("ViewEquipments?status=success");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("ViewService?status=fail");
+            response.sendRedirect("ViewEquipments?status=fail");
         }
     }
     @Override
