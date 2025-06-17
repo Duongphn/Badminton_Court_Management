@@ -3,6 +3,8 @@ package controller.manager;
 import DAO.BookingDAO;
 import DAO.CourtDAO;
 import DAO.UserDAO;
+import DAO.AreaDAO;
+import Model.Branch;
 import Model.Bookings;
 import Model.Courts;
 import Model.User;
@@ -15,6 +17,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -118,6 +121,34 @@ public class UpdateBookingServlet extends HttpServlet {
                 // Gửi lại dữ liệu cho form để hiển thị
                 request.setAttribute("booking", currentBooking);
                 request.setAttribute("court", new CourtDAO().getCourtById(courtId));
+                request.setAttribute("customer", new UserDAO().getUserById(currentBooking.getUser_id()));
+                request.getRequestDispatcher("update_booking.jsp").forward(request, response);
+                return;
+            }
+
+            CourtDAO courtDAO = new CourtDAO();
+            Courts court = courtDAO.getCourtById(courtId);
+            AreaDAO areaDAO = new AreaDAO();
+            Branch area = areaDAO.getAreaByIdWithManager(court.getArea_id());
+
+            if (area != null) {
+                Time open = area.getOpenTime();
+                Time close = area.getCloseTime();
+                if (startTime.before(open) || endTime.after(close)) {
+                    request.setAttribute("error", "Thời gian đặt sân phải trong khoảng mở cửa: " + open + " - " + close);
+                    request.setAttribute("booking", currentBooking);
+                    request.setAttribute("court", court);
+                    request.setAttribute("customer", new UserDAO().getUserById(currentBooking.getUser_id()));
+                    request.getRequestDispatcher("update_booking.jsp").forward(request, response);
+                    return;
+                }
+            }
+
+            LocalDateTime startDateTime = LocalDateTime.of(date, startTime.toLocalTime());
+            if (startDateTime.isBefore(LocalDateTime.now())) {
+                request.setAttribute("error", "Không thể đặt sân trong thời gian đã qua.");
+                request.setAttribute("booking", currentBooking);
+                request.setAttribute("court", court);
                 request.setAttribute("customer", new UserDAO().getUserById(currentBooking.getUser_id()));
                 request.getRequestDispatcher("update_booking.jsp").forward(request, response);
                 return;
