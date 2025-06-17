@@ -63,6 +63,14 @@ public class CourtServlet extends HttpServlet {
             court.setFloor_material(request.getParameter("floorMaterial"));
             court.setLighting(request.getParameter("lighting"));
             court.setDescription(request.getParameter("description"));
+            String priceStr = request.getParameter("price");
+            if (priceStr != null && !priceStr.isEmpty()) {
+                try {
+                    court.setPrice(Double.parseDouble(priceStr));
+                } catch (NumberFormatException e) {
+                    court.setPrice(0);
+                }
+            }
 
             Part filePart = request.getPart("image");
             String imagePath = null;
@@ -89,6 +97,14 @@ public class CourtServlet extends HttpServlet {
             court.setFloor_material(request.getParameter("floorMaterial"));
             court.setLighting(request.getParameter("lighting"));
             court.setDescription(request.getParameter("description"));
+            String priceStr = request.getParameter("price");
+            if (priceStr != null && !priceStr.isEmpty()) {
+                try {
+                    court.setPrice(Double.parseDouble(priceStr));
+                } catch (NumberFormatException e) {
+                    court.setPrice(0);
+                }
+            }
 
             Part filePart = request.getPart("image");
             String imagePath = request.getParameter("currentImage");
