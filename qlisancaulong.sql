@@ -97,6 +97,7 @@ CREATE TABLE Courts (
     description NVARCHAR(255),
     image_url NVARCHAR(255),
     [status] NVARCHAR(50),
+    price DECIMAL(10,2),
     area_id INT NOT NULL,
     FOREIGN KEY (area_id) REFERENCES Areas(area_id),
     CONSTRAINT chk_court_time CHECK (open_time IS NULL OR close_time IS NULL OR open_time < close_time),
@@ -115,6 +116,7 @@ CREATE TABLE Bookings (
     end_time TIME NOT NULL,
     [status] NVARCHAR(50),
     rating INT CHECK (rating BETWEEN 1 AND 5),
+    total_price DECIMAL(10,2),
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (court_id) REFERENCES Courts(court_id),
     CONSTRAINT chk_booking_time CHECK (start_time < end_time)

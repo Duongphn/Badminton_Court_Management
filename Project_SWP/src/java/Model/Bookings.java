@@ -20,11 +20,12 @@ public class Bookings {
     private Time end_time;
     private String status;
     private int rating;
+    private double total_price;
 
     public Bookings() {
     }
 
-    public Bookings(int booking_id, int user_id, int court_id, LocalDate date, Time start_time, Time end_time, String status, int rating) {
+    public Bookings(int booking_id, int user_id, int court_id, LocalDate date, Time start_time, Time end_time, String status, int rating, double total_price) {
         this.booking_id = booking_id;
         this.user_id = user_id;
         this.court_id = court_id;
@@ -33,6 +34,7 @@ public class Bookings {
         this.end_time = end_time;
         this.status = status;
         this.rating = rating;
+        this.total_price = total_price;
     }
 
     public int getBooking_id() {
@@ -89,6 +91,14 @@ public class Bookings {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public double getTotal_price() {
+        return total_price;
+    }
+
+    public void setTotal_price(double total_price) {
+        this.total_price = total_price;
     }
 
     

@@ -213,6 +213,10 @@
                             <input type="text" class="form-control" name="lighting">
                         </div>
                         <div class="form-group">
+                            <label>Giá</label>
+                            <input type="number" step="0.01" class="form-control" name="price" required>
+                        </div>
+                        <div class="form-group">
                             <label>Mô Tả</label>
                             <input type="text" class="form-control" name="description">
                         </div>
@@ -275,6 +279,10 @@
                             <input type="text" class="form-control" id="updateLighting" name="lighting">
                         </div>
                         <div class="form-group">
+                            <label>Giá</label>
+                            <input type="number" step="0.01" class="form-control" id="updatePrice" name="price" required>
+                        </div>
+                        <div class="form-group">
                             <label>Mô Tả</label>
                             <input type="text" class="form-control" id="updateDescription" name="description">
                         </div>
@@ -320,6 +328,7 @@
                         <th>Loại</th>
                         <th>Chất Liệu</th>
                         <th>Chiếu Sáng</th>
+                        <th>Giá</th>
                         <th>Mô Tả</th>
                         <th>Trạng Thái</th>
                         <th>Khu Vực ID</th>
@@ -334,6 +343,7 @@
                             <td>${court.type}</td>
                             <td>${court.floor_material}</td>
                             <td>${court.lighting}</td>
+                            <td>${court.price}</td>
                             <td>${court.description}</td>
                             <td>${court.status}</td>
                             <td>${court.area_id}</td>
@@ -347,6 +357,7 @@
                                         data-description="${court.description}"
                                         data-status="${court.status}"
                                         data-area="${court.area_id}"
+                                        data-price="${court.price}"
                                         ><i class="fas fa-edit"></i> Sửa</button>
                                 <form action="courts" method="post" style="display: inline;">
                                     <input type="hidden" name="action" value="delete">
@@ -419,6 +430,7 @@
             document.getElementById('updateDescription').value = this.dataset.description || '';
             document.getElementById('currentImage').value = this.dataset.image || '';
             document.getElementById('updateStatus').value = this.dataset.status;
+            document.getElementById('updatePrice').value = this.dataset.price;
             document.getElementById('updateAreaId').value = this.dataset.area;
             $('#updateCourtModal').modal('show');
         });

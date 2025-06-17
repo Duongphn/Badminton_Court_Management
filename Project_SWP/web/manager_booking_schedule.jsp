@@ -60,6 +60,7 @@
                                 <th>Customer</th>
                                 <th>Date</th>
                                 <th>Time</th>
+                                <th>Total</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -73,6 +74,7 @@
                                     <td>${b.customerName}</td>
                                     <td>${b.date}</td>
                                     <td>${b.start_time} - ${b.end_time}</td>
+                                    <td>${b.totalPrice}</td>
                                     <td>${b.status}</td>
                                     <td>
                                         <c:if test="${b.status eq 'pending'}">

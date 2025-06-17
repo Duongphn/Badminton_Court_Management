@@ -17,6 +17,7 @@ import java.util.List;
 import Dal.DBContext;
 import Model.BookingScheduleDTO;
 import Model.Bookings;
+import DAO.CourtPricingDAO;
 
 /**
  *
@@ -126,7 +127,7 @@ public boolean checkSlotAvailableAdmin(int courtId, LocalDate date, Time startTi
     }
 
 public int insertBooking1(int userId, int courtId, LocalDate date, Time startTime, Time endTime, String status) {
-    String sql = "INSERT INTO Bookings (user_id, court_id, date, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO Bookings (user_id, court_id, date, start_time, end_time, status, total_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
     int bookingId = -1;
 
     try (PreparedStatement ps = conn.prepareStatement(sql )) {
@@ -136,6 +137,9 @@ public int insertBooking1(int userId, int courtId, LocalDate date, Time startTim
         ps.setTime(4, startTime);
         ps.setTime(5, endTime);
         ps.setString(6, status); // e.g., "pending"
+        CourtPricingDAO pricingDAO = new CourtPricingDAO();
+        double total = pricingDAO.calculatePrice(new CourtDAO().getCourtById(courtId).getArea_id(), startTime, endTime);
+        ps.setDouble(7, total);
 
         int affectedRows = ps.executeUpdate();
 
@@ -154,7 +158,7 @@ public int insertBooking1(int userId, int courtId, LocalDate date, Time startTim
 }
 
 public boolean insertBooking(int userId, int courtId, LocalDate date, Time startTime, Time endTime, String status) {
-    String sql = "INSERT INTO Bookings (user_id, court_id, date, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO Bookings (user_id, court_id, date, start_time, end_time, status, total_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
     int bookingId = -1;
 
     try (PreparedStatement ps = conn.prepareStatement(sql )) {
@@ -164,6 +168,9 @@ public boolean insertBooking(int userId, int courtId, LocalDate date, Time start
         ps.setTime(4, startTime);
         ps.setTime(5, endTime);
         ps.setString(6, status); // e.g., "pending"
+        CourtPricingDAO pricingDAO = new CourtPricingDAO();
+        double total = pricingDAO.calculatePrice(new CourtDAO().getCourtById(courtId).getArea_id(), startTime, endTime);
+        ps.setDouble(7, total);
 
         int affectedRows = ps.executeUpdate();
 
@@ -197,6 +204,7 @@ public Bookings getBookingById(int bookingId) {
             b.setEnd_time(rs.getTime("end_time"));
             b.setStatus(rs.getString("status"));
             b.setRating(rs.getInt("rating"));
+            b.setTotal_price(rs.getDouble("total_price"));
             return b;
         }
     } catch (Exception e) {
@@ -219,6 +227,7 @@ public List<Bookings> getBookingsByUserId(int userId) {
             b.setEnd_time(rs.getTime("end_time"));
             b.setStatus(rs.getString("status"));
             b.setRating(rs.getInt("rating"));
+            b.setTotal_price(rs.getDouble("total_price"));
             list.add(b);
         }
     } catch (Exception e) {
@@ -290,6 +299,9 @@ public List<BookingScheduleDTO> getManagerBookings(int managerId, Integer areaId
                 dto.setCourtNumber(rs.getString("court_number"));
                 dto.setArea_id(rs.getInt("area_id"));
                 dto.setAreaName(rs.getString("area_name"));
+                CourtPricingDAO pricingDAO = new CourtPricingDAO();
+                double total = pricingDAO.calculatePrice(dto.getArea_id(), dto.getStart_time(), dto.getEnd_time());
+                dto.setTotalPrice(total);
                 list.add(dto);
             }
         } catch (SQLException e) {
