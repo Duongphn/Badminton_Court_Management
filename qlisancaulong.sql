@@ -69,8 +69,6 @@ CREATE TABLE Courts
     [status] NVARCHAR(50),
     price DECIMAL(10,2),
     area_id INT NOT NULL,
-    open_time TIME NULL,
-    close_time TIME NULL,
     FOREIGN KEY (area_id) REFERENCES Areas(area_id),
     CONSTRAINT chk_court_time CHECK (open_time IS NULL OR close_time IS NULL OR open_time < close_time),
     CONSTRAINT uq_court_number UNIQUE (court_number, area_id)
