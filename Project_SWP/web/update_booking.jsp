@@ -58,6 +58,7 @@
                 <option value="pending" <c:if test="${booking.status eq 'pending'}">selected</c:if>>Pending</option>
                 <option value="confirmed" <c:if test="${booking.status eq 'confirmed'}">selected</c:if>>Confirmed</option>
                 <option value="cancelled" <c:if test="${booking.status eq 'cancelled'}">selected</c:if>>Cancelled</option>
+                <option value="completed" <c:if test="${booking.status eq 'completed'}">selected</c:if>>Completed</option>
             </select>
         </div>
                         <div class="col-12">
