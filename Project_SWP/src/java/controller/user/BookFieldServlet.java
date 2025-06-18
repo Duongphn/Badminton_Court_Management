@@ -26,7 +26,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+
 /**
  *
  * @author admin
@@ -69,7 +71,7 @@ public class BookFieldServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
- @Override
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -97,25 +99,25 @@ public class BookFieldServlet extends HttpServlet {
                 request.getRequestDispatcher("book_field.jsp").forward(request, response);
                 return;
             }
-            
+
             // Mặc định dùng ca đầu tiên
             Shift shift = shifts.get(0);
 
             BookingDAO bookingDAO = new BookingDAO();
             List<Bookings> bookings = bookingDAO.getBookingsByCourtAndDate(courtId, date);
-
-            List<Slot> slots = SlotTime.generateSlots(shift, bookings, 60);
-
+            List<Slot> allSlots = new ArrayList<>();
+            for (Shift shifted : shifts) {
+                List<Slot> slotsForShift = SlotTime.generateSlots(shifted, bookings, 60);
+                allSlots.addAll(slotsForShift);
+            }
             request.setAttribute("court", court);
-            request.setAttribute("slots", slots);
+            request.setAttribute("slots", allSlots);
             request.setAttribute("selectedDate", date);
-            
-            
-            
+
             request.getRequestDispatcher("book_field.jsp").forward(request, response);
-              for (Slot s : slots) {
-            System.out.println(">>> SLOT: " + s.getStart() + " - " + s.getEnd() + " | Avail: " + s.isAvailable());
-}
+            for (Slot s : allSlots) {
+                System.out.println(">>> SLOT: " + s.getStart() + " - " + s.getEnd() + " | Avail: " + s.isAvailable());
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,7 +134,6 @@ public class BookFieldServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-  
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -197,7 +198,6 @@ public class BookFieldServlet extends HttpServlet {
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
-
 
     /**
      * Returns a short description of the servlet.

@@ -83,7 +83,26 @@ public class CourtDAO extends DBContext{
             e.printStackTrace();
         }
     }
-
+    public void increaseCourtOfArea(int area_id){
+        String sql = "UPDATE Areas SET court = court+1 WHERE area_id = ?";
+        try{
+             PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, area_id);
+             ps.executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+  public void decreaseCourtOfArea(int area_id){
+        String sql = "UPDATE Areas SET court = court - 1 WHERE area_id = ?";
+        try{
+             PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, area_id);
+             ps.executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public List<Courts> getAllCourts() {
         List<Courts> courts = new ArrayList<>();
         String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price FROM Courts";
@@ -223,6 +242,10 @@ public int countCourtsByManager(int managerId) {
     }
     return 0;
 }
-
+    public static void main(String[] args) {
+        CourtDAO dao = new CourtDAO();
+        int a = dao .countCourtsByArea(5);
+        System.out.println(a);
+    }
     
 }

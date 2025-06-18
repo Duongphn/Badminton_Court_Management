@@ -127,11 +127,11 @@
                 </div>
                 <div class="form-group">
                     <label>Thời gian bắt đầu</label>
-                    <input type="time" name="startTime" class="form-control" required />
+                    <input type="time" name="startTime" class="form-control" step="1800" required />
                 </div>
                 <div class="form-group">
                     <label>Thời gian kết thúc</label>
-                    <input type="time" name="endTime" class="form-control" required />
+                    <input type="time" name="endTime" class="form-control" step="1800" required />
                 </div>
             </div>
             <div class="modal-footer">

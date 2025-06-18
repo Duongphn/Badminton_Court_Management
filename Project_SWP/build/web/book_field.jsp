@@ -57,15 +57,23 @@
                 <div class="alert alert-danger">${message}</div>
             </c:if>
 
-            <form action="book-field" method="post">
+            <!-- Form GET: chỉ để chọn lại ngày -->
+            <form action="book-field" method="get" id="dateForm">
                 <input type="hidden" name="courtId" value="${court.court_id}" />
-                <input type="hidden" name="areaId" value="${court.area_id}" />
-
                 <div class="mb-3">
                     <label for="date">Chọn ngày</label>
-                    <input type="date" name="date" value="${selectedDate}" min="<%= java.time.LocalDate.now().toString() %>" required/>
+                    <input type="date" id="dateInput" name="date"
+                           value="${selectedDate}"
+                           min="<%= java.time.LocalDate.now().toString() %>"
+                           required
+                           onchange="document.getElementById('dateForm').submit();" />
                 </div>
+            </form>
 
+            <!-- Form POST: chọn ca để đặt sân -->
+            <form action="book-field" method="post">
+                <input type="hidden" name="courtId" value="${court.court_id}" />
+                <input type="hidden" name="date" value="${selectedDate}" />
                 <div class="mb-3">
                     <label class="form-label">Chọn ca chơi:</label>
                     <div class="d-flex flex-wrap gap-2">
@@ -85,6 +93,7 @@
                     </div>
                 </div>
             </form>
+
         </div>
         <jsp:include page="homefooter.jsp" />
     </body>

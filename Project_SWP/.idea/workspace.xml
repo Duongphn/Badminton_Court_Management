@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="4badb5c3-cdac-479a-a30d-0743668b2e97" name="Changes" comment="">
+<<<<<<< HEAD
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/build.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nbproject/build-impl.xml" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/build-impl.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nbproject/genfiles.properties" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/genfiles.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nbproject/project.properties" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/project.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nbproject/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/ChangePassword.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/ChangePassword.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/META-INF/context.xml" beforeDir="false" afterPath="$PROJECT_DIR$/web/META-INF/context.xml" afterDir="false" />
+=======
       <change beforePath="$PROJECT_DIR$/src/java/DAO/AreaDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/DAO/AreaDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/homepage.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/homepage.jsp" afterDir="false" />
+>>>>>>> 6391c82af13b18cb8dc684d98b54ec0a34dd3219
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,8 +67,13 @@
       <option name="presentableId" value="Default" />
       <updated>1747789249591</updated>
       <workItem from="1747789250645" duration="92000" />
+<<<<<<< HEAD
+      <workItem from="1748274645701" duration="954000" />
+      <workItem from="1748398974954" duration="32000" />
+=======
       <workItem from="1748274645701" duration="360000" />
       <workItem from="1748399008920" duration="48000" />
+>>>>>>> 6391c82af13b18cb8dc684d98b54ec0a34dd3219
     </task>
     <servers />
   </component>

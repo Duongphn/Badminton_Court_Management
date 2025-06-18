@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import DAO.CourtDAO;
-import DAO.CourtPricingDAO;
 
 import Dal.DBContext;
 import Model.BookingScheduleDTO;
@@ -151,26 +150,22 @@ public List<Bookings> getBookingsByCourtAndDate(int courtId, LocalDate date) {
 
     public boolean checkSlotAvailableAdmin(int courtId, LocalDate date, Time startTime, Time endTime) {
         String sql = "SELECT COUNT(*) FROM Bookings "
-                + "WHERE court_id = ? AND date = ? AND status <> 'cancelled' "
+                + "WHERE court_id = ? AND date = ? AND status NOT IN ('cancelled', 'rejected') "
                 + "AND (start_time < ? AND end_time > ?)";
-
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, courtId);
             ps.setDate(2, Date.valueOf(date));
-            // kiểm tra các booking giao nhau với khoảng thời gian mới
             ps.setTime(3, endTime);    // start_time < endTime mới
             ps.setTime(4, startTime);  // end_time > startTime mới
-
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                // Không có bản ghi giao nhau khi số đếm bằng 0
-                return rs.getInt(1) == 0;
+                // Trả về true nếu không có bản ghi giao nhau
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        // Mặc định xem như không thể đặt nếu có lỗi xảy ra
-        return false;
+        return true;
     }
 
 
@@ -187,8 +182,6 @@ public int insertBooking1(int userId, int courtId, LocalDate date, Time startTim
         ps.setString(6, status); // e.g., "pending"
         try {
             int areaId = new CourtDAO().getCourtById(courtId).getArea_id();
-            double totalPrice = new CourtPricingDAO().calculatePrice(areaId, startTime, endTime);
-            ps.setDouble(7, totalPrice);
         } catch (Exception e) {
             ps.setDouble(7, 0);
         }
@@ -226,8 +219,6 @@ public boolean insertBooking(int userId, int courtId, LocalDate date, Time start
         ps.setString(6, status); // e.g., "pending"
         try {
             int areaId = new CourtDAO().getCourtById(courtId).getArea_id();
-            double totalPrice = new CourtPricingDAO().calculatePrice(areaId, startTime, endTime);
-            ps.setDouble(7, totalPrice);
         } catch (Exception e) {
             ps.setDouble(7, 0);
         }
@@ -421,9 +412,7 @@ public List<Bookings> getBookingsByUserId(int userId) {
             // Recalculate price based on the new time range
             Bookings current = getBookingById(bookingId);
             int areaId = new CourtDAO().getCourtById(current.getCourt_id()).getArea_id();
-            double totalPrice = new CourtPricingDAO().calculatePrice(areaId, startTime, endTime);
 
-            ps.setDouble(5, totalPrice);
             ps.setInt(6, bookingId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

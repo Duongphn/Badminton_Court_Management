@@ -160,8 +160,12 @@
             <div class="header-container">
                 <div class="logo">BadmintonCourt</div>
                 <div class="search-bar">
-                    <input type="text" placeholder="Tìm sân cầu lông...">
-                    <button class="search-btn">Tìm</button>
+
+                    <form action="SearchUser" method="POST" class="form-inline mb-4">
+                        <input type="text" name="searchInput" value="${searchKeyword}" placeholder="Tìm khu vực sân cầu lông...">
+                        <button class="search-btn" type="submit" >Tìm</button>
+                    </form>
+
                 </div>
                 <div class="header-actions">
                     

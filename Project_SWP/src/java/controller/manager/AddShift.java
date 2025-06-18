@@ -60,13 +60,27 @@ public class AddShift extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-     try {
+       request.getRequestDispatcher("DetailBranch.jsp").forward(request, response);
+    } 
+
+    /** 
+     * Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+  @Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    try {
         int areaId = Integer.parseInt(request.getParameter("area_id"));
         String shiftName = request.getParameter("shiftName");
         String start = request.getParameter("startTime");
         String end = request.getParameter("endTime");
 
         if (start == null || end == null || start.isEmpty() || end.isEmpty()) {
+            
             response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Thiếu thời gian bắt đầu hoặc kết thúc");
             return;
         }
@@ -77,7 +91,7 @@ public class AddShift extends HttpServlet {
         // Lấy DAO
         ShiftDAO dao = new ShiftDAO();
         AreaDAO aDao = new AreaDAO();
-
+      
         // Lấy giờ mở cửa và đóng cửa của khu vực
         Time[] openClose = aDao.getAreaOpenAndCloseTime(areaId);
         if (openClose == null) {
@@ -122,19 +136,6 @@ public class AddShift extends HttpServlet {
         e.printStackTrace();
         response.sendRedirect("error.jsp");
     }
-    } 
-
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-  @Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-    
 }
 
 

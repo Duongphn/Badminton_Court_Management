@@ -119,7 +119,7 @@ public class ShiftDAO extends DBContext{
     }
       public static void main(String[] args) {
         ShiftDAO dao = new ShiftDAO();
-        List<Shift> list = dao.getShiftsByArea(5);
+        List<Shift> list = dao.getShiftsByCourt(1);
         for(Shift a : list){
             System.out.println(a);
         }

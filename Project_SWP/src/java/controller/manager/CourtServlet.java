@@ -86,7 +86,7 @@ public class CourtServlet extends HttpServlet {
             court.setStatus(request.getParameter("status"));
             court.setArea_id(Integer.parseInt(request.getParameter("areaId")));
             courtDAO.addCourt(court);
-
+            courtDAO.increaseCourtOfArea(court.getArea_id());
             session.setAttribute("successMessage", "Thêm sân thành công!");
             session.setAttribute("messageType", "success");
         } else if (action.equals("update")) {

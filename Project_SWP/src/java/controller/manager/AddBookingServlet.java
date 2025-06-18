@@ -116,12 +116,12 @@ public class AddBookingServlet extends HttpServlet {
             }
 
             BookingDAO bookingDAO = new BookingDAO();
-            if (!bookingDAO.checkSlotAvailableAdmin(courtId, date, startTime, endTime)) {
-                request.setAttribute("error", "Sân này đã được đặt trong thời gian này. Vui lòng chọn thời gian khác.");
-                populateFormData(request, managerId);
-                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-                return;
-            }
+//            if (!bookingDAO.checkSlotAvailableAdmin(courtId, date, startTime, endTime)) {
+//                request.setAttribute("error", "Sân này đã được đặt trong thời gian này. Vui lòng chọn thời gian khác.");
+//                populateFormData(request, managerId);
+//                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+//                return;
+//            }
 
             int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending");
             if (bookingId == -1) {

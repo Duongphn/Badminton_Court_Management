@@ -6,27 +6,22 @@
 package controller.user;
 
 import DAO.AreaDAO;
-import DAO.Branch_ImageDAO;
-import DAO.UserDAO;
 import Model.Branch;
-import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 /**
  *
- * @author admin
+ * @author sangn
  */
-@WebServlet(name="ListBranch", urlPatterns={"/listBranch"})
-public class ListBranch extends HttpServlet {
+@WebServlet(name="SearchUser", urlPatterns={"/SearchUser"})
+public class SearchUser extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -43,10 +38,10 @@ public class ListBranch extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ListBranch</title>");  
+            out.println("<title>Servlet SearchUser</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ListBranch at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet SearchUser at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,45 +58,7 @@ public class ListBranch extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        Cookie cookies[] = request.getCookies();
-        String authToken = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("auth_token".equals(cookie.getName())) {
-                    authToken = cookie.getValue();
-                }
-            }
-        }
-        if (authToken != null && validateToken(authToken)) {
-            String username = getUsernameFromToken(authToken);
-            UserDAO dao = new UserDAO();
-            User u = dao.getUserByUsername(username);
-            HttpSession session = request.getSession();
-            if (u.getRole().equals("staff")) {
-                session.setAttribute("user", u);
-            }
-        }
-        
-         HttpSession session = request.getSession(false);
-        if (session != null) {
-            User user = (User) session.getAttribute("user");
-
-            if (user != null) {
-               
-                AreaDAO areaDAO = new AreaDAO();
-                List<Branch> areaList = areaDAO.getAllAreas();
-                System.out.println("Branch"+areaList);
-                request.setAttribute("areaList", areaList);
-                Branch_ImageDAO imageDAO = new Branch_ImageDAO();
-                
-                // Forward đến trang JSP hiển thị danh sách khu vực
-                request.getRequestDispatcher("List_Branch.jsp").forward(request, response);
-            } else {
-                response.sendRedirect("login");
-            }
-        } else {
-            response.sendRedirect("login");
-        }
+        processRequest(request, response);
     } 
 
     /** 
@@ -114,7 +71,13 @@ public class ListBranch extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        String keyword = request.getParameter("searchInput");
+        AreaDAO dao = new AreaDAO();
+        List<Branch> searchResult = dao.searchAreaByName(keyword);
+
+        request.setAttribute("area", searchResult);
+        request.setAttribute("searchKeyword", keyword);
+        request.getRequestDispatcher("List_Branch.jsp").forward(request, response);
     }
 
     /** 
@@ -125,13 +88,5 @@ public class ListBranch extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    private boolean validateToken(String authToken) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private String getUsernameFromToken(String authToken) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
 }

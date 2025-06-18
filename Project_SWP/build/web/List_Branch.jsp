@@ -16,53 +16,96 @@
             }
 
             .search-section {
+                max-width: 1200px;
+                margin-bottom: 30px;
                 background: white;
-                padding: 2rem;
-                border-radius: 15px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                margin-bottom: 2rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                padding: 30px;
             }
 
             .search-filters {
                 display: grid;
-                grid-template-columns: 1fr 200px 200px 200px auto;
-                gap: 1rem;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 24px;
                 align-items: end;
             }
 
             .filter-group {
                 display: flex;
                 flex-direction: column;
+                gap: 8px;
             }
 
             .filter-group label {
-                margin-bottom: 0.5rem;
-                font-weight: 500;
-                color: #333;
+                font-weight: 600;
+                color: #2c3e50;
+                font-size: 14px;
+                margin-bottom: 4px;
             }
 
-            .filter-group input,
             .filter-group select {
-                padding: 0.75rem;
-                border: 1px solid #ddd;
+                width: 100%;
+                padding: 12px 16px;
+                border: 2px solid #e1e8ed;
                 border-radius: 8px;
-                font-size: 1rem;
-            }
-
-            .search-main-btn {
-                background: #ff4757;
-                color: white;
-                border: none;
-                padding: 0.75rem 2rem;
-                border-radius: 8px;
+                font-size: 15px;
+                color: #2c3e50;
+                background: white;
                 cursor: pointer;
-                font-size: 1rem;
-                transition: all 0.3s;
+                transition: all 0.3s ease;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+                background-position: right 12px center;
+                background-repeat: no-repeat;
+                background-size: 16px;
+                padding-right: 40px;
             }
 
-            .search-main-btn:hover {
-                background: #ff3838;
-                transform: translateY(-2px);
+            .filter-group select:focus {
+                outline: none;
+                border-color: #3498db;
+                box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            }
+
+            .filter-group select:hover {
+                border-color: #bdc3c7;
+            }
+
+            /* Responsive design */
+            @media (max-width: 768px) {
+                .search-filters {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .search-section {
+                    padding: 20px;
+                    margin: 10px;
+                }
+            }
+
+            @media (min-width: 769px) and (max-width: 1024px) {
+                .search-filters {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            @media (min-width: 1025px) {
+                .search-filters {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+
+            /* Hiệu ứng loading khi hover */
+            .filter-group select:active {
+                transform: translateY(1px);
+            }
+
+            /* Style cho option */
+            .filter-group select option {
+                padding: 8px;
+                color: #2c3e50;
             }
 
             /* Featured Section */
@@ -205,23 +248,9 @@
                     gap: 1rem;
                 }
 
-                .search-bar {
-                    order: -1;
-                    max-width: 100%;
-                    margin: 0;
-                }
-
                 .nav-container {
                     flex-wrap: wrap;
                     gap: 1rem;
-                }
-
-                .search-filters {
-                    grid-template-columns: 1fr;
-                }
-
-                .featured {
-                    grid-template-columns: 1fr;
                 }
             }
 
@@ -263,10 +292,6 @@
             <div class="search-section">
                 <div class="search-filters">
                     <div class="filter-group">
-                        <label>Tìm sân</label>
-                        <input type="text" placeholder="Nhập tên sân hoặc địa điểm...">
-                    </div>
-                    <div class="filter-group">
                         <label>Khu vực</label>
                         <select>
                             <option>Tất cả</option>
@@ -294,9 +319,6 @@
                             <option>Chiều (12h-18h)</option>
                             <option>Tối (18h-22h)</option>
                         </select>
-                    </div>
-                    <div>
-                        <button class="search-main-btn">🔍 Tìm sân</button>
                     </div>
                 </div>
             </div>
@@ -328,7 +350,7 @@
                             <p>Giờ mở cửa: ${area.openTime} - ${area.closeTime}</p>
                             <p>Mô tả: ${area.description}</p>
                             <a href="AreaDetail?area_id=${area.area_id}" class="book-btn btn" >Xem chi tiết</a>
-                          
+
                         </div>
                     </div>
                 </c:forEach>
