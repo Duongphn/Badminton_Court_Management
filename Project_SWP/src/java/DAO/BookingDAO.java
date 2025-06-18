@@ -158,12 +158,12 @@ public List<Bookings> getBookingsByCourtAndDate(int courtId, LocalDate date) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 // Trả về true nếu không có bản ghi giao nhau
-                return rs.getInt(1) == 0;
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return true;
     }
 
 
