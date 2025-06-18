@@ -63,6 +63,7 @@ public class AddBookingServlet extends HttpServlet {
             response.sendRedirect("login");
             return;
         }
+        int managerId = user.getUser_Id();
 
         // Lấy các tham số từ form
         String dateStr = request.getParameter("date");
@@ -78,6 +79,7 @@ public class AddBookingServlet extends HttpServlet {
                 || endStr == null || endStr.isEmpty()
                 || courtIdStr == null || courtIdStr.isEmpty()) {
             request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin ngày, giờ và sân.");
+            populateFormData(request, managerId);
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
             return;
         }
@@ -95,6 +97,7 @@ public class AddBookingServlet extends HttpServlet {
             }
         } catch (Exception e) {
             request.setAttribute("error", "Định dạng ngày hoặc giờ không hợp lệ!");
+            populateFormData(request, managerId);
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
             return;
         }
@@ -102,6 +105,7 @@ public class AddBookingServlet extends HttpServlet {
         // 2. Kiểm tra logic thời gian
         if (!startTime.before(endTime)) {
             request.setAttribute("error", "Giờ bắt đầu phải trước giờ kết thúc.");
+            populateFormData(request, managerId);
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
             return;
         }
@@ -116,6 +120,7 @@ public class AddBookingServlet extends HttpServlet {
             Time close = area.getCloseTime();
             if (startTime.before(open) || endTime.after(close)) {
                 request.setAttribute("error", "Thời gian đặt sân phải trong khoảng mở cửa: " + open + " - " + close);
+                populateFormData(request, managerId);
                 request.getRequestDispatcher("add_booking.jsp").forward(request, response);
                 return;
             }
@@ -124,6 +129,7 @@ public class AddBookingServlet extends HttpServlet {
         LocalDateTime startDateTime = LocalDateTime.of(date, startTime.toLocalTime());
         if (startDateTime.isBefore(LocalDateTime.now())) {
             request.setAttribute("error", "Không thể đặt sân trong thời gian đã qua.");
+            populateFormData(request, managerId);
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
             return;
         }
@@ -133,7 +139,8 @@ public class AddBookingServlet extends HttpServlet {
         boolean slotAvailable = dao.checkSlotAvailableAdmin(courtId, date, startTime, endTime);
         if (!slotAvailable) {
             request.setAttribute("error", "Sân này đã được đặt trong thời gian này. Vui lòng chọn thời gian khác.");
-            request.getRequestDispatcher("manager_booking_schedule.jsp").forward(request, response);
+            populateFormData(request, managerId);
+            request.getRequestDispatcher("add_booking.jsp").forward(request, response);
             return;
         }
 
@@ -153,7 +160,19 @@ public class AddBookingServlet extends HttpServlet {
             response.sendRedirect("manager-booking-schedule?msg=" + msg);
         } else {
             request.setAttribute("error", "Có lỗi xảy ra, vui lòng thử lại sau!");
+            populateFormData(request, managerId);
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
         }
+    }
+
+    private void populateFormData(HttpServletRequest request, int managerId) {
+        CourtDAO courtDAO = new CourtDAO();
+        UserDAO userDAO = new UserDAO();
+        List<Courts> courts = courtDAO.getCourtsByManager(managerId);
+        List<User> customers = userDAO.getUsersByRole("user");
+        List<Service> services = ServiceDAO.getAllService();
+        request.setAttribute("courts", courts);
+        request.setAttribute("customers", customers);
+        request.setAttribute("services", services);
     }
 }
