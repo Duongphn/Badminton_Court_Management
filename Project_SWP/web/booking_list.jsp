@@ -141,7 +141,7 @@
                         </td>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${booking.status eq 'confirmed'}">
+                                        <c:when test="${booking.status eq 'completed'}">
                                             <c:choose>
                                                 <c:when test="${booking.rating == 0}">
                                                     <button type="button" class="btn btn-primary btn-sm open-rating-modal"
