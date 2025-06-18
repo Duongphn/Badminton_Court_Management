@@ -46,7 +46,7 @@
     </style>
 </head>
 <body>
-  <jsp:include page="homehead.jsp" />
+<jsp:include page="homehead.jsp" />
 <div class="container booking-container">
     <h2 class="booking-title">Đặt sân: ${court.court_number}</h2>
 
@@ -56,20 +56,18 @@
 
     <form action="book-field" method="post">
         <input type="hidden" name="courtId" value="${court.court_id}" />
+        <input type="hidden" name="areaId" value="${court.area_id}" />
 
         <div class="mb-3">
             <label for="date">Chọn ngày</label>
-            <input type="date" id="date" name="date" class="form-control" required>
+            <input type="date" name="date" value="${selectedDate}" min="<%= java.time.LocalDate.now() %>" required/>
         </div>
 
         <div class="mb-3">
-            <label for="startTime">Giờ bắt đầu</label>
-            <input type="time" id="startTime" name="startTime" class="form-control"  required >
-        </div>
-
-        <div class="mb-3">
-            <label for="endTime">Giờ kết thúc</label>
-            <input type="time" id="endTime" name="endTime" class="form-control" required >
+            <label class="form-label">Chọn ca chơi:</label>
+            <div class="d-flex flex-wrap gap-2" id="slotContainer"></div>
+            <input type="hidden" name="startTime" id="slotStart" required />
+            <input type="hidden" name="endTime" id="slotEnd" required />
         </div>
 
         <div class="d-grid">
@@ -77,7 +75,33 @@
         </div>
     </form>
 </div>
-         <jsp:include page="homefooter.jsp" />
+<jsp:include page="homefooter.jsp" />
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const slots = ${slots != null ? slots : '[]'};
+        const slotContainer = document.getElementById('slotContainer');
+        const slotStartInput = document.getElementById('slotStart');
+        const slotEndInput = document.getElementById('slotEnd');
+
+        slots.forEach(slot => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = `btn ${slot.available ? 'btn-success' : 'btn-secondary'} btn-sm m-1`;
+            button.textContent = `${slot.start} - ${slot.end}`;
+            button.disabled = !slot.available;
+
+            button.addEventListener('click', () => {
+                document.querySelectorAll('#slotContainer button').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                slotStartInput.value = slot.start;
+                slotEndInput.value = slot.end;
+            });
+
+            slotContainer.appendChild(button);
+        });
+    });
+</script>
 
 </body>
 </html>

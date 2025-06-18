@@ -320,7 +320,7 @@
                 <c:forEach var="area" items="${areaList}">
                     <div class="court-card">
                         <div class="logo-san">
-                            <img src="images/san/san.jpg" alt="${area.name}" />
+                            <img src="          " alt="${area.name}" />
                         </div>
                         <div class="court-info">
                             <div class="court-name">${area.name}</div>

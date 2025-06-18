@@ -123,7 +123,22 @@
                                 <td>${booking.court_id}</td>
                                 <td>${booking.date}</td>
                                 <td>${booking.start_time} - ${booking.end_time}</td>
-                                <td>${booking.status}</td>
+                                <td>
+                            <c:choose>
+                                <c:when test="${booking.status eq 'confirmed'}">
+                                    <span class="badge bg-success">Đã xác nhận</span>
+                                </c:when>
+                                <c:when test="${booking.status eq 'cancelled'}">
+                                    <span class="badge bg-secondary">Đã hủy</span>
+                                </c:when>
+                                <c:when test="${booking.status eq 'pending'}">
+                                    <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="badge bg-light text-dark">${booking.status}</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${booking.status eq 'confirmed'}">
@@ -160,6 +175,13 @@
                         </c:forEach>
                     </tbody>
                 </table>
+                <c:if test="${not empty sessionScope.cancelMessage}">
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        ${sessionScope.cancelMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <c:remove var="cancelMessage" scope="session"/>
+                </c:if>
             </div>
             <!-- Rating Modal -->
             <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true">
