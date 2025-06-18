@@ -38,7 +38,7 @@ public class SubmitRatingServlet extends HttpServlet {
                 response.sendRedirect("booking-list?error=unauthorized");
                 return;
             }
-            if (!"confirmed".equals(booking.getStatus())) {
+            if (!"completed".equals(booking.getStatus())) {
                 response.sendRedirect("booking-list?error=invalid-status");
                 return;
             }
