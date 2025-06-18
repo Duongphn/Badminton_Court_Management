@@ -1,13 +1,16 @@
 package controller.manager;
 
 import DAO.BookingDAO;
+import DAO.BookingServiceDAO;
 import DAO.CourtDAO;
 import DAO.UserDAO;
 import DAO.AreaDAO;
+import DAO.ServiceDAO;
 import Model.Branch;
 import Model.Bookings;
 import Model.Courts;
 import Model.User;
+import Model.Service;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,6 +23,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @WebServlet("/update-booking")
 public class UpdateBookingServlet extends HttpServlet {
@@ -54,9 +59,15 @@ public class UpdateBookingServlet extends HttpServlet {
             Courts court = courtDAO.getCourtById(booking.getCourt_id());
             UserDAO userDAO = new UserDAO();
             User customer = userDAO.getUserById(booking.getUser_id());
+            BookingServiceDAO bsDao = new BookingServiceDAO();
+            List<Service> services = ServiceDAO.getAllService();
+            List<Integer> selectedIds = bsDao.getServicesByBookingId(bookingId)
+                    .stream().map(Service::getService_id).collect(Collectors.toList());
             request.setAttribute("booking", booking);
             request.setAttribute("court", court);
             request.setAttribute("customer", customer);
+            request.setAttribute("services", services);
+            request.setAttribute("selectedServiceIds", selectedIds);
             request.getRequestDispatcher("update_booking.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             response.sendRedirect("manager-booking-schedule");
@@ -82,6 +93,16 @@ public class UpdateBookingServlet extends HttpServlet {
         String startStr = request.getParameter("startTime");
         String endStr = request.getParameter("endTime");
         String status = request.getParameter("status");
+        String[] selectedServices = request.getParameterValues("selectedServices");
+        List<Service> servicesList = ServiceDAO.getAllService();
+        List<Integer> selectedIdsParam = new java.util.ArrayList<>();
+        if (selectedServices != null) {
+            for (String s : selectedServices) {
+                try { selectedIdsParam.add(Integer.parseInt(s)); } catch (NumberFormatException ignored) {}
+            }
+        }
+        request.setAttribute("services", servicesList);
+        request.setAttribute("selectedServiceIds", selectedIdsParam);
 
         // 2. Kiểm tra null/rỗng
         if (bookingIdStr == null || bookingIdStr.isEmpty()
@@ -169,6 +190,16 @@ public class UpdateBookingServlet extends HttpServlet {
             boolean updateSuccess = dao.updateBooking(bookingId, date, startTime, endTime, status);
 
             if (updateSuccess) {
+                BookingServiceDAO bsDao = new BookingServiceDAO();
+                bsDao.removeServicesByBookingId(bookingId);
+                if (selectedServices != null) {
+                    for (String sidStr : selectedServices) {
+                        try {
+                            int sid = Integer.parseInt(sidStr);
+                            bsDao.addServiceToBooking(bookingId, sid);
+                        } catch (NumberFormatException ignored) {}
+                    }
+                }
                 String msg = URLEncoder.encode("Cập nhật thành công!", StandardCharsets.UTF_8);
                 response.sendRedirect("manager-booking-schedule?msg=" + msg);
             } else {

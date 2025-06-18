@@ -1,9 +1,11 @@
 package controller.manager;
 
 import DAO.BookingDAO;
+import DAO.BookingServiceDAO;
 import DAO.AreaDAO;
 import Model.BookingScheduleDTO;
 import Model.Branch;
+import Model.Service;
 import Model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,7 +14,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet("/manager-booking-schedule")
 public class ManagerBookingSchedule extends HttpServlet {
@@ -63,11 +68,19 @@ public class ManagerBookingSchedule extends HttpServlet {
 
         BookingDAO dao = new BookingDAO();
         List<BookingScheduleDTO> bookings = dao.getManagerBookings(managerId, areaId, startDate, endDate, status);
+        BookingServiceDAO bsDao = new BookingServiceDAO();
+        Map<Integer, String> serviceNames = new HashMap<>();
+        for (BookingScheduleDTO b : bookings) {
+            List<Service> svs = bsDao.getServicesByBookingId(b.getBooking_id());
+            String names = svs.stream().map(Service::getName).collect(Collectors.joining(", "));
+            serviceNames.put(b.getBooking_id(), names);
+        }
 
         AreaDAO areaDAO = new AreaDAO();
         List<Branch> areas = areaDAO.getAreasByManager(managerId);
 
         request.setAttribute("bookings", bookings);
+        request.setAttribute("serviceNames", serviceNames);
         request.setAttribute("areas", areas);
         request.setAttribute("areaId", areaId);
         request.setAttribute("startDate", startParam);
