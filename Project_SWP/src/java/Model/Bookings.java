@@ -22,6 +22,11 @@ public class Bookings {
     private int rating;
     private double total_price;
 
+    @Override
+    public String toString() {
+        return "Bookings{" + "booking_id=" + booking_id + ", user_id=" + user_id + ", court_id=" + court_id + ", date=" + date + ", start_time=" + start_time + ", end_time=" + end_time + ", status=" + status + ", rating=" + rating + '}';
+    }
+
     public Bookings() {
     }
 

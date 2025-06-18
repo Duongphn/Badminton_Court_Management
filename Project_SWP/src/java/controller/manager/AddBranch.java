@@ -95,9 +95,13 @@ public class AddBranch extends HttpServlet {
         Time openTime = Time.valueOf(request.getParameter("openTime") + ":00");
         Time closeTime = Time.valueOf(request.getParameter("closeTime") + ":00");
         String description = request.getParameter("description");
+       
+        String nameStaff = request.getParameter("nameStaff");
+                String phone_branch= request.getParameter("phone_branch");
         int empty = 0;
 
         try {
+           
             empty = Integer.parseInt(request.getParameter("emptyCourt"));
         } catch (NumberFormatException e) {
             System.out.println("Lỗi chuyển đổi số lượng sân: " + e.getMessage());
@@ -109,7 +113,9 @@ public class AddBranch extends HttpServlet {
         area.setOpenTime(openTime);
         area.setCloseTime(closeTime);
         area.setDescription(description);
-        area.setManager_id(user.getUser_Id()); // 
+        area.setManager_id(user.getUser_Id()); 
+        area.setNameStaff(nameStaff);
+        area.setPhone_branch(phone_branch);
 
         AreaDAO dao = new AreaDAO();
         boolean exists = dao.isRegionNameExist(name, user.getUser_Id());
@@ -117,6 +123,7 @@ public class AddBranch extends HttpServlet {
             session.setAttribute("error", "Tồn tại địa điểm rồi!");
         } else {
             dao.addRegion(area);
+            session.setAttribute("success", "Thêm khu vực thành công!");
         }
 
         response.sendRedirect("view-region");

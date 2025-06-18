@@ -31,6 +31,23 @@ public class AreaDAO extends DBContext {
             System.out.println("Connect failed");
         }
     }
+    public Time[] getAreaOpenAndCloseTime(int areaId) {
+    String sql = "SELECT open_time, close_time FROM Areas WHERE area_id = ?";
+    try (
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, areaId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Time openTime = rs.getTime("open_time");
+            Time closeTime = rs.getTime("close_time");
+            return new Time[]{openTime, closeTime};
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
 public List<Branch> searchAreaByName(String keyword) {
     List<Branch> areas = new ArrayList<>();
     String sql = "SELECT * FROM Areas WHERE name LIKE ?";
@@ -46,6 +63,8 @@ public List<Branch> searchAreaByName(String keyword) {
             area.setOpenTime(rs.getTime("open_time"));
             area.setCloseTime(rs.getTime("close_time"));
             area.setDescription(rs.getString("descriptions"));
+            area.setPhone_branch(rs.getString("phone_area"));
+            area.setNameStaff(rs.getString("nameStaff"));
             areas.add(area);
         }
     } catch (Exception e) {
@@ -55,24 +74,26 @@ public List<Branch> searchAreaByName(String keyword) {
 }
 
     public void addRegion(Branch re) {
-        String sql = "INSERT INTO [dbo].[Areas] "
-                + "([name], [location], [manager_id], [court], [open_time], [close_time],[descriptions]) "
-                + "VALUES (?, ?, ?, ?, ?, ?,?)";
+    String sql = "INSERT INTO [dbo].[Areas] "
+            + "([name], [location], [manager_id], [court], [open_time], [close_time], [descriptions], [phone_area], [nameStaff]) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try {
-            PreparedStatement pre = conn.prepareStatement(sql);
-            pre.setString(1, re.getName());
-            pre.setString(2, re.getLocation());
-            pre.setInt(3, re.getManager_id());
-            pre.setInt(4, re.getEmptyCourt());
-            pre.setTime(5, re.getOpenTime());
-            pre.setTime(6, re.getCloseTime());
-            pre.setString(7, re.getDescription());
-            pre.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    try (PreparedStatement pre = conn.prepareStatement(sql)) {
+        pre.setString(1, re.getName());
+        pre.setString(2, re.getLocation());
+        pre.setInt(3, re.getManager_id());
+        pre.setInt(4, re.getEmptyCourt());
+        pre.setTime(5, re.getOpenTime());
+        pre.setTime(6, re.getCloseTime());
+        pre.setString(7, re.getDescription());
+        pre.setString(8, re.getPhone_branch());
+        pre.setString(9, re.getNameStaff());
+        pre.executeUpdate();
+    } catch (SQLException e) {
+        System.out.println("Error adding region: " + e.getMessage());
     }
+}
+
 
 
 public Branch getAreaByIdWithManager(int area_id) {
@@ -90,7 +111,9 @@ public Branch getAreaByIdWithManager(int area_id) {
             area.setOpenTime(rs.getTime("open_time"));
             area.setCloseTime(rs.getTime("close_time"));
             area.setDescription(rs.getString("descriptions"));
-            area.setManagerName(rs.getString("managerName")); 
+            area.setPhone_branch(rs.getString("phone_area"));
+            area.setNameStaff(rs.getString("nameStaff"));
+           
             return area;
         }
     } catch (Exception e) {
@@ -100,16 +123,20 @@ public Branch getAreaByIdWithManager(int area_id) {
 }
 
 
-    public void UpdateArea(int id, String name, String location, int emptyCourt, Time openTime, Time closeTime, String descriptions) {
-        String sql = "UPDATE Areas SET name = ?, location = ?, court = ?, open_time = ?, close_time = ?, descriptions = ? WHERE area_id = ?";
+    public void UpdateArea(int id, String name, String location,  Time openTime, Time closeTime, String descriptions,String phone_branch, String nameStaff) {
+        String sql = "UPDATE Areas SET name = ?, location = ?,  open_time = ?, close_time = ?, descriptions = ?,phone_area = ?, nameStaff =? WHERE area_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, name);
             stmt.setString(2, location);
-            stmt.setInt(3, emptyCourt);
-            stmt.setTime(4, openTime);
-            stmt.setTime(5, closeTime);
-            stmt.setString(6, descriptions);
-            stmt.setInt(7, id);
+         
+            stmt.setTime(3, openTime);
+            stmt.setTime(4, closeTime);
+            stmt.setString(5, descriptions);
+             stmt.setString(6, phone_branch);
+            stmt.setString(7, nameStaff);
+            
+           
+            stmt.setInt(8, id);
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -129,34 +156,36 @@ public Branch getAreaByIdWithManager(int area_id) {
         }
     }
 
-    public List<Branch> getAreasByManager(int managerId) {
-        List<Branch> areas = new ArrayList<>();
-        String sql = "SELECT * FROM Areas WHERE manager_id = ?";
+   public List<Branch> getAreasByManager(int managerId) {
+    List<Branch> areas = new ArrayList<>();
+    String sql = "SELECT * FROM Areas WHERE manager_id = ?";
 
-        try (
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, managerId);
+        ResultSet rs = stmt.executeQuery();
 
-            stmt.setInt(1, managerId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Branch area = new Branch(
-                        rs.getInt("area_id"),
-                        rs.getString("name"),
-                        rs.getString("location"),
-                        rs.getInt("manager_id"),
-                        rs.getInt("court"),
-                        rs.getTime("open_time"),
-                        rs.getTime("close_time"),
-                        rs.getString("descriptions")
-                );
-                areas.add(area);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        while (rs.next()) {
+            Branch area = new Branch(
+                rs.getInt("area_id"),
+                rs.getString("name"),
+                rs.getString("location"),
+                rs.getInt("manager_id"),
+                rs.getInt("court"),
+                rs.getTime("open_time"),
+                rs.getTime("close_time"),
+                rs.getString("descriptions"),
+                rs.getString("phone_area"),
+                rs.getString("nameStaff")
+            );
+            areas.add(area);
         }
-        return areas;
+    } catch (SQLException e) {
+        System.out.println("getAreasByManager error: " + e.getMessage());
     }
+
+    return areas;
+}
+
 
     public int countAreasByManagerId(int id) {
         String sql = "SELECT count(*) as Total FROM Areas where manager_id = ?";
@@ -192,7 +221,9 @@ public Branch getAreaByIdWithManager(int area_id) {
                 Time openTime = rs.getTime("open_time");
                 Time closeTime = rs.getTime("close_time");
                 String description = rs.getString("descriptions");
-                Branch ar = new Branch(areasID, areaName, location, managerID, emptyCourt, openTime, closeTime, description);
+                String phone_branch = rs.getString("phone_area");
+                String nameStaff = rs.getString("nameStaff");
+                Branch ar = new Branch(areasID, areaName, location, managerID, emptyCourt, openTime, closeTime, description,phone_branch,nameStaff);
                 list.add(ar);
             }
 
@@ -222,7 +253,9 @@ public Branch getAreaByIdWithManager(int area_id) {
                 Time openTime = rs.getTime("open_time");
                 Time closeTime = rs.getTime("close_time");
                 String description = rs.getString("descriptions");
-                Branch ar = new Branch(areasID, areaName, location, managerID, emptyCourt, openTime, closeTime,description);
+                 String phone_branch = rs.getString("phone_area");
+                String nameStaff = rs.getString("nameStaff");
+                Branch ar = new Branch(areasID, areaName, location, managerID, emptyCourt, openTime, closeTime,description,phone_branch,nameStaff);
                 listCourt.add(ar);
             }
 
@@ -247,7 +280,9 @@ public Branch getAreaByIdWithManager(int area_id) {
                 Time openTime = rs.getTime("open_time");
                 Time closeTime = rs.getTime("close_time");
                 String description = rs.getString("descriptions");
-                Branch branch = new Branch(areasID, areaName, location, managerID, emptyCourt, openTime, closeTime, description);
+                String phone_branch = rs.getString("phone_area");
+                String nameStaff = rs.getString("nameStaff");
+                Branch branch = new Branch(areasID, areaName, location, managerID, emptyCourt, openTime, closeTime, description,phone_branch,nameStaff);
                 listTop3.add(branch);
             }
 
@@ -294,46 +329,35 @@ public Branch getAreaByIdWithManager(int area_id) {
 
         AreaDAO areaDAO = new AreaDAO();
 
-        Branch newArea = new Branch(
-            1,                   
-            "Khu Vuc Hola",      
-            "Ha Noi",            
-            2,              
-            0,               
-            Time.valueOf("10:00:00"),  
-            Time.valueOf("22:00:00")   ,
-                "String"
-        );
-        // Gọi phương thức addRegion để thêm mới
-        areaDAO.addRegion(newArea);
-         System.out.println("Đã thêm khu vực mới thành công!");
+         int areaIdToUpdate = 5; 
+    String updatedName = "Sân Thể Thao XYZ";
+    String updatedLocation = "456 Đường DEF, TP.HCM";
+    Time updatedOpenTime = Time.valueOf("06:00:00");
+    Time updatedCloseTime = Time.valueOf("21:00:00");
+    String updatedDescription = "Khu vực được cải tạo mới nhất";
+    String updatedPhoneBranch = "0909123456";
+    String updatedNameStaff = "Lê Văn B";
 
-        List<Branch> aa = areaDAO.getAreasByManager(1);
+    areaDAO.UpdateArea(
+        areaIdToUpdate,
+        updatedName,
+        updatedLocation,
+        updatedOpenTime,
+        updatedCloseTime,
+        updatedDescription,
+        updatedPhoneBranch,
+        updatedNameStaff
+    );
+
+    System.out.println("Cập nhật thông tin khu vực thành công!");
+         
+         
+         
+         
+        List<Branch> aa = areaDAO.getAreasByManager(2);
         for (Branch list : aa) {
             System.out.println(list);
         }
-        
-        List<Branch> top3Areas = areaDAO.getTop3();
-        System.out.println("Danh sách 3 khu vực mới nhất:");
-        for (Branch branch : top3Areas) {
-            System.out.println(branch);
-        }
-        
-         int areaIdToUpdate = 4;
 
-    // ✅ Dữ liệu mới cần cập nhật
-    String newName = "Khu Vực Test Cập Nhật";
-    String newLocation = "Đường ABC, Quận XYZ";
-    int newEmptyCourt = 5;
-    Time newOpenTime = Time.valueOf("08:00:00");
-    Time newCloseTime = Time.valueOf("20:00:00");
-    String newDescription = "Khu vực được cập nhật qua hàm main";
-
-    try {
-        areaDAO.UpdateArea(areaIdToUpdate, newName, newLocation, newEmptyCourt, newOpenTime, newCloseTime, newDescription);
-        System.out.println(" Đã cập nhật thành công khu vực có ID: " + areaIdToUpdate);
-    } catch (Exception e) {
-        System.out.println(" Cập nhật thất bại: " + e.getMessage());
-    }
     }
 }

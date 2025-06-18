@@ -6,6 +6,7 @@ import java.sql.*;
 import java.util.*;
 import Model.Branch_Service;
 
+
 public class ServiceDAO extends DBContext {
 
     // Lấy tất cả dịch vụ
@@ -33,27 +34,44 @@ public class ServiceDAO extends DBContext {
         return list;
     }
 
-    public List<Branch_Service> getAllAreaServices(int areaID) {
-        List<Branch_Service> areaServices = new ArrayList<>();
-        String query = "SELECT AreaServices_id, service_id, area_id FROM Areas_Services  where area_id = ?";
+   public List<Branch_Service> getAllAreaServices(int areaID) {
+    List<Branch_Service> areaServices = new ArrayList<>();
+    String query = "SELECT a.AreaServices_id, a.service_id, a.area_id, " +
+                   "s.name, s.price, s.description, s.image_url, s.status " +
+                   "FROM Areas_Services a " +
+                   "JOIN BadmintonService s ON a.service_id = s.service_id " +
+                   "WHERE a.area_id = ?";
 
-        try (
-                Connection conn = new DBContext().getConnection(); PreparedStatement preparedStatement = conn.prepareStatement(query); ResultSet resultSet = preparedStatement.executeQuery()) {
+    try (
+        Connection conn = new DBContext().getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
-            preparedStatement.setInt(1, areaID);
+        preparedStatement.setInt(1, areaID);
+        ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
-                Branch_Service areaService = new Branch_Service();
-                areaService.setAreaService_id(resultSet.getInt("AreaServices_id"));
-                areaService.setService_id(resultSet.getInt("service_id"));
-                areaService.setArea_id(resultSet.getInt("area_id"));
-                areaServices.add(areaService);
-            }
-        } catch (SQLException | ClassNotFoundException e) {
-            System.out.println("getAllRoomServices: " + e.getMessage());
+        while (resultSet.next()) {
+            Branch_Service areaService = new Branch_Service();
+            areaService.setAreaService_id(resultSet.getInt("AreaServices_id"));
+            areaService.setService_id(resultSet.getInt("service_id"));
+            areaService.setArea_id(resultSet.getInt("area_id"));
+
+            Service service = new Service();
+            service.setService_id(resultSet.getInt("service_id"));
+            service.setName(resultSet.getString("name"));
+            service.setPrice(resultSet.getDouble("price"));
+            service.setDescription(resultSet.getString("description"));
+            service.setImage_url(resultSet.getString("image_url"));
+            service.setStatus(resultSet.getString("status"));
+
+            areaService.setService(service);
+            areaServices.add(areaService);
         }
-        return areaServices;
+    } catch (SQLException | ClassNotFoundException e) {
+        System.out.println("getAllAreaServices: " + e.getMessage());
     }
+    return areaServices;
+}
+
 
     // Thêm dịch vụ mới
     public static void addService(Service s) throws SQLException {
@@ -110,6 +128,7 @@ public class ServiceDAO extends DBContext {
         }
         return nextId;
     }
+
 
     // Cập nhật thông tin dịch vụ theo service_id
     public static boolean updateService(Service s) throws SQLException {
@@ -171,5 +190,6 @@ public class ServiceDAO extends DBContext {
         }
         return list;
     }
+
 
 }

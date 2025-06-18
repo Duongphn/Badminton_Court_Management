@@ -3,11 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.user;
+package controller.manager;
 
-import DAO.BookingDAO;
-import Model.Bookings;
-import Model.User;
+import DAO.AreaDAO;
+import DAO.ShiftDAO;
+import Model.Shift;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,18 +15,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.sql.Time;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name="Cancel_booking", urlPatterns={"/cancel_booking"})
-public class Cancel_booking extends HttpServlet {
+@WebServlet(name="AddShift", urlPatterns={"/add-shift"})
+public class AddShift extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -43,10 +39,10 @@ public class Cancel_booking extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Cancel_booking</title>");  
+            out.println("<title>Servlet AddShift</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Cancel_booking at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet AddShift at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -74,43 +70,60 @@ public class Cancel_booking extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            response.sendRedirect("login");
-            return;
-        }
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
 
-        int bookingId = Integer.parseInt(request.getParameter("bookingId"));
-        BookingDAO bookingDAO = new BookingDAO();
-        Bookings booking = bookingDAO.getBookingById(bookingId);
+    try {
+        int areaId = Integer.parseInt(request.getParameter("area_id"));
+        String shiftName = request.getParameter("shiftName");
+       String start = request.getParameter("startTime");
+String end = request.getParameter("endTime");
 
-        if (booking == null || booking.getUser_id() != user.getUser_Id()) {
-            response.sendRedirect("booking-list?error=unauthorized");
-            return;
-        }
+if (start == null || end == null || start.isEmpty() || end.isEmpty()) {
+    response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Thiếu thời gian bắt đầu hoặc kết thúc");
+    return;
+}
 
+Time startTime = Time.valueOf(start + ":00"); // nếu chỉ có HH:mm
+Time endTime = Time.valueOf(end + ":00");
+
+        ShiftDAO dao = new ShiftDAO();
+        AreaDAO aDao = new AreaDAO();
         
-        LocalDate date = booking.getDate();
-        LocalTime time = booking.getStart_time().toLocalTime();
-        LocalDateTime startDateTime = LocalDateTime.of(date, time);
-        LocalDateTime now = LocalDateTime.now();
-
-        Duration duration = Duration.between(now, startDateTime);
-        if (duration.toHours() < 4) {
-            session.setAttribute("cancelMessage", "Không thể hủy đặt sân vì còn dưới 4 tiếng trước giờ chơi.");
-            response.sendRedirect("booking-list?error=late-cancel");
+        Time[] openClose = aDao.getAreaOpenAndCloseTime(areaId);
+        if (openClose == null) {
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Không tìm thấy giờ hoạt động của khu vực.");
             return;
         }
 
-        // Cập nhật trạng thái
-        boolean success = bookingDAO.cancelBookingById(bookingId);
-        session.setAttribute("cancelMessage", "Bạn đã huỷ đặt sân thành công! ");
-        response.sendRedirect("booking-list?cancel=" + (success ? "success" : "failed"));
+        Time openTime = openClose[0];
+        Time closeTime = openClose[1];
+
+       
+        if (startTime.compareTo(endTime) >= 0) {
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Giờ bắt đầu phải trước giờ kết thúc.");
+            return;
+        }
+        if (startTime.before(openTime)) {
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Giờ bắt đầu không được trước giờ mở cửa (" + openTime + ").");
+            return;
+        }
+        if (endTime.after(closeTime)) {
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Giờ kết thúc không được sau giờ đóng cửa (" + closeTime + ").");
+            return;
+        }
+
+        // Nếu hợp lệ thì thêm shift
+        Shift shift = new Shift(areaId, shiftName, startTime, endTime);
+        dao.addShift(shift);
+
+        response.sendRedirect("detailBranch?area_id=" + areaId);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("error.jsp");
     }
-   
+}
 
     /** 
      * Returns a short description of the servlet.

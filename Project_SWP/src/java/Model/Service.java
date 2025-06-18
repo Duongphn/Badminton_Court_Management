@@ -70,6 +70,11 @@ public class Service {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Service{" + "service_id=" + service_id + ", name=" + name + ", price=" + price + ", decription=" + decription + ", image_url=" + image_url + ", status=" + status + '}';
+    }
 }
     
 

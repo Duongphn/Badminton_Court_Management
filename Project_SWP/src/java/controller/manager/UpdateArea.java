@@ -79,8 +79,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         int id = Integer.parseInt(request.getParameter("regionID"));
         String name = request.getParameter("RegionName");
         String address = request.getParameter("address");
-              int empty = Integer.parseInt(request.getParameter("empty"));
-
+             
         // Lấy chuỗi giờ từ input
         String openTimeStr = request.getParameter("openTime");
         String closeTimeStr = request.getParameter("closeTime");
@@ -88,10 +87,11 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         // Chuyển từ chuỗi sang java.sql.Time
         java.sql.Time openTime = java.sql.Time.valueOf(openTimeStr );
         java.sql.Time closeTime = java.sql.Time.valueOf(closeTimeStr );
-
+        String phone_branch = request.getParameter("phone_branch");
+        String nameStaff = request.getParameter("nameStaff");
         AreaDAO dao = new AreaDAO();
         System.out.println(id+","+name+","+address);
-        dao.UpdateArea(id, name, address, empty, openTime, closeTime,description);
+        dao.UpdateArea(id, name, address, openTime, closeTime,description,phone_branch,nameStaff);
         
         response.sendRedirect("view-region");
     } catch ( NumberFormatException  e) {

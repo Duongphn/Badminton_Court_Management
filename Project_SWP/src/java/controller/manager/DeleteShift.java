@@ -3,11 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.user;
+package controller.manager;
 
-import DAO.AreaDAO;
 import DAO.Branch_ImageDAO;
-import Model.Branch;
+import DAO.ShiftDAO;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,14 +16,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name="ListBranch", urlPatterns={"/listBranch"})
-public class ListBranch extends HttpServlet {
+@WebServlet(name="DeleteShift", urlPatterns={"/delete-shift"})
+public class DeleteShift extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -41,10 +39,10 @@ public class ListBranch extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ListBranch</title>");  
+            out.println("<title>Servlet DeleteShift</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ListBranch at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet DeleteShift at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,19 +62,16 @@ public class ListBranch extends HttpServlet {
          HttpSession session = request.getSession(false);
         if (session != null) {
             User user = (User) session.getAttribute("user");
+            if (user.getRole().equals("staff")) {
+                int shift_id = Integer.parseInt(request.getParameter("shiftId"));
+                String area_id = request.getParameter("area_id");
+                ShiftDAO dao = new ShiftDAO();
+                dao.removeShift(shift_id);
 
-            if (user != null) {
-               
-                AreaDAO areaDAO = new AreaDAO();
-                List<Branch> areaList = areaDAO.getAllAreas();
-                System.out.println("Branch"+areaList);
-                request.setAttribute("areaList", areaList);
-                Branch_ImageDAO imageDAO = new Branch_ImageDAO();
-                
-                // Forward đến trang JSP hiển thị danh sách khu vực
-                request.getRequestDispatcher("List_Branch.jsp").forward(request, response);
+                response.sendRedirect("detailBranch?area_id=" + area_id + "&message=Xóa ca thành công");
+
             } else {
-                response.sendRedirect("login");
+                response.sendError(403);
             }
         } else {
             response.sendRedirect("login");

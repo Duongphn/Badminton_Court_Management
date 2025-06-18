@@ -3,12 +3,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controller.user;
+package controller.manager;
 
-import DAO.AreaDAO;
+
 import DAO.Branch_ImageDAO;
-import Model.Branch;
+import DAO.Service_BranchDAO;
 import Model.User;
+
+import DAO.ServiceDAO;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,18 +19,29 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
+
 
 /**
  *
  * @author admin
  */
-@WebServlet(name="ListBranch", urlPatterns={"/listBranch"})
-public class ListBranch extends HttpServlet {
+
+@WebServlet(name="DeleteImageBranch", urlPatterns={"/delete-image"})
+public class DeleteImageBranch extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+========
+@WebServlet(name = "DeleteService", urlPatterns = {"/DeleteService"})
+public class DeleteService extends HttpServlet {
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+>>>>>>>> 02881c1ca9f788f36b5f3e62cd7d0ab19d67c073:Project_SWP/src/java/controller/manager/DeleteService.java
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -41,10 +55,12 @@ public class ListBranch extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ListBranch</title>");  
+
+            out.println("<title>Servlet DeleteService</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ListBranch at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet DeleteService at " + request.getContextPath() + "</h1>");
+
             out.println("</body>");
             out.println("</html>");
         }
@@ -60,23 +76,20 @@ public class ListBranch extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
+
     throws ServletException, IOException {
          HttpSession session = request.getSession(false);
         if (session != null) {
             User user = (User) session.getAttribute("user");
+            if (user.getRole().equals("staff")) {
+                int image_id = Integer.parseInt(request.getParameter("image_id"));
+                String area_id = request.getParameter("area_id");
+                Branch_ImageDAO areasImageDAO = new Branch_ImageDAO();
+               areasImageDAO.removeImageFromArea(image_id);
 
-            if (user != null) {
-               
-                AreaDAO areaDAO = new AreaDAO();
-                List<Branch> areaList = areaDAO.getAllAreas();
-                System.out.println("Branch"+areaList);
-                request.setAttribute("areaList", areaList);
-                Branch_ImageDAO imageDAO = new Branch_ImageDAO();
-                
-                // Forward đến trang JSP hiển thị danh sách khu vực
-                request.getRequestDispatcher("List_Branch.jsp").forward(request, response);
+                response.sendRedirect("detailBranch?area_id=" + area_id);
             } else {
-                response.sendRedirect("login");
+                response.sendError(403);
             }
         } else {
             response.sendRedirect("login");
@@ -84,6 +97,21 @@ public class ListBranch extends HttpServlet {
     } 
 
     /** 
+========
+            throws ServletException, IOException {
+        int service_id = Integer.parseInt(request.getParameter("id"));
+        try {
+            boolean result = ServiceDAO.deleteService(service_id);
+            // Có thể set thuộc tính để thông báo xóa thành công/thất bại nếu muốn
+            response.sendRedirect("ServiceView.jsp"); // Chuyển về trang danh sách dịch vụ
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi khi xóa dịch vụ.");
+        }
+    }
+
+    /**
+>>>>>>>> 02881c1ca9f788f36b5f3e62cd7d0ab19d67c073:Project_SWP/src/java/controller/manager/DeleteService.java
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
      * @param response servlet response

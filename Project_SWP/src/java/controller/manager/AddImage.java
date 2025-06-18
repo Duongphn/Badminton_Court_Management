@@ -8,6 +8,7 @@ import DAO.Branch_ImageDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import java.io.File;
  * @author admin
  */
 @WebServlet(name = "AddImage", urlPatterns = {"/add-image"})
+@MultipartConfig
 public class AddImage extends HttpServlet {
 
     /**
@@ -92,7 +94,7 @@ public class AddImage extends HttpServlet {
         }
 
         String filePath = uploadPath + File.separator + fileName;
-        filePart.write(filePath); // Ghi file lên server
+        filePart.write(filePath); 
 
         String imageURL = "uploads/" + fileName;
 

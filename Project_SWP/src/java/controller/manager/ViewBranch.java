@@ -113,7 +113,7 @@ public class ViewBranch extends HttpServlet {
                     session.removeAttribute("error");
                 }
                
-
+               
                 request.getRequestDispatcher("manager-region.jsp").forward(request, response);
                 
                 

@@ -67,6 +67,7 @@ public class DeleteBranch extends HttpServlet {
                 int regionID = Integer.parseInt(request.getParameter("regionId"));
                 AreaDAO dao = new AreaDAO();
                 dao.deleteById(regionID);
+                 session.setAttribute("success", "Xóa khu vực thành công!");
                 response.sendRedirect("view-region");
             }
         } else {

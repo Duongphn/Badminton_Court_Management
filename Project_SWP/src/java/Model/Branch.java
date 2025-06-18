@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * @author admin
  */
 public class Branch {
-    private String managerName;
+   
     private int area_id;
     private String name;
     private String location;
@@ -21,9 +21,13 @@ public class Branch {
     private Time openTime;
     private Time closeTime;
     private String description;
+    private String phone_branch;
+    private String nameStaff;
 
-   
-    public Branch(int area_id, String name, String location, int manager_id, int emptyCourt, Time openTime, Time closeTime, String description) {
+    public Branch() {
+    }
+
+    public Branch(int area_id, String name, String location, int manager_id, int emptyCourt, Time openTime, Time closeTime, String description, String phone_branch, String nameStaff) {
         this.area_id = area_id;
         this.name = name;
         this.location = location;
@@ -32,23 +36,13 @@ public class Branch {
         this.openTime = openTime;
         this.closeTime = closeTime;
         this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+        this.phone_branch = phone_branch;
+        this.nameStaff = nameStaff;
     }
 
     @Override
     public String toString() {
-        return "Areas{" + "area_id=" + area_id + ", name=" + name + ", location=" + location + ", manager_id=" + manager_id + ", emptyCourt=" + emptyCourt + ", openTime=" + openTime + ", closeTime=" + closeTime + ", description=" + description + '}';
-    }
-    
-    
-    public Branch() {
+        return "Branch{" + "area_id=" + area_id + ", name=" + name + ", location=" + location + ", manager_id=" + manager_id + ", emptyCourt=" + emptyCourt + ", openTime=" + openTime + ", closeTime=" + closeTime + ", description=" + description + ", phone_branch=" + phone_branch + ", nameStaff=" + nameStaff + '}';
     }
 
     public int getArea_id() {
@@ -107,13 +101,32 @@ public class Branch {
         this.closeTime = closeTime;
     }
 
-    public String getManagerName() {
-        return managerName;
+    public String getDescription() {
+        return description;
     }
 
-    public void setManagerName(String managerName) {
-        this.managerName = managerName;
+    public void setDescription(String description) {
+        this.description = description;
     }
+
+    public String getPhone_branch() {
+        return phone_branch;
+    }
+
+    public void setPhone_branch(String phone_branch) {
+        this.phone_branch = phone_branch;
+    }
+
+    public String getNameStaff() {
+        return nameStaff;
+    }
+
+    public void setNameStaff(String nameStaff) {
+        this.nameStaff = nameStaff;
+    }
+
+    
+    
     
     
     
