@@ -153,20 +153,24 @@ public List<Bookings> getBookingsByCourtAndDate(int courtId, LocalDate date) {
         String sql = "SELECT COUNT(*) FROM Bookings "
                 + "WHERE court_id = ? AND date = ? AND status <> 'cancelled' "
                 + "AND (start_time < ? AND end_time > ?)";
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, courtId);
             ps.setDate(2, Date.valueOf(date));
+            // kiểm tra các booking giao nhau với khoảng thời gian mới
             ps.setTime(3, endTime);    // start_time < endTime mới
             ps.setTime(4, startTime);  // end_time > startTime mới
+
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                // Trả về true nếu không có bản ghi giao nhau
-                return rs.getInt(1) > 0;
+                // Không có bản ghi giao nhau khi số đếm bằng 0
+                return rs.getInt(1) == 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
+        // Mặc định xem như không thể đặt nếu có lỗi xảy ra
+        return false;
     }
 
 
