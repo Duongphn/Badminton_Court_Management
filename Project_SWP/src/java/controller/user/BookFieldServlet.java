@@ -70,54 +70,59 @@ public class BookFieldServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
  @Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-    HttpSession session = request.getSession();
-    User user = (User) session.getAttribute("user");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
 
-    if (user == null) {
-        response.sendRedirect("login");
-        return;
-    }
-
-    try {
-        int courtId = Integer.parseInt(request.getParameter("courtId"));
-        
-        // Lấy ngày từ request, mặc định là ngày hiện tại
-        String dateParam = request.getParameter("date");
-        LocalDate date = (dateParam != null && !dateParam.isEmpty()) 
-                            ? LocalDate.parse(dateParam) 
-                            : LocalDate.now();
-
-        CourtDAO courtDAO = new CourtDAO();
-        Courts court = courtDAO.getCourtById(courtId);
-        ShiftDAO shiftDAO = new ShiftDAO();
-        Shift shift = shiftDAO.getShiftByCourt(courtId);
-        if (shift == null) {
-            request.setAttribute("message", "Không tìm thấy ca hoạt động cho sân.");
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
+        if (user == null) {
+            response.sendRedirect("login");
             return;
         }
 
-        BookingDAO bookingDAO = new BookingDAO();
-        List<Bookings> bookings = bookingDAO.getBookingsByCourtAndDate(courtId, date);
+        try {
+            int courtId = Integer.parseInt(request.getParameter("courtId"));
+            String dateParam = request.getParameter("date");
+            LocalDate date = (dateParam != null && !dateParam.isEmpty()) ? LocalDate.parse(dateParam) : LocalDate.now();
 
-        List<Slot> slots = SlotTime.generateSlots(shift, bookings, 60); // 60 phút mỗi slot
+            CourtDAO courtDAO = new CourtDAO();
+            Courts court = courtDAO.getCourtById(courtId);
 
-        request.setAttribute("court", court);
-        request.setAttribute("slots", slots);
-        request.setAttribute("selectedDate", date); // Truyền ngày vào JSP để hiển thị
-        request.getRequestDispatcher("book_field.jsp").forward(request, response);
+            ShiftDAO shiftDAO = new ShiftDAO();
+            List<Shift> shifts = shiftDAO.getShiftsByCourt(courtId);
+            if (shifts == null || shifts.isEmpty()) {
+                request.setAttribute("message", "Không tìm thấy ca hoạt động cho sân.");
+                request.setAttribute("court", court);
+                request.setAttribute("selectedDate", date);
+                request.getRequestDispatcher("book_field.jsp").forward(request, response);
+                return;
+            }
+            
+            // Mặc định dùng ca đầu tiên
+            Shift shift = shifts.get(0);
 
-    } catch (NumberFormatException e) {
-        request.setAttribute("message", "Tham số sân không hợp lệ.");
-        request.getRequestDispatcher("error.jsp").forward(request, response);
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.sendRedirect("error.jsp");
-    }
+            BookingDAO bookingDAO = new BookingDAO();
+            List<Bookings> bookings = bookingDAO.getBookingsByCourtAndDate(courtId, date);
+
+            List<Slot> slots = SlotTime.generateSlots(shift, bookings, 60);
+
+            request.setAttribute("court", court);
+            request.setAttribute("slots", slots);
+            request.setAttribute("selectedDate", date);
+            
+            
+            
+            request.getRequestDispatcher("book_field.jsp").forward(request, response);
+              for (Slot s : slots) {
+            System.out.println(">>> SLOT: " + s.getStart() + " - " + s.getEnd() + " | Avail: " + s.isAvailable());
 }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("message", "Đã xảy ra lỗi.");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+    }
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -127,64 +132,72 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+  
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+
         if (user == null) {
             response.sendRedirect("login");
             return;
         }
 
-        int courtId = Integer.parseInt(request.getParameter("courtId"));
-        LocalDate date = LocalDate.parse(request.getParameter("date"));
-        
-
-        BookingDAO bookingDAO = new BookingDAO();
-        CourtDAO courtDAO = new CourtDAO();
-        Courts court = courtDAO.getCourtById(courtId);
-        Time startTime, endTime;
-        LocalDate today = LocalDate.now();
-
-        if (date.isBefore(today)) {
-            request.setAttribute("message", "Không thể đặt lịch cho ngày đã qua.");
-            request.setAttribute("court", court);
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
-            return;
-        }
-int areaId = court.getArea_id();
         try {
-            startTime = Time.valueOf(request.getParameter("startTime") + ":00");
-            endTime = Time.valueOf(request.getParameter("endTime") + ":00");
+            int courtId = Integer.parseInt(request.getParameter("courtId"));
+            LocalDate date = LocalDate.parse(request.getParameter("date"));
+            CourtDAO courtDAO = new CourtDAO();
+            Courts court = courtDAO.getCourtById(courtId);
+
+            if (date.isBefore(LocalDate.now())) {
+                request.setAttribute("message", "Không thể đặt lịch cho ngày đã qua.");
+                request.setAttribute("court", court);
+                request.setAttribute("selectedDate", date);
+                request.getRequestDispatcher("book_field.jsp").forward(request, response);
+                return;
+            }
+
+            Time startTime, endTime;
+            try {
+                startTime = Time.valueOf(request.getParameter("startTime") + ":00");
+                endTime = Time.valueOf(request.getParameter("endTime") + ":00");
+            } catch (Exception e) {
+                request.setAttribute("message", "Lỗi định dạng giờ.");
+                request.setAttribute("court", court);
+                request.setAttribute("selectedDate", date);
+                request.getRequestDispatcher("book_field.jsp").forward(request, response);
+                return;
+            }
+
+            BookingDAO bookingDAO = new BookingDAO();
+            boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
+
+            if (!isAvailable) {
+                request.setAttribute("message", "Khoảng thời gian này đã có người đặt.");
+                request.setAttribute("court", court);
+                request.setAttribute("selectedDate", date);
+                request.getRequestDispatcher("book_field.jsp").forward(request, response);
+                return;
+            }
+
+            Service_BranchDAO sDao = new Service_BranchDAO();
+            List<Branch_Service> services = sDao.getAllAreaServices(court.getArea_id());
+
+            request.setAttribute("court", court);
+            request.setAttribute("date", date);
+            request.setAttribute("startTime", startTime);
+            request.setAttribute("endTime", endTime);
+            request.setAttribute("availableServices", services);
+            request.getRequestDispatcher("confirm_booking.jsp").forward(request, response);
+
         } catch (Exception e) {
-            request.setAttribute("message", "Lỗi định dạng giờ. Vui lòng kiểm tra lại.");
-            request.setAttribute("court", court);
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
-            return;
+            e.printStackTrace();
+            request.setAttribute("message", "Đã xảy ra lỗi khi đặt sân.");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
-        boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
-
-        if (!isAvailable) {
-            request.setAttribute("message", "Khoảng thời gian này đã có người đặt.");
-            request.setAttribute("court", court);
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
-            return;
-        }
-
-        
-//        int totalPrice = pricingDAO.calculatePrice(court.getCourt_id(), startTime, endTime);
-        Service_BranchDAO sDao = new Service_BranchDAO();
-        List<Branch_Service> availableServices = sDao.getAllAreaServices(areaId);
-        request.setAttribute("availableServices", availableServices);
-        System.out.println(">>>>>>>>>>>>>>>>>" + availableServices);
-        request.setAttribute("court", court);
-        request.setAttribute("date", date);
-        request.setAttribute("startTime", startTime);
-        request.setAttribute("endTime", endTime);
-//        request.setAttribute("totalPrice", totalPrice);
-        request.getRequestDispatcher("confirm_booking.jsp").forward(request, response);
     }
+
 
     /**
      * Returns a short description of the servlet.

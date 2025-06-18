@@ -5,23 +5,191 @@
     <head>
         <title>Manager Dashboard</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    </head>
-    <body>
+        <style>
+            /* Ẩn thanh cuộn ngang toàn bộ trang */
+            body {
+                overflow-x: hidden;
+                font-size: 16px;
+            }
 
+            /* Tối ưu kích thước container */
+            .container-fluid {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            /* Ngăn bảng tràn ra ngoài khi trong div.table-responsive */
+            .table-responsive {
+                overflow-x: auto;
+                max-width: 100%;
+            }
+
+            /* Cố định bảng không vượt quá khung */
+            #userTable {
+                table-layout: auto;
+                width: 100%;
+                word-wrap: break-word;
+                font-size: 15px;
+            }
+
+            /* Tối ưu header bảng */
+            #userTable th {
+                padding: 10px 8px;
+                font-size: 15px;
+                font-weight: 600;
+                white-space: nowrap;
+                vertical-align: middle;
+            }
+
+            /* Tối ưu cell bảng */
+            #userTable td {
+                padding: 10px 8px;
+                vertical-align: middle;
+                font-size: 14px;
+            }
+
+            /* Tối ưu cột hành động - QUAN TRỌNG */
+            .action-column {
+                min-width: 200px;
+                max-width: 220px;
+            }
+
+            /* Container cho các nút hành động - nằm ngang */
+            .action-buttons {
+                display: flex;
+                flex-direction: row;
+                gap: 3px;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: nowrap;
+            }
+
+            /* Tối ưu kích thước nút */
+            .action-buttons .btn {
+                padding: 6px 12px;
+                font-size: 13px;
+                border-radius: 4px;
+                white-space: nowrap;
+                min-width: 70px;
+                font-weight: 500;
+            }
+
+            /* Icon trong nút nhỏ hơn */
+            .action-buttons .btn i {
+                font-size: 10px;
+                margin-right: 2px;
+            }
+
+            /* Tối ưu badge role */
+            .role-badge {
+                font-size: 11px;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+
+            /* Tối ưu status badge */
+            .status-badge {
+                font-size: 13px;
+                padding: 4px 10px;
+                border-radius: 8px;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+
+            /* Tối ưu date display */
+            .date-display {
+                font-size: 11px;
+                padding: 2px 6px;
+                border-radius: 6px;
+                white-space: nowrap;
+            }
+
+            /* Responsive cho màn hình nhỏ */
+            @media (max-width: 768px) {
+                .action-buttons {
+                    flex-direction: column;
+                    gap: 2px;
+                }
+                
+                .action-buttons .btn {
+                    width: 100%;
+                    min-width: auto;
+                    font-size: 10px;
+                    padding: 3px 6px;
+                }
+                
+                #userTable {
+                    font-size: 16px;
+                }
+                
+                #userTable th,
+                #userTable td {
+                    padding: 5px 3px;
+                }
+            }
+
+            /* Tối ưu search form */
+            .search-form .form-control,
+            .search-form .form-select {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            /* Compact card */
+            .card-body {
+                padding: 15px;
+            }
+
+            /* User icon styling */
+            .user-icon {
+                font-size: 14px;
+                margin-right: 5px;
+            }
+
+            /* Note column styling */
+            .note-text {
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: 11px;
+            }
+        </style>
+    </head>
+
+    <c:if test="${not empty openEditModal}">
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                modal.show();
+
+                // Gán lại dữ liệu vào các input trong form sửa
+                document.getElementById('editUserId').value = '${editUser.user_Id}';
+                document.getElementById('editUsername').value = '${editUser.username}';
+                document.getElementById('editEmail').value = '${editUser.email}';
+                document.getElementById('editPhone').value = '${editUser.phone_number}';
+                document.getElementById('editRole').value = '${editUser.role}';
+            });
+        </script>
+    </c:if>
+
+    <body>
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">Manager</a>
                 <div class="d-flex">
-                    <!--            <a class="nav-link text-light" href="/profile">Profile</a>-->
                     <a class="nav-link text-light" href="login">Logout</a>
                 </div>
             </div>
         </nav>
 
         <!-- Main Layout -->
-        <div class="container-fluid mt-4">
+        <div class="container-fluid mt-3">
             <div class="row">
                 <!-- Sidebar -->
                 <div class="col-md-3">
@@ -29,84 +197,95 @@
                 </div>
 
                 <!-- Content -->
-                <div class="col-md-8">
-                    <div class="container py-4">
+                <div class="col-md-9">
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ${error}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </c:if>
+                    <c:if test="${not empty success}">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            ${success}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </c:if>
 
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2 class="mb-0"><i class="fas fa-users"></i> Quản Lý Người Dùng</h2>
-                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                                <i class="fas fa-user-plus"></i> Thêm Người Dùng
+                    <div class="container-fluid py-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="mb-0"><i class="fas fa-users me-2"></i>Quản Lý Người Dùng</h3>
+                            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="fas fa-user-plus me-1"></i>Thêm
                             </button>
                         </div>
 
                         <!-- Search + Filter -->
-                        <div class="row mb-3 g-2">
-                            <!-- Search + Filter (submit về /users, method GET) -->
-                            <form method="get" class="row mb-3 g-2">
-                                <div class="col-md-6">
-                                    <input type="text" name="keyword" value="${param.keyword}" class="form-control" placeholder="Tìm kiếm theo Username, Email, Số điện thoại...">
-                                </div>
-                                <div class="col-md-3">
-                                    <select name="status" class="form-select">
-                                        <option value="">Tất cả trạng thái</option>
-                                        <option value="Active" ${param.status == 'Active' ? 'selected' : ''}>Active</option>
-                                        <option value="Suspended" ${param.status == 'Suspended' ? 'selected' : ''}>Suspended</option>
-                                        <option value="banned" ${param.status == 'banned' ? 'selected' : ''}>Banned</option>
-                                        <option value="pending" ${param.status == 'pending' ? 'selected' : ''}>Pending</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search"></i> Tìm</button>
-                                </div>
-                            </form>
+                        <form method="get" class="row mb-3 g-2 search-form">
+                            <div class="col-md-5">
+                                <input type="text" name="keyword" value="${param.keyword}" class="form-control form-control-sm" placeholder="Tìm kiếm theo Username, Email, SĐT...">
+                            </div>
+                            <div class="col-md-3">
+                                <select name="status" class="form-select form-select-sm">
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="Active" ${param.status == 'Active' ? 'selected' : ''}>Active</option>
+                                    
+                                    <option value="banned" ${param.status == 'banned' ? 'selected' : ''}>Banned</option>
+                                   
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary btn-sm w-100">
+                                    <i class="fas fa-search me-1"></i>Tìm
+                                </button>
+                            </div>
+                        </form>
 
-                        </div>
                         <div class="card shadow-sm">
-                            <div class="card-body p-0">
+                            <div class="card-body p-2">
                                 <div class="table-responsive">
                                     <table id="userTable" class="table table-bordered table-hover mb-0 align-middle">
-                                        <thead>
-                                            <tr class="align-middle text-center">
-                                                <th>ID</th>
-                                                <th>Username</th>
-                                                <th>Email</th>
-                                                <th>Số điện thoại</th>
-                                                <th>Vai trò</th>
-                                                <th>Ngày tạo</th>
-                                                <th>Trạng thái</th>
-                                                <th>Note</th>
-                                                <th>Hành động</th>
+                                        <thead class="table-light">
+                                            <tr class="text-center">
+                                                <th style="width: 50px;">ID</th>
+                                                <th style="width: 120px;">Tên đăng nhập</th>
+                                                <th style="width: 150px;">Email</th>
+                                                <th style="width: 100px;">SĐT</th>
+                                                <th style="width: 80px;">Vai trò</th>
+                                                <th style="width: 100px;">Ngày tạo</th>
+                                                <th style="width: 80px;">Trạng thái</th>
+                                                <th style="width: 100px;">Ghi kí</th>
+                                                <th class="action-column">Hành động</th>
                                             </tr>
                                         </thead>
                                         <tbody id="userTableBody">
                                             <c:forEach var="user" items="${users}">
-                                                <tr class="align-middle text-center" 
+                                                <tr class="text-center" 
                                                     data-username="${user.username}" 
                                                     data-email="${user.email}" 
                                                     data-phone="${user.phone_number}" 
                                                     data-status="${user.status}">
                                                     <td>${user.user_Id}</td>
                                                     <td>
-                                                        <i class="fas fa-user-circle text-primary"></i>
-                                                        <b>${user.username}</b>
+                                                        <i class="fas fa-user-circle text-primary user-icon"></i>
+                                                        <strong>${user.username}</strong>
                                                     </td>
-                                                    <td>${user.email}</td>
+                                                    <td class="text-start" style="font-size: 11px;">${user.email}</td>
                                                     <td>${user.phone_number}</td>
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${user.role eq 'admin'}">
-                                                                <span style="background: linear-gradient(90deg, #ff9800 60%, #fff3e0); color:#fff; font-weight:600; padding:4px 14px; border-radius:20px; font-size:14px; letter-spacing:0.3px;">
-                                                                    Admin
+                                                                <span class="role-badge" style="background: #ff9800; color: white;">
+                                                                    Quản lí
                                                                 </span>
                                                             </c:when>
                                                             <c:when test="${user.role eq 'staff'}">
-                                                                <span style="background: linear-gradient(90deg, #17a2b8 60%, #e0f7fa); color:#fff; font-weight:600; padding:4px 14px; border-radius:20px; font-size:14px; letter-spacing:0.3px;">
-                                                                    Staff
+                                                                <span class="role-badge" style="background: #17a2b8; color: white;">
+                                                                    Nhân Viên
                                                                 </span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span style="background: linear-gradient(90deg, #6c757d 60%, #ececec); color:#fff; font-weight:600; padding:4px 14px; border-radius:20px; font-size:14px; letter-spacing:0.3px;">
-                                                                    User
+                                                                <span class="role-badge" style="background: #6c757d; color: white;">
+                                                                    Người dùng
                                                                 </span>
                                                             </c:otherwise>
                                                         </c:choose>
@@ -114,87 +293,90 @@
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${not empty user.createdAt}">
-                                                                <span style="background:#e3f2fd; color:#1565c0; font-weight:bold; border-radius:8px; padding:3px 10px; font-size:15px; letter-spacing:0.5px;">
+                                                                <span class="date-display" style="background: #e3f2fd; color: #1565c0;">
                                                                     ${user.createdAt}
                                                                 </span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span style="background:#efefef; color:#888; border-radius:8px; padding:3px 10px; font-size:15px;">
-                                                                    -
-                                                                </span>
+                                                                <span class="date-display" style="background: #efefef; color: #888;">-</span>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${user.status eq 'Active'}">
-                                                                <span style="background:#1dd167; color:#fff; font-weight:bold; border-radius:10px; padding:3px 14px; font-size:15px; letter-spacing:1px; box-shadow:0 2px 6px rgba(30,255,120,0.1);">
+                                                                <span class="status-badge" style="background: #28a745; color: white;">
                                                                     Active
                                                                 </span>
                                                             </c:when>
                                                             <c:when test="${user.status eq 'Suspended'}">
-                                                                <span style="background:#ffb300; color:#fff; font-weight:bold; border-radius:10px; padding:3px 14px; font-size:15px; letter-spacing:1px; box-shadow:0 2px 6px rgba(255,180,0,0.13);">
+                                                                <span class="status-badge" style="background: #ffc107; color: black;">
                                                                     Suspended
                                                                 </span>
                                                             </c:when>
                                                             <c:when test="${user.status eq 'banned'}">
-                                                                <span style="background:#ea3a45; color:#fff; font-weight:bold; border-radius:10px; padding:3px 14px; font-size:15px; letter-spacing:1px; box-shadow:0 2px 6px rgba(234,58,69,0.13);">
+                                                                <span class="status-badge" style="background: #dc3545; color: white;">
                                                                     Banned
                                                                 </span>
                                                             </c:when>
                                                             <c:when test="${user.status eq 'pending'}">
-                                                                <span style="background:#ffd700; color:#222; font-weight:bold; border-radius:10px; padding:3px 14px; font-size:15px; letter-spacing:1px; box-shadow:0 2px 6px rgba(255,215,0,0.09);">
+                                                                <span class="status-badge" style="background: #fd7e14; color: white;">
                                                                     Pending
                                                                 </span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span style="background:#bdbdbd; color:#fff; font-weight:bold; border-radius:10px; padding:3px 14px; font-size:15px; letter-spacing:1px;">
-                                                                    -
-                                                                </span>
+                                                                <span class="status-badge" style="background: #6c757d; color: white;">-</span>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
-                                                    <td><span>${user.note}</span></td>
                                                     <td>
-                                                        <button type="button" class="btn btn-warning btn-sm"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#editUserModal"
-                                                                data-userid="${user.user_Id}"
-                                                                data-username="${user.username}"
-                                                                data-email="${user.email}"
-                                                                data-phone="${user.phone_number}"
-                                                                data-role="${user.role}">
-                                                            <i class="fas fa-edit"> edit</i>
-                                                        </button>
-                                                        <form action="users" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
-                                                            <input type="hidden" name="action" value="delete">
-                                                            <input type="hidden" name="userId" value="${user.user_Id}">
-                                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                                <i class="fas fa-trash-alt"> Delete</i>
+                                                        <span class="note-text" title="${user.note}">${user.note}</span>
+                                                    </td>
+                                                    <td class="action-column">
+                                                        <div class="action-buttons">
+                                                            <!-- Nút Edit -->
+                                                            <button type="button" class="btn btn-warning"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#editUserModal"
+                                                                    data-userid="${user.user_Id}"
+                                                                    data-username="${user.username}"
+                                                                    data-email="${user.email}"
+                                                                    data-phone="${user.phone_number}"
+                                                                    data-role="${user.role}">
+                                                                <i class="fas fa-edit"></i>Chỉnh
                                                             </button>
-                                                        </form>
-                                                        <c:choose>
-                                                            <c:when test="${user.status ne 'banned'}">
-                                                                <!-- Nút Ban dùng JS mở modal -->
-                                                                <button type="button" class="btn btn-dark btn-sm" style="background: #ea3a45; color: #fff;"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#banUserModal"
-                                                                        data-userid="${user.user_Id}"
-                                                                        data-username="${user.username}">
-                                                                    <i class="fas fa-user-slash"></i> Ban
+
+                                                            <!-- Nút Delete -->
+                                                            <form action="users" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
+                                                                <input type="hidden" name="action" value="delete">
+                                                                <input type="hidden" name="userId" value="${user.user_Id}">
+                                                                <button type="submit" class="btn btn-danger">
+                                                                    <i class="fas fa-trash"></i>Xoá
                                                                 </button>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <!-- Unban giữ nguyên confirm -->
-                                                                <form action="users" method="post" class="d-inline" onsubmit="return confirm('Unban user này?');">
-                                                                    <input type="hidden" name="action" value="unban">
-                                                                    <input type="hidden" name="userId" value="${user.user_Id}">
-                                                                    <button type="submit" class="btn btn-success btn-sm">
-                                                                        <i class="fas fa-user-check"></i> Unban
+                                                            </form>
+
+                                                            <!-- Nút Ban hoặc Unban -->
+                                                            <c:choose>
+                                                                <c:when test="${user.status ne 'banned'}">
+                                                                    <button type="button" class="btn btn-dark"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#banUserModal"
+                                                                            data-userid="${user.user_Id}"
+                                                                            data-username="${user.username}">
+                                                                        <i class="fas fa-ban"></i>Chặn
                                                                     </button>
-                                                                </form>
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <form action="users" method="post" class="d-inline" onsubmit="return confirm('Unban user này?');">
+                                                                        <input type="hidden" name="action" value="unban">
+                                                                        <input type="hidden" name="userId" value="${user.user_Id}">
+                                                                        <button type="submit" class="btn btn-success">
+                                                                            <i class="fas fa-check"></i>Gỡ chặn
+                                                                        </button>
+                                                                    </form>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </c:forEach>
@@ -202,10 +384,11 @@
                                     </table>
                                 </div>
                             </div>
+                            
                             <!-- Pagination -->
-                            <div class="card-footer bg-white">
+                            <div class="card-footer bg-white py-2">
                                 <nav aria-label="Page navigation">
-                                    <ul class="pagination justify-content-center mb-0">
+                                    <ul class="pagination pagination-sm justify-content-center mb-0">
                                         <c:if test="${currentPage > 1}">
                                             <li class="page-item">
                                                 <a class="page-link" href="users?page=${currentPage-1}">&laquo;</a>
@@ -227,40 +410,6 @@
                         </div>
                     </div>
 
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const searchInput = document.getElementById('searchInput');
-                            const statusFilter = document.getElementById('statusFilter');
-                            const tbody = document.getElementById('userTableBody');
-                            const rows = Array.from(tbody.querySelectorAll('tr'));
-
-                            function filterTable() {
-                                const keyword = searchInput.value.toLowerCase();
-                                const status = statusFilter.value;
-                                rows.forEach(row => {
-                                    const username = row.getAttribute('data-username').toLowerCase();
-                                    const email = row.getAttribute('data-email').toLowerCase();
-                                    const phone = row.getAttribute('data-phone').toLowerCase();
-                                    const rowStatus = row.getAttribute('data-status');
-
-                                    // search theo username, email, phone
-                                    const matchSearch = (
-                                            username.includes(keyword) ||
-                                            email.includes(keyword) ||
-                                            phone.includes(keyword)
-                                            );
-                                    // lọc status
-                                    const matchStatus = (status === "" || rowStatus === status);
-
-                                    row.style.display = (matchSearch && matchStatus) ? "" : "none";
-                                });
-                            }
-
-                            searchInput.addEventListener('input', filterTable);
-                            statusFilter.addEventListener('change', filterTable);
-                        });
-
-                    </script>
                     <!-- Modal Ban User -->
                     <div class="modal fade" id="banUserModal" tabindex="-1" aria-labelledby="banUserModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -284,18 +433,6 @@
                             </form>
                         </div>
                     </div>
-                    <script>
-                        // Đổ userId vào modal Ban khi click nút Ban
-                        var banUserModal = document.getElementById('banUserModal');
-                        banUserModal.addEventListener('show.bs.modal', function (event) {
-                            var button = event.relatedTarget;
-                            var userId = button.getAttribute('data-userid');
-                            document.getElementById('banUserId').value = userId;
-                            // Nếu muốn reset note khi mở lại
-                            document.getElementById('banNote').value = '';
-                        });
-                    </script>
-
 
                     <!-- Modal Thêm User -->
                     <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
@@ -326,9 +463,9 @@
                                     <div class="mb-3">
                                         <label class="form-label">Vai trò</label>
                                         <select name="role" class="form-select" required>
-                                            <option value="user">User</option>
-                                            <option value="staff">Staff</option>
-                                            <option value="admin">Admin</option>
+                                            <option value="user">Người dùng</option>
+                                            <option value="staff">Nhân viên</option>
+                                            <option value="admin">Quản lí</option>
                                         </select>
                                     </div>
                                 </div>
@@ -366,12 +503,11 @@
                                     <div class="mb-3">
                                         <label class="form-label">Vai trò</label>
                                         <select name="role" id="editRole" class="form-select" required>
-                                            <option value="user">User</option>
-                                            <option value="staff">Staff</option>
-                                            <option value="admin">Admin</option>
+                                            <option value="user">Người dùng</option>
+                                            <option value="staff">Nhân viên</option>
+                                            <option value="admin">Quản lí</option>
                                         </select>
                                     </div>
-                                    <!-- Có thể thêm field đổi mật khẩu nếu cần -->
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -380,26 +516,68 @@
                             </form>
                         </div>
                     </div>
-
-                    <!-- Bootstrap 5 JS -->
-                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-                    <script>
-                        // Đổ dữ liệu vào modal edit user khi click nút Sửa
-                        var editUserModal = document.getElementById('editUserModal');
-                        editUserModal.addEventListener('show.bs.modal', function (event) {
-                            var button = event.relatedTarget;
-                            document.getElementById('editUserId').value = button.getAttribute('data-userid');
-                            document.getElementById('editUsername').value = button.getAttribute('data-username');
-                            document.getElementById('editEmail').value = button.getAttribute('data-email');
-                            document.getElementById('editPhone').value = button.getAttribute('data-phone');
-                            document.getElementById('editRole').value = button.getAttribute('data-role');
-                        });
-                    </script>
-
                 </div>
             </div>
         </div>
 
+        <!-- Bootstrap 5 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script>
+            // Filter table functionality
+            document.addEventListener('DOMContentLoaded', function () {
+                const searchInput = document.querySelector('input[name="keyword"]');
+                const statusFilter = document.querySelector('select[name="status"]');
+                const tbody = document.getElementById('userTableBody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
 
+                function filterTable() {
+                    const keyword = searchInput?.value.toLowerCase() || '';
+                    const status = statusFilter?.value || '';
+                    
+                    rows.forEach(row => {
+                        const username = row.getAttribute('data-username')?.toLowerCase() || '';
+                        const email = row.getAttribute('data-email')?.toLowerCase() || '';
+                        const phone = row.getAttribute('data-phone')?.toLowerCase() || '';
+                        const rowStatus = row.getAttribute('data-status') || '';
+
+                        const matchSearch = (
+                            username.includes(keyword) ||
+                            email.includes(keyword) ||
+                            phone.includes(keyword)
+                        );
+                        const matchStatus = (status === "" || rowStatus === status);
+
+                        row.style.display = (matchSearch && matchStatus) ? "" : "none";
+                    });
+                }
+
+                if (searchInput) searchInput.addEventListener('input', filterTable);
+                if (statusFilter) statusFilter.addEventListener('change', filterTable);
+            });
+
+            // Modal handlers
+            var banUserModal = document.getElementById('banUserModal');
+            if (banUserModal) {
+                banUserModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget;
+                    var userId = button.getAttribute('data-userid');
+                    document.getElementById('banUserId').value = userId;
+                    document.getElementById('banNote').value = '';
+                });
+            }
+
+            var editUserModal = document.getElementById('editUserModal');
+            if (editUserModal) {
+                editUserModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget;
+                    document.getElementById('editUserId').value = button.getAttribute('data-userid');
+                    document.getElementById('editUsername').value = button.getAttribute('data-username');
+                    document.getElementById('editEmail').value = button.getAttribute('data-email');
+                    document.getElementById('editPhone').value = button.getAttribute('data-phone');
+                    document.getElementById('editRole').value = button.getAttribute('data-role');
+                });
+            }
+        </script>
     </body>
 </html>

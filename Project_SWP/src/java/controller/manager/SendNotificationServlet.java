@@ -109,6 +109,9 @@ public class SendNotificationServlet extends HttpServlet {
 
                 ndao.insertReceiver(receiver);
             }
+            notification.setSentTime(LocalDateTime.now());
+notification.setStatus("sent");
+ndao.update(notification);
 
             response.sendRedirect("notification_list?msg=sent");
         } catch (NumberFormatException e) {

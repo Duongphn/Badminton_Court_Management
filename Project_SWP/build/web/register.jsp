@@ -16,29 +16,28 @@
             font-family: Arial, sans-serif;
             background: #1da1f2;
         }
+
         .register-container {
             background: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-            width: 600px;
+            width: 400px;
             text-align: center;
         }
+
         h2 {
             margin-bottom: 20px;
             color: #333;
             font-size: 28px;
         }
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px 20px;
-            margin-bottom: 15px;
-        }
+
         .input-group {
             position: relative;
+            margin-bottom: 20px;
             text-align: left;
         }
+
         .input-field {
             width: 100%;
             padding: 12px 12px 12px 40px;
@@ -48,10 +47,12 @@
             font-size: 14px;
             transition: border-color 0.3s;
         }
+
         .input-field:focus {
             outline: none;
             border-color: #1da1f2;
         }
+
         .input-icon {
             position: absolute;
             left: 12px;
@@ -60,6 +61,7 @@
             color: #666;
             font-size: 16px;
         }
+
         .btn {
             width: 100%;
             padding: 12px;
@@ -73,9 +75,11 @@
             transition: background-color 0.3s;
             margin-top: 10px;
         }
+
         .btn:hover {
             background-color: #1a91da;
         }
+
         .login-link {
             margin-top: 15px;
             font-size: 14px;
@@ -83,8 +87,16 @@
             text-decoration: none;
             display: inline-block;
         }
+
         .login-link:hover {
             text-decoration: underline;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
         }
     </style>
 </head>
@@ -94,48 +106,49 @@
     <h2>Register</h2>
 
     <form action="register" method="post">
-        <div class="form-grid">
-
-            <!-- Username -->
-            <div class="input-group">
-                <span class="input-icon">&#128100;</span>
-                <input type="text" class="input-field" name="username" placeholder="Username" required>
-            </div>
-
-            <!-- Password -->
-            <div class="input-group">
-                <span class="input-icon">&#128274;</span>
-                <input type="password" class="input-field" name="password" placeholder="Password" required>
-            </div>
-
-            <!-- Confirm Password -->
-            <div class="input-group">
-                <span class="input-icon">&#128274;</span>
-                <input type="password" class="input-field" name="confirm_password" placeholder="Confirm Password" required>
-            </div>
-
-            <!-- Email -->
-            <div class="input-group">
-                <span class="input-icon">&#9993;</span>
-                <input type="email" class="input-field" name="email" placeholder="Email" required>
-            </div>
-
-            <!-- Phone Number -->
-            <div class="input-group">
-                <span class="input-icon">&#128222;</span>
-                <input type="text" class="input-field" name="phone_number" placeholder="Phone Number" required>
-            </div>
-
+        <!-- Username -->
+        <div class="input-group">
+            <span class="input-icon">&#128100;</span>
+            <input type="text" class="input-field" name="username" placeholder="Username" required>
         </div>
 
-        <!-- Hidden role input -->
+        <!-- Password -->
+        <div class="input-group">
+            <span class="input-icon">&#128274;</span>
+            <input type="password" class="input-field" name="password" placeholder="Password" required>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="input-group">
+            <span class="input-icon">&#128274;</span>
+            <input type="password" class="input-field" name="confirm_password" placeholder="Confirm Password" required>
+        </div>
+
+        <!-- Email -->
+        <div class="input-group">
+            <span class="input-icon">&#9993;</span>
+            <input type="email" class="input-field" name="email" placeholder="Email" required>
+        </div>
+
+        <!-- Phone -->
+        <div class="input-group">
+            <span class="input-icon">&#128222;</span>
+            <input type="text" class="input-field" name="phone_number" placeholder="Phone Number" required>
+        </div>
+
+        <!-- Hidden role -->
         <input type="hidden" name="role" value="user"/>
 
         <!-- Submit -->
         <button type="submit" class="btn">Register</button>
     </form>
-    <span>${error}</span>
 
+    <!-- Error message -->
+    <c:if test="${not empty error}">
+        <span class="error-message">${error}</span>
+    </c:if>
+
+    <!-- Login -->
     <a href="login" class="login-link">Login here</a>
 </div>
 

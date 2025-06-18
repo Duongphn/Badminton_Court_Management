@@ -40,6 +40,8 @@ CREATE TABLE Areas
     open_time TIME NOT NULL,
     close_time TIME NOT NULL,
     descriptions NVARCHAR(MAX),
+	[phone_area] [varchar](20) NULL,
+	nameStaff NVARCHAR(100) NOT NULL,
    FOREIGN KEY (manager_id) REFERENCES Users(user_id),
 
     CONSTRAINT chk_area_time CHECK (open_time < close_time)
@@ -55,6 +57,7 @@ CREATE TABLE Area_Image
 );
 
 -- ==========================
+
 -- BẢNG SÂN
 -- ==========================
 CREATE TABLE Courts
@@ -67,24 +70,12 @@ CREATE TABLE Courts
     description NVARCHAR(255),
     image_url NVARCHAR(255),
     [status] NVARCHAR(50),
-    price DECIMAL(10,2),
     area_id INT NOT NULL,
+	price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
+    
     FOREIGN KEY (area_id) REFERENCES Areas(area_id),
-    CONSTRAINT chk_court_time CHECK (open_time IS NULL OR close_time IS NULL OR open_time < close_time),
+   
     CONSTRAINT uq_court_number UNIQUE (court_number, area_id)
-);
-
--- ==========================
--- BẢNG GIÁ THUÊ SÂN
--- ==========================
-CREATE TABLE Court_Pricing (
-    pricing_id INT PRIMARY KEY IDENTITY(1,1),
-    court_id INT NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (court_id) REFERENCES Courts(court_id),
-    CONSTRAINT chk_pricing_time CHECK (start_time < end_time)
 );
 
 

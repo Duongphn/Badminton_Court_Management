@@ -10,6 +10,7 @@ import DAO.Branch_ImageDAO;
 import DAO.CourtDAO;
 import DAO.ServiceDAO;
 import DAO.Service_BranchDAO;
+import DAO.ShiftDAO;
 
 
 import Model.Branch;
@@ -18,6 +19,7 @@ import Model.Branch_Service;
 import Model.Branch_pictures;
 import Model.Courts;
 import Model.Service;
+import Model.Shift;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -84,7 +86,10 @@ throws ServletException, IOException {
             Branch_ImageDAO idao = new Branch_ImageDAO();
             CourtDAO cdao = new CourtDAO();
             ServiceDAO eDao = new ServiceDAO();
-
+            ShiftDAO shiftDao = new ShiftDAO();
+            List <Shift> listShift = shiftDao.getShiftsByArea(area_id);
+            request.setAttribute("listShift", listShift);
+            
            
 
             Branch areaDetail = dao.getAreaByIdWithManager(area_id);

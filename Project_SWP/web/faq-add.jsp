@@ -35,6 +35,13 @@
                             </a>
                         </div>
 
+                        <!-- Hiển thị lỗi nếu có -->
+                        <c:if test="${not empty error}">
+                            <div class="alert alert-danger" role="alert">
+                                ${error}
+                            </div>
+                        </c:if>
+
                         <!-- Form -->
                         <form action="faq-add" method="post" class="card shadow-sm p-4">
                             <div class="mb-3">

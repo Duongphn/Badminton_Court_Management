@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Sidebar</title>
+        <title>Thanh điều hướng</title>
         <style>
             body {
                 margin: 0;
@@ -69,23 +69,29 @@
     </head>
     <body>
         <div class="sidebar">
-            <div class="sidebar-logo" >
+            <div class="sidebar-logo">
                 <a href="host_dashboard.jsp">
-                    <img src="badminton.jpg" alt="Logo" >
+                    <img src="badminton.jpg" alt="Logo">
                 </a> 
             </div>
             <ul>
                 <li class="nav-item">
-                    <a class="nav-link " href="view-region">REGION MANAGEMENT</a>
+                    <a class="nav-link" href="view-region">QUẢN LÝ KHU VỰC</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="ViewEquipments">SERVICE MANAGEMENT</a>
+                    <a class="nav-link" href="manager-booking-schedule">QUẢN LÝ SÂN</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="manager-booking-schedule">BOOKING SCHEDULE</a>
+                    <a class="nav-link" href="ViewEquipments">QUẢN LÝ DỊCH VỤ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="ManagerPost.jsp">POST VIEW</a>
+                    <a class="nav-link" href="users">QUẢN LÝ NGƯỜI DÙNG</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="notification_list">QUẢN LÝ THÔNG BÁO</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="faq-list">QUẢN LÝ CÂU HỎI THƯỜNG GẶP</a>
                 </li>
             </ul>
         </div>

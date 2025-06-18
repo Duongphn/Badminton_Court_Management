@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="java.time.LocalDateTime" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,6 +29,7 @@
       <div class="container py-4">
         <h2 class="mb-4"><i class="bi bi-plus-circle"></i> Tạo Thông Báo Mới</h2>
 
+        <!-- Hiển thị lỗi nếu có -->
         <c:if test="${not empty error}">
           <div class="alert alert-danger">${error}</div>
         </c:if>
@@ -43,9 +46,7 @@
 
           <div class="mb-3">
             <label class="form-label">Nội dung</label>
-            <!-- hidden textarea để gửi content -->
             <textarea name="content" id="hiddenContent" style="display:none;"></textarea>
-            <!-- div để render editor -->
             <div id="editor"></div>
           </div>
 
@@ -56,7 +57,12 @@
 
           <div class="mb-3">
             <label class="form-label">Thời gian dự kiến gửi</label>
-            <input type="datetime-local" name="scheduledTime" class="form-control" required/>
+            <%
+              // Tạo thời gian hiện tại theo định dạng phù hợp với datetime-local
+              LocalDateTime now = LocalDateTime.now();
+              String minTime = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+            %>
+            <input type="datetime-local" name="scheduledTime" class="form-control" required min="<%= minTime %>"/>
           </div>
 
           <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Tạo Thông Báo</button>
@@ -83,11 +89,10 @@
         console.error(error);
       });
 
-    // Gán lại dữ liệu vào textarea ẩn trước khi submit
-    document.getElementById("notificationForm").addEventListener("submit", function (e) {
+    // Gán nội dung từ CKEditor vào textarea trước khi submit
+    document.getElementById("notificationForm").addEventListener("submit", function () {
       if (editorInstance) {
-        const content = editorInstance.getData();
-        document.getElementById("hiddenContent").value = content;
+        document.getElementById("hiddenContent").value = editorInstance.getData();
       }
     });
   });

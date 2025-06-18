@@ -5,7 +5,8 @@
 package DAO;
 
 import Dal.DBContext;
-
+import Model.Branch_Equipments;
+import Model.Equipments;
 import Model.FaqAnswer;
 import Model.FaqQuestion;
 import Model.FaqTag;
@@ -13,6 +14,20 @@ import java.sql.*;
 import java.util.*;
 
 public class FaqDAO extends DBContext {
+    
+    public boolean isQuestionTagExists(String title, int tagId) throws SQLException, ClassNotFoundException {
+    String sql = "SELECT COUNT(*) FROM faq_question WHERE title = ? AND tag_id = ?";
+    try (Connection conn = getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, title);
+        stmt.setInt(2, tagId);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    }
+    return false;
+}
 
     public List<FaqQuestion> getAllQuestionsWithTag() {
         List<FaqQuestion> list = new ArrayList<>();

@@ -155,7 +155,7 @@
                     <div><strong>Ngày:</strong> ${date}</div>
                     <div><strong>Giờ bắt đầu:</strong> ${startTime}</div>
                     <div><strong>Giờ kết thúc:</strong> ${endTime}</div>
-                    <div><strong>Tổng tiền:</strong> ${totalPrice}</div>
+                   
                     
                     
                 </div>

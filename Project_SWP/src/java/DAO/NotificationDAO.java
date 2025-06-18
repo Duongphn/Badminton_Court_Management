@@ -229,6 +229,24 @@ public class NotificationDAO extends DBContext {
         }
         return 0;
     }
+    public boolean update(Notification n) {
+    String sql = "UPDATE Notification SET sent_time = ?, status = ? WHERE notification_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        if (n.getSentTime() != null) {
+            ps.setTimestamp(1, Timestamp.valueOf(n.getSentTime()));
+        } else {
+            ps.setNull(1, Types.TIMESTAMP);
+        }
+        ps.setString(2, n.getStatus());
+        ps.setInt(3, n.getNotificationId());
+
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        System.err.println("Lỗi cập nhật thời gian gửi: " + e.getMessage());
+        return false;
+    }
+}
+
 
     public void insertReceiver(NotificationReceiver receiver) {
         String sql = "INSERT INTO Notification_Receiver (notification_id, user_id, is_read, read_at, opened_at) "

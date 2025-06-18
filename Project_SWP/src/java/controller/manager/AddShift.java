@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Time;
+import java.util.List;
 
 /**
  *
@@ -59,37 +60,25 @@ public class AddShift extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
-    } 
-
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-
-    try {
+     try {
         int areaId = Integer.parseInt(request.getParameter("area_id"));
         String shiftName = request.getParameter("shiftName");
-       String start = request.getParameter("startTime");
-String end = request.getParameter("endTime");
+        String start = request.getParameter("startTime");
+        String end = request.getParameter("endTime");
 
-if (start == null || end == null || start.isEmpty() || end.isEmpty()) {
-    response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Thiếu thời gian bắt đầu hoặc kết thúc");
-    return;
-}
+        if (start == null || end == null || start.isEmpty() || end.isEmpty()) {
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Thiếu thời gian bắt đầu hoặc kết thúc");
+            return;
+        }
 
-Time startTime = Time.valueOf(start + ":00"); // nếu chỉ có HH:mm
-Time endTime = Time.valueOf(end + ":00");
+        Time startTime = Time.valueOf(start + ":00");
+        Time endTime = Time.valueOf(end + ":00");
 
+        // Lấy DAO
         ShiftDAO dao = new ShiftDAO();
         AreaDAO aDao = new AreaDAO();
-        
+
+        // Lấy giờ mở cửa và đóng cửa của khu vực
         Time[] openClose = aDao.getAreaOpenAndCloseTime(areaId);
         if (openClose == null) {
             response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Không tìm thấy giờ hoạt động của khu vực.");
@@ -99,7 +88,7 @@ Time endTime = Time.valueOf(end + ":00");
         Time openTime = openClose[0];
         Time closeTime = openClose[1];
 
-       
+        // Validate giờ
         if (startTime.compareTo(endTime) >= 0) {
             response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Giờ bắt đầu phải trước giờ kết thúc.");
             return;
@@ -113,6 +102,16 @@ Time endTime = Time.valueOf(end + ":00");
             return;
         }
 
+        // Kiểm tra trùng với shift đã tồn tại trong khu vực
+        List<Shift> existingShifts = dao.getShiftsByArea(areaId);
+        for (Shift s : existingShifts) {
+            boolean overlap = !(endTime.compareTo(s.getStartTime()) <= 0 || startTime.compareTo(s.getEndTime()) >= 0);
+            if (overlap) {
+                response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Ca mới bị trùng với ca đã có: " + s.getShiftName());
+                return;
+            }
+        }
+
         // Nếu hợp lệ thì thêm shift
         Shift shift = new Shift(areaId, shiftName, startTime, endTime);
         dao.addShift(shift);
@@ -123,7 +122,21 @@ Time endTime = Time.valueOf(end + ":00");
         e.printStackTrace();
         response.sendRedirect("error.jsp");
     }
+    } 
+
+    /** 
+     * Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+  @Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    
 }
+
 
     /** 
      * Returns a short description of the servlet.

@@ -97,7 +97,7 @@
         </tr>
     </thead>
     <tbody>
-        <c:forEach var="shift" items="${areaShifts}" varStatus="loop">
+        <c:forEach var="shift" items="${listShift}" varStatus="loop">
             <tr>
                 <td>${loop.count}</td>
                 <td>${shift.shiftName}</td>

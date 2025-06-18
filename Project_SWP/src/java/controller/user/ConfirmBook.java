@@ -77,7 +77,7 @@ public class ConfirmBook extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-   @Override
+ @Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
     HttpSession session = request.getSession();
@@ -89,50 +89,56 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     }
 
     try {
-        
         int userId = user.getUser_Id();
         int courtId = Integer.parseInt(request.getParameter("courtId"));
         String dateStr = request.getParameter("date");
         String startTimeStr = request.getParameter("startTime");
         String endTimeStr = request.getParameter("endTime");
+        String totalPriceStr = request.getParameter("totalPrice");
+
         LocalDate date = LocalDate.parse(dateStr);
         Time startTime = Time.valueOf(startTimeStr);
         Time endTime = Time.valueOf(endTimeStr);
-        String[] selectedServices = request.getParameterValues("selectedServices");
 
-        
+        // Validate giờ hợp lệ
+        if (startTime.after(endTime) || startTime.equals(endTime)) {
+            request.setAttribute("message", "Giờ bắt đầu phải trước giờ kết thúc.");
+            request.getRequestDispatcher("book_field.jsp").forward(request, response);
+            return;
+        }
+
+        // Check nếu đã có người đặt
         BookingDAO bookingDAO = new BookingDAO();
+        boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
+
+        if (!isAvailable) {
+            request.setAttribute("message", "Khoảng thời gian đã có người đặt.");
+            request.getRequestDispatcher("book_field.jsp").forward(request, response);
+            return;
+        }
+
+        // Lưu thông tin booking
         int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending");
 
-        BookingServiceDAO bookingserviceDao = new BookingServiceDAO();
+        // Dịch vụ đi kèm (nếu có)
+        String[] selectedServices = request.getParameterValues("selectedServices");
         if (selectedServices != null && bookingId != -1) {
+            BookingServiceDAO bookingServiceDAO = new BookingServiceDAO();
             for (String serviceIdStr : selectedServices) {
                 int serviceId = Integer.parseInt(serviceIdStr);
-                bookingserviceDao.addServiceToBooking(bookingId, serviceId);
+                bookingServiceDAO.addServiceToBooking(bookingId, serviceId);
             }
         }
 
-       
         response.sendRedirect("booking-list");
 
     } catch (Exception e) {
         e.printStackTrace();
-
-        // Lấy lại dịch vụ khi có lỗi
-        try {
-            int areaId = Integer.parseInt(request.getParameter("areaId"));
-            Service_BranchDAO sDao = new Service_BranchDAO();
-            List<Branch_Service> availableServices = sDao.getAllAreaServices(areaId);
-            System.out.println("danh sach sericeee" + availableServices);
-            request.setAttribute("availableServices", availableServices);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        request.setAttribute("error", "Đã xảy ra lỗi khi đặt sân.");
-        request.getRequestDispatcher("confirm_booking.jsp").forward(request, response);
+        request.setAttribute("message", "Có lỗi xảy ra khi xử lý đặt sân.");
+        request.getRequestDispatcher("error.jsp").forward(request, response);
     }
 }
+
 
 
     /**
