@@ -40,6 +40,7 @@
                             <option value="pending" <c:if test="${status eq 'pending'}">selected</c:if>>Pending</option>
                             <option value="confirmed" <c:if test="${status eq 'confirmed'}">selected</c:if>>Confirmed</option>
                             <option value="cancelled" <c:if test="${status eq 'cancelled'}">selected</c:if>>Cancelled</option>
+                            <option value="completed" <c:if test="${status eq 'completed'}">selected</c:if>>Completed</option>
                         </select>
                     </div>
                     <div class="col-auto">
@@ -87,6 +88,13 @@
                                                 <input type="hidden" name="bookingId" value="${b.booking_id}" />
                                                 <input type="hidden" name="action" value="cancel" />
                                                 <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                            </form>
+                                        </c:if>
+                                        <c:if test="${b.status eq 'confirmed'}">
+                                            <form action="confirm-booking-manager" method="post" style="display:inline-block">
+                                                <input type="hidden" name="bookingId" value="${b.booking_id}" />
+                                                <input type="hidden" name="action" value="complete" />
+                                                <button type="submit" class="btn btn-secondary btn-sm">Mark Completed</button>
                                             </form>
                                         </c:if>
                                         <a href="update-booking?bookingId=${b.booking_id}" class="btn btn-primary btn-sm" style="margin-left:5px;">Edit</a>
