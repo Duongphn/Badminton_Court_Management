@@ -49,7 +49,7 @@
         </div>
         <div class="col-md-4">
             <label class="form-label">Date</label>
-            <input type="date" name="date" class="form-control" required>
+            <input type="date" name="date" class="form-control" min="<%= java.time.LocalDate.now().toString() %>" required>
         </div>
         <div class="col-md-4">
             <label class="form-label">Start Time</label>
