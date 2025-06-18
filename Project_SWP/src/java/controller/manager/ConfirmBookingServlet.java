@@ -31,8 +31,19 @@ public class ConfirmBookingServlet extends HttpServlet {
             try {
                 int bookingId = Integer.parseInt(bookingIdRaw);
                 BookingDAO dao = new BookingDAO();
-                String status = "confirm".equals(action) ? "confirmed" : "cancelled";
-                dao.updateBookingStatus(bookingId, status);
+                String status;
+                if ("confirm".equals(action)) {
+                    status = "confirmed";
+                } else if ("cancel".equals(action)) {
+                    status = "cancelled";
+                } else if ("complete".equals(action)) {
+                    status = "completed";
+                } else {
+                    status = null;
+                }
+                if (status != null) {
+                    dao.updateBookingStatus(bookingId, status);
+                }
             } catch (NumberFormatException e) {
                 // ignore invalid id
             }
