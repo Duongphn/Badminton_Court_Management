@@ -62,6 +62,7 @@
                                 <th>Date</th>
                                 <th>Time</th>
                                 <th>Total</th>
+                                <th>Services</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -76,6 +77,7 @@
                                     <td>${b.date}</td>
                                     <td>${b.start_time} - ${b.end_time}</td>
                                     <td>${b.totalPrice}</td>
+                                    <td>${serviceNames[b.booking_id]}</td>
                                     <td>${b.status}</td>
                                     <td>
                                         <c:if test="${b.status eq 'pending'}">

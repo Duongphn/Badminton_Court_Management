@@ -52,6 +52,15 @@
             <label class="form-label">End Time</label>
             <input type="time" name="endTime" class="form-control" value="${booking.end_time}" required>
         </div>
+        <div class="col-md-12">
+            <label class="form-label">Services</label>
+            <c:forEach var="s" items="${services}">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="selectedServices" value="${s.service_id}" id="service${s.service_id}" <c:if test="${selectedServiceIds.contains(s.service_id)}">checked</c:if>>
+                    <label class="form-check-label" for="service${s.service_id}">${s.name} - ${s.price}</label>
+                </div>
+            </c:forEach>
+        </div>
         <div class="col-md-4">
             <label class="form-label">Status</label>
             <select name="status" class="form-select">

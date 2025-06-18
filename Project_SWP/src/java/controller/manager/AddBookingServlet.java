@@ -1,11 +1,14 @@
 package controller.manager;
 
 import DAO.BookingDAO;
+import DAO.BookingServiceDAO;
 import DAO.CourtDAO;
 import DAO.UserDAO;
 import DAO.AreaDAO;
+import DAO.ServiceDAO;
 import Model.Branch;
 import Model.Courts;
+import Model.Service;
 import Model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -41,8 +44,10 @@ public class AddBookingServlet extends HttpServlet {
         UserDAO userDAO = new UserDAO();
         List<Courts> courts = courtDAO.getCourtsByManager(managerId);
         List<User> customers = userDAO.getUsersByRole("user");
+        List<Service> services = ServiceDAO.getAllService();
         request.setAttribute("courts", courts);
         request.setAttribute("customers", customers);
+        request.setAttribute("services", services);
         request.getRequestDispatcher("add_booking.jsp").forward(request, response);
     }
 
@@ -65,6 +70,7 @@ public class AddBookingServlet extends HttpServlet {
         String endStr = request.getParameter("endTime");
         String courtIdStr = request.getParameter("courtId");
         String userIdStr = request.getParameter("userId"); // nếu có
+        String[] selectedServices = request.getParameterValues("selectedServices");
 
         // 1. Kiểm tra dữ liệu đầu vào
         if (dateStr == null || dateStr.isEmpty()
@@ -131,10 +137,18 @@ public class AddBookingServlet extends HttpServlet {
             return;
         }
 
-        // 4. Thêm booking mới (status: pending hoặc booked tuỳ logic của bạn)
-        boolean success = dao.insertBooking(userId, courtId, date, startTime, endTime, "pending");
-        if (success) {
-            // Có thể redirect về lịch hoặc thông báo thành công
+        // 4. Thêm booking mới (status: pending)
+        int bookingId = dao.insertBooking1(userId, courtId, date, startTime, endTime, "pending");
+        if (bookingId != -1) {
+            if (selectedServices != null) {
+                BookingServiceDAO bsDao = new BookingServiceDAO();
+                for (String sidStr : selectedServices) {
+                    try {
+                        int sid = Integer.parseInt(sidStr);
+                        bsDao.addServiceToBooking(bookingId, sid);
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
             String msg = URLEncoder.encode("Đặt sân thành công!", StandardCharsets.UTF_8);
             response.sendRedirect("manager-booking-schedule?msg=" + msg);
         } else {
