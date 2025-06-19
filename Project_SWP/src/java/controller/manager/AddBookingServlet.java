@@ -116,7 +116,7 @@ public class AddBookingServlet extends HttpServlet {
             }
 
             BookingDAO bookingDAO = new BookingDAO();
-            int bookingId = bookingDAO.insertBooking(userId, courtId, date, startTime, endTime, "Pending");
+            int bookingId = bookingDAO.insertBooking(userId, courtId, date, startTime, endTime, "pending");
             if (bookingId == -1) {
                 request.setAttribute("error", "Có lỗi xảy ra, vui lòng thử lại sau!");
                 populateFormData(request, managerId);

@@ -20,6 +20,7 @@ import DAO.CourtDAO;
 import Dal.DBContext;
 import Model.BookingScheduleDTO;
 import Model.Bookings;
+import Model.Courts;
 
 
 /**
