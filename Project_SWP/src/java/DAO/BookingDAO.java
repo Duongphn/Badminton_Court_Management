@@ -423,20 +423,25 @@ public List<Bookings> getBookingsByUserId(int userId) {
         return false;
     }
 
-    public boolean checkSlotAvailableForUpdate(int bookingId, int courtId, LocalDate date, Time startTime, Time endTime) {
+    public boolean checkSlotAvailableForUpdate(int bookingId, int courtId, LocalDate date,
+                                              Time startTime, Time endTime) {
+        // Use the same overlap logic as when creating a new booking and exclude the
+        // current booking by its id. Also ignore cancelled or rejected bookings.
         String sql = "SELECT COUNT(*) FROM Bookings "
                 + "WHERE court_id = ? AND date = ? AND booking_id <> ? "
-                + "AND start_time < ? AND end_time > ? "
-                + "AND status <> 'cancelled'";
+                + "AND status NOT IN ('cancelled', 'rejected') "
+                + "AND NOT (end_time <= ? OR start_time >= ?)";
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, courtId);
             ps.setDate(2, Date.valueOf(date));
             ps.setInt(3, bookingId);
-            ps.setTime(4, endTime);
-            ps.setTime(5, startTime);
+            ps.setTime(4, startTime);  // compare new slot with existing ones
+            ps.setTime(5, endTime);
+
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                // true khi không có booking khác giao nhau
+                // Slot is available when there is no overlapping booking
                 return rs.getInt(1) == 0;
             }
         } catch (SQLException e) {
