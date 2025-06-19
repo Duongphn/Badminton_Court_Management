@@ -116,29 +116,22 @@ public class AddBookingServlet extends HttpServlet {
             }
 
             BookingDAO bookingDAO = new BookingDAO();
-//            if (!bookingDAO.checkSlotAvailableAdmin(courtId, date, startTime, endTime)) {
-//                request.setAttribute("error", "Sân này đã được đặt trong thời gian này. Vui lòng chọn thời gian khác.");
-//                populateFormData(request, managerId);
-//                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-//                return;
-//            }
+            int bookingId = bookingDAO.insertBooking(userId, courtId, date, startTime, endTime, "Pending");
+            if (bookingId == -1) {
+                request.setAttribute("error", "Có lỗi xảy ra, vui lòng thử lại sau!");
+                populateFormData(request, managerId);
+                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+                return;
+            }
 
-            bookingDAO.insertBooking(userId, courtId, date, startTime, endTime, "Pending");
-//            if (bookingId == -1) {
-//                request.setAttribute("error", "Có lỗi xảy ra, vui lòng thử lại sau!");
-//                populateFormData(request, managerId);
-//                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-//                return;
-//            }
-
-//            if (selectedServices != null) {
-//                BookingServiceDAO bsDao = new BookingServiceDAO();
-//                for (String id : selectedServices) {
-//                    try {
-//                        bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
-//                    } catch (NumberFormatException ignored) { }
-//                }
-//            }
+            if (selectedServices != null) {
+                BookingServiceDAO bsDao = new BookingServiceDAO();
+                for (String id : selectedServices) {
+                    try {
+                        bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
+                    } catch (NumberFormatException ignored) { }
+                }
+            }
 
             String msg = URLEncoder.encode("Đặt sân thành công!", StandardCharsets.UTF_8);
             response.sendRedirect("manager-booking-schedule?msg=" + msg);
