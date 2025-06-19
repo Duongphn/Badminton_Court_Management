@@ -443,12 +443,12 @@ public List<Bookings> getBookingsByUserId(int userId) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 // Slot is available when there is no overlapping booking
-                return rs.getInt(1) == 0;
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return true;
     }
 public List<Bookings> getBookingsByCourtId(int courtId) {
     List<Bookings> list = new ArrayList<>();
