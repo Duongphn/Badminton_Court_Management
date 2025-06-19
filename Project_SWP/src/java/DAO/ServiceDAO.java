@@ -191,5 +191,29 @@ public class ServiceDAO extends DBContext {
         return list;
     }
 
+    // Lấy thông tin dịch vụ theo id
+    public static Service getServiceById(int serviceId) {
+        String sql = "SELECT * FROM BadmintonService WHERE service_id = ?";
+        try (
+                Connection con = new DBContext().getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, serviceId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Service(
+                        rs.getInt("service_id"),
+                        rs.getString("name"),
+                        rs.getDouble("price"),
+                        rs.getString("description"),
+                        rs.getString("image_url"),
+                        rs.getString("status")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 }
