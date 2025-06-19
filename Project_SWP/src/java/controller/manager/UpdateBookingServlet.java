@@ -186,20 +186,19 @@ public class UpdateBookingServlet extends HttpServlet {
                 return;
             }
 
-            // 6. Cập nhật booking
-            boolean updateSuccess = dao.updateBooking(bookingId, date, startTime, endTime, status);
+            // 6. Cập nhật booking cùng dịch vụ
+            List<Integer> serviceIds = new java.util.ArrayList<>();
+            if (selectedServices != null) {
+                for (String sidStr : selectedServices) {
+                    try {
+                        serviceIds.add(Integer.parseInt(sidStr));
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+
+            boolean updateSuccess = dao.updateBooking(bookingId, date, startTime, endTime, status, serviceIds);
 
             if (updateSuccess) {
-                BookingServiceDAO bsDao = new BookingServiceDAO();
-                bsDao.removeServicesByBookingId(bookingId);
-                if (selectedServices != null) {
-                    for (String sidStr : selectedServices) {
-                        try {
-                            int sid = Integer.parseInt(sidStr);
-                            bsDao.addServiceToBooking(bookingId, sid);
-                        } catch (NumberFormatException ignored) {}
-                    }
-                }
                 String msg = URLEncoder.encode("Cập nhật thành công!", StandardCharsets.UTF_8);
                 response.sendRedirect("manager-booking-schedule?msg=" + msg);
             } else {

@@ -21,6 +21,9 @@ import Dal.DBContext;
 import Model.BookingScheduleDTO;
 import Model.Bookings;
 import Model.Courts;
+import Model.Service;
+import DAO.ServiceDAO;
+import DAO.BookingServiceDAO;
 
 
 /**
@@ -404,7 +407,8 @@ public List<Bookings> getBookingsByUserId(int userId) {
         return false;
     }
 
-    public boolean updateBooking(int bookingId, LocalDate date, Time startTime, Time endTime, String status) {
+    public boolean updateBooking(int bookingId, LocalDate date, Time startTime, Time endTime,
+                                 String status, List<Integer> serviceIds) {
         String sql = "UPDATE Bookings SET date = ?, start_time = ?, end_time = ?, status = ?, total_price = ? WHERE booking_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(date));
@@ -412,12 +416,35 @@ public List<Bookings> getBookingsByUserId(int userId) {
             ps.setTime(3, endTime);
             ps.setString(4, status);
 
-            // Recalculate price based on the new time range
+            // Recalculate price based on court and services
             Bookings current = getBookingById(bookingId);
-            int areaId = new CourtDAO().getCourtById(current.getCourt_id()).getArea_id();
-
+            double total = 0;
+            Courts court = new CourtDAO().getCourtById(current.getCourt_id());
+            if (court != null) {
+                total += court.getPrice();
+            }
+            if (serviceIds != null) {
+                for (int sid : serviceIds) {
+                    Service s = ServiceDAO.getServiceById(sid);
+                    if (s != null) {
+                        total += s.getPrice();
+                    }
+                }
+            }
+            ps.setDouble(5, total);
             ps.setInt(6, bookingId);
-            return ps.executeUpdate() > 0;
+
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                BookingServiceDAO bsDao = new BookingServiceDAO();
+                bsDao.removeServicesByBookingId(bookingId);
+                if (serviceIds != null) {
+                    for (int sid : serviceIds) {
+                        bsDao.addServiceToBooking(bookingId, sid);
+                    }
+                }
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
