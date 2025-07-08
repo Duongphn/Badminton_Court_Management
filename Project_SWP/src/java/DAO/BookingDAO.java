@@ -87,6 +87,84 @@ public class BookingDAO extends DBContext {
         return 0;
     }
 
+    // Count number of bookings for current date of manager
+    public int countBookingsTodayByManager(int managerId) {
+        String sql = "SELECT COUNT(*) FROM Bookings b "
+                + "JOIN Courts c ON b.court_id = c.court_id "
+                + "JOIN Areas a ON c.area_id = a.area_id "
+                + "WHERE a.manager_id = ? AND b.date = CAST(GETDATE() AS DATE)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
+    }
+
+    // Sum of revenue in last 7 days for manager
+    public BigDecimal getRevenueLast7DaysByManager(int managerId) {
+        String sql = "SELECT SUM(total_price) FROM Bookings b "
+                + "JOIN Courts c ON b.court_id = c.court_id "
+                + "JOIN Areas a ON c.area_id = a.area_id "
+                + "WHERE a.manager_id = ? AND b.status != 'cancelled' "
+                + "AND b.date >= DATEADD(day,-6, CAST(GETDATE() AS DATE)) "
+                + "AND b.date <= CAST(GETDATE() AS DATE)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                BigDecimal sum = rs.getBigDecimal(1);
+                return sum != null ? sum : BigDecimal.ZERO;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return BigDecimal.ZERO;
+    }
+
+    // Booking count per start hour in last 7 days for manager
+    public Map<Integer, Integer> getHourlyBookingDistribution(int managerId) {
+        Map<Integer, Integer> result = new LinkedHashMap<>();
+        String sql = "SELECT DATEPART(HOUR, b.start_time) AS h, COUNT(*) AS c FROM Bookings b "
+                + "JOIN Courts c ON b.court_id = c.court_id "
+                + "JOIN Areas a ON c.area_id = a.area_id "
+                + "WHERE a.manager_id = ? AND b.status != 'cancelled' "
+                + "AND b.date >= DATEADD(day,-6, CAST(GETDATE() AS DATE)) "
+                + "AND b.date <= CAST(GETDATE() AS DATE) "
+                + "GROUP BY DATEPART(HOUR, b.start_time) ORDER BY h";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                result.put(rs.getInt("h"), rs.getInt("c"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
+    // Top booked courts of manager
+    public Map<String, Integer> getTopBookedCourts(int managerId, int limit) {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        String sql = "SELECT TOP " + limit + " c.court_number AS name, COUNT(*) AS c FROM Bookings b "
+                + "JOIN Courts c ON b.court_id = c.court_id "
+                + "JOIN Areas a ON c.area_id = a.area_id "
+                + "WHERE a.manager_id = ? GROUP BY c.court_number ORDER BY c DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                result.put(rs.getString("name"), rs.getInt("c"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
     public List<Bookings> getBookingsByCourtAndDate(int courtId, LocalDate date) {
         List<Bookings> bookings = new ArrayList<>();
         String sql = "SELECT * FROM Bookings WHERE court_id = ? AND date = ? AND status NOT IN ('cancelled', 'rejected')";
