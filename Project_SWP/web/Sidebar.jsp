@@ -216,7 +216,7 @@
     <body>
         <div class="sidebar">
             <div class="sidebar-logo">
-                <a href="host_dashboard.jsp">
+                <a href="staff-dashboard">
                     <img src="./uploads/Badminton.jpg" alt="Logo">
                 </a>
                 <h3>BadmintonCourt</h3>
@@ -225,6 +225,9 @@
             
             <div class="nav-container">
                 <ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="staff-dashboard">DASHBOARD</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="view-region">QUẢN LÝ KHU VỰC</a>
                     </li>
