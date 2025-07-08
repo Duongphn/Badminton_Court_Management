@@ -17,20 +17,32 @@
                 padding: 0 2rem;
             }
 
-            .hero-banner {
-                border-radius: 20px;
-                overflow: hidden;
-                margin-bottom: 3rem;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            }
-
-            .hero-banner img {
+            .banner-slider {
+                position: relative;
                 width: 100%;
-                height: 400px;
-                object-fit: cover;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .banner-slide {
+                display: none;
+                position: absolute;
+                width: 100%;
+            }
+            .banner-slide.active {
                 display: block;
             }
+
+            .banner-caption {
+                position: absolute;
+                bottom: 20px;
+                left: 30px;
+                background: rgba(0,0,0,0.4);
+                color: #fff;
+                padding: 10px 20px;
+                border-radius: 5px;
+            }
             
+
             .title {
                 text-align: center;
             }
@@ -61,7 +73,7 @@
                 height: 180px;
                 object-fit: cover;
             }
-            
+
             .court-info p{
                 margin-bottom: 0.5rem;
             }
@@ -104,27 +116,156 @@
             .book-btn:hover {
                 background: #ff3838;
             }
+            #chatbot-toggle {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                background: #2980b9;
+                border-radius: 50%;
+                color: white;
+                font-size: 30px;
+                text-align: center;
+                line-height: 60px;
+                cursor: pointer;
+                z-index: 1001;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                transition: background 0.3s;
+            }
+
+            #chatbot-toggle:hover {
+                background: #1f6390;
+            }
+
+            #chatbot-container {
+                display: none; /* Ẩn mặc định */
+                position: fixed;
+                bottom: 90px;
+                right: 20px;
+                width: 300px;
+                z-index: 1000;
+                font-family: sans-serif;
+            }
+
+            #chatbox {
+                height: 350px;
+                background: #fff;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                overflow-y: auto;
+                padding: 10px;
+                font-size: 14px;
+                line-height: 1.5;
+                word-wrap: break-word;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+
+            .msg-user, .msg-bot {
+                margin: 5px 0;
+                display: flex;
+                width: 100%;
+            }
+
+            .msg-user span {
+                background: #dfe6e9;
+                padding: 8px 12px;
+                border-radius: 10px 0 10px 10px;
+                margin-left: auto;
+                max-width: 80%;
+                word-break: break-word;
+            }
+
+            .msg-bot span {
+                background: #74b9ff;
+                color: white;
+                padding: 8px 12px;
+                border-radius: 0 10px 10px 10px;
+                margin-right: auto;
+                max-width: 80%;
+                word-break: break-word;
+            }
         </style>
     </head>
     <body>
         <jsp:include page="homehead.jsp" />
+        <div id="chatbot-toggle" onclick="toggleChatbot()">💬</div>
 
+        <!-- Chatbot Panel -->
+        <div id="chatbot-container">
+            <div id="chatbox"></div>
+            <div style="display: flex; margin-top: 5px;">
+                <input type="text" id="userMessage" placeholder="Nhập tin nhắn..."
+                       style="flex: 1; padding: 8px; border-radius: 6px 0 0 6px; border: 1px solid #ccc; outline: none;">
+                <button onclick="sendMessage()"
+                        style="padding: 8px 12px; border: none; background-color: #2980b9; color: white; border-radius: 0 6px 6px 0; cursor: pointer;">
+                    Gửi
+                </button>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        <script>
+                            function toggleChatbot() {
+                                const panel = document.getElementById("chatbot-container");
+                                panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
+                            }
+
+                            function sendMessage() {
+                                var msg = $("#userMessage").val().trim();
+                                if (msg === "")
+                                    return;
+
+                                $("#chatbox").append('<div class="msg-user"><span>' + escapeHTML(msg) + '</span></div>');
+                                $("#userMessage").val("");
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "${pageContext.request.contextPath}/chatbot",
+                                    data: {message: msg},
+                                    success: function (response) {
+                                        $("#chatbox").append('<div class="msg-bot"><span>' + escapeHTML(response) + '</span></div>');
+                                        $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
+                                    },
+                                    error: function () {
+                                        $("#chatbox").append('<div class="msg-bot"><span style="color:red;">Lỗi phản hồi từ chatbot</span></div>');
+                                    }
+                                });
+                            }
+
+                            function escapeHTML(str) {
+                                return str.replace(/&/g, "&amp;")
+                                        .replace(/</g, "&lt;")
+                                        .replace(/>/g, "&gt;");
+                            }
+        </script>
         <main class="main">
 
-            <div class="hero-banner">
-                <img src="./images/logo/hinh_nen.jpg" alt="Badminton Court Banner" />
+            <div class="banner-slider" style="height: 400px;">
+                <c:forEach var="banner" items="${bannerList}">
+                    <div class="banner-slide">
+                        <img src="${pageContext.request.contextPath}/${banner.imageUrl}" alt="${banner.title}" style="width:100%;height:400px;object-fit:cover;">
+                        <div class="banner-caption">
+                            <h2>${banner.title}</h2>
+                            <p>${banner.caption}</p>
+                        </div>
+                    </div>
+                </c:forEach>
             </div>
 
             <div class="title">
                 <h1>Danh sách khu vực nổi bật</h1>
             </div>
 
-           <!-- Courts Grid -->
+            <!-- Courts Grid -->
             <div class="courts-grid">
                 <c:forEach var="top" items="${listTop3}">
                     <div class="court-card">
-                        <div class="logo-san">
-                            <img src="images/san/san.jpg" alt="${top.name}" />
+                        <div class="court-images">
+                            <c:forEach var="img" items="${areaImagesMap[top.area_id]}">
+                                <div class="logo-san">
+                                    <img src="${pageContext.request.contextPath}/${img.imageURL}" alt="Image ${img.image_id}" />
+                                </div>
+                            </c:forEach>
                         </div>
                         <div class="court-info">
                             <div class="court-name">${top.name}</div>
@@ -143,4 +284,17 @@
 
         <jsp:include page="homefooter.jsp" />
     </body>
+    <script>
+        // JS chuyển slide đơn giản
+        window.onload = function() {
+            let slides = document.querySelectorAll('.banner-slide');
+            let idx = 0;
+            if(slides.length > 0) slides[0].classList.add('active');
+            setInterval(function() {
+                slides[idx].classList.remove('active');
+                idx = (idx+1)%slides.length;
+                slides[idx].classList.add('active');
+            }, 4000);
+        }
+    </script>
 </html>

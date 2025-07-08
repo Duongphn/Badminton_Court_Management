@@ -6,12 +6,14 @@ package controller.user;
 
 import DAO.BookingDAO;
 import DAO.CourtDAO;
+import DAO.PromotionDAO;
 
 import DAO.Service_BranchDAO;
 import DAO.ShiftDAO;
 import Model.Bookings;
 import Model.Branch_Service;
 import Model.Courts;
+import Model.Promotion;
 import Model.Shift;
 import Model.Slot;
 import Model.SlotTime;
@@ -24,6 +26,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -158,11 +161,13 @@ public class BookFieldServlet extends HttpServlet {
                 request.getRequestDispatcher("book_field.jsp").forward(request, response);
                 return;
             }
-
+            Shift shift = new Shift();
             Time startTime, endTime;
             try {
                 startTime = Time.valueOf(request.getParameter("startTime") + ":00");
                 endTime = Time.valueOf(request.getParameter("endTime") + ":00");
+                System.out.println("Start Time: " + shift.getStartTime());
+                System.out.println("End Time: " + shift.getEndTime());
             } catch (Exception e) {
                 request.setAttribute("message", "Lỗi định dạng giờ.");
                 request.setAttribute("court", court);
@@ -181,14 +186,26 @@ public class BookFieldServlet extends HttpServlet {
                 request.getRequestDispatcher("book_field.jsp").forward(request, response);
                 return;
             }
+            CourtDAO cDao = new CourtDAO();
+            BigDecimal pricePerHour = cDao.getCourtPrice(courtId);
+            PromotionDAO proDAO = new PromotionDAO();
+            Promotion promotion = proDAO.getCurrentPromotionForArea(court.getArea_id(), date);
 
+            System.out.println("Promotion for areaId " + court.getArea_id() + ": " + promotion);
+            if (promotion != null) {
+                System.out.println("Title: " + promotion.getTitle());
+            }
+
+            BigDecimal totalPrice = bookingDAO.calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, promotion);
+            System.out.println("Toltol>>>>" + totalPrice);
             Service_BranchDAO sDao = new Service_BranchDAO();
             List<Branch_Service> services = sDao.getAllAreaServices(court.getArea_id());
-
+            request.setAttribute("promotion", promotion);
             request.setAttribute("court", court);
             request.setAttribute("date", date);
             request.setAttribute("startTime", startTime);
             request.setAttribute("endTime", endTime);
+            request.setAttribute("totalPrice", totalPrice);
             request.setAttribute("availableServices", services);
             request.getRequestDispatcher("confirm_booking.jsp").forward(request, response);
 

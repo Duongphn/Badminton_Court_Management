@@ -11,6 +11,7 @@ import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ import java.sql.SQLException;
  *
  * @author admin
  */
+@MultipartConfig
 @WebServlet(name = "AddPostManager", urlPatterns = {"/AddPostManager"})
 public class AddPostManager extends HttpServlet {
 
@@ -85,14 +87,17 @@ public class AddPostManager extends HttpServlet {
             String content = request.getParameter("content");
             String type = request.getParameter("type");
 
-            if ("news".equals(type)) {
-                type = "admin";
-            }
-            if ("common".equals(type)) {
-                type = "common";
-            }
-            if ("partner".equals(type)) {
-                type = "partner";
+            // --- Lấy file ảnh upload (nếu có) ---
+            jakarta.servlet.http.Part filePart = request.getPart("image");
+            String fileName = null;
+            if (filePart != null && filePart.getSize() > 0) {
+                fileName = java.nio.file.Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                String uploadPath = getServletContext().getRealPath("") + "uploads";
+                java.io.File uploadDir = new java.io.File(uploadPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdir();
+                }
+                filePart.write(uploadPath + java.io.File.separator + fileName);
             }
 
             HttpSession session = request.getSession();
@@ -111,6 +116,7 @@ public class AddPostManager extends HttpServlet {
             post.setCreatedBy(createdBy);
             post.setStatus("pending");
             post.setCreatedAt(new java.util.Date());
+            post.setImage(fileName);
 
             try {
                 DBContext db = new DBContext();

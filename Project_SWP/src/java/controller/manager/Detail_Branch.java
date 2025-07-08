@@ -76,7 +76,7 @@ throws ServletException, IOException {
     HttpSession session = request.getSession(false);
     if (session != null) {
         User user = (User) session.getAttribute("user");
-        if (user != null && "staff".equals(user.getRole())) {
+        if (user != null && "admin".equals(user.getRole())) {
             int area_id = Integer.parseInt(request.getParameter("area_id"));
 
             AreaDAO dao = new AreaDAO();

@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -114,18 +116,18 @@
                     flex-direction: column;
                     gap: 2px;
                 }
-                
+
                 .action-buttons .btn {
                     width: 100%;
                     min-width: auto;
                     font-size: 10px;
                     padding: 3px 6px;
                 }
-                
+
                 #userTable {
                     font-size: 16px;
                 }
-                
+
                 #userTable th,
                 #userTable td {
                     padding: 5px 3px;
@@ -181,9 +183,9 @@
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Manager</a>
+                <a class="navbar-brand" href="#">Quản lí</a>
                 <div class="d-flex">
-                    <a class="nav-link text-light" href="login">Logout</a>
+                    <a class="nav-link text-light" href="login">Đăng xuất</a>
                 </div>
             </div>
         </nav>
@@ -227,10 +229,10 @@
                             <div class="col-md-3">
                                 <select name="status" class="form-select form-select-sm">
                                     <option value="">Tất cả trạng thái</option>
-                                    <option value="Active" ${param.status == 'Active' ? 'selected' : ''}>Active</option>
-                                    
-                                    <option value="banned" ${param.status == 'banned' ? 'selected' : ''}>Banned</option>
-                                   
+                                    <option value="Active" ${param.status == 'Active' ? 'selected' : ''}>Hoạt Động </option>
+
+                                    <option value="banned" ${param.status == 'banned' ? 'selected' : ''}>Đã chặn</option>
+
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -246,56 +248,55 @@
                                     <table id="userTable" class="table table-bordered table-hover mb-0 align-middle">
                                         <thead class="table-light">
                                             <tr class="text-center">
-                                                <th style="width: 50px;">ID</th>
-                                                <th style="width: 120px;">Tên đăng nhập</th>
-                                                <th style="width: 150px;">Email</th>
-                                                <th style="width: 100px;">SĐT</th>
-                                                <th style="width: 80px;">Vai trò</th>
-                                                <th style="width: 100px;">Ngày tạo</th>
-                                                <th style="width: 80px;">Trạng thái</th>
-                                                <th style="width: 100px;">Ghi kí</th>
+                                                <th>ID</th>
+                                                <th>Tên đăng nhập</th>
+                                                <th>Họ</th>
+                                                <th>Tên</th>
+                                                <th>Full name</th>
+                                                <th>Giới tính</th>
+                                                <th>Ngày sinh</th>
+                                                <th>Email</th>
+                                                <th>SĐT</th>
+                                                <th>Vai trò</th>
+                                                <th>Ngày tạo</th>
+                                                <th>Trạng thái</th>
+                                                <th>Ghi chú</th>
                                                 <th class="action-column">Hành động</th>
                                             </tr>
                                         </thead>
                                         <tbody id="userTableBody">
                                             <c:forEach var="user" items="${users}">
-                                                <tr class="text-center" 
-                                                    data-username="${user.username}" 
-                                                    data-email="${user.email}" 
-                                                    data-phone="${user.phone_number}" 
+                                                <tr class="text-center"
+                                                    data-username="${user.username}"
+                                                    data-email="${user.email}"
+                                                    data-phone="${user.phone_number}"
                                                     data-status="${user.status}">
                                                     <td>${user.user_Id}</td>
-                                                    <td>
-                                                        <i class="fas fa-user-circle text-primary user-icon"></i>
-                                                        <strong>${user.username}</strong>
-                                                    </td>
+                                                    <td><i class="fas fa-user-circle text-primary user-icon"></i><strong>${user.username}</strong></td>
+                                                    <td>${user.lastname}</td>
+                                                    <td>${user.firstname}</td>
+                                                    <td>${user.lastname} ${user.firstname} </td>
+                                                    <td>${user.gender}</td>
+                                                    <td><fmt:formatDate value="${user.dateOfBirth}" pattern="yyyy-MM-dd"/></td>
                                                     <td class="text-start" style="font-size: 11px;">${user.email}</td>
                                                     <td>${user.phone_number}</td>
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${user.role eq 'admin'}">
-                                                                <span class="role-badge" style="background: #ff9800; color: white;">
-                                                                    Quản lí
-                                                                </span>
+                                                                <span class="role-badge" style="background: #ff9800; color: white;">Quản lí</span>
                                                             </c:when>
                                                             <c:when test="${user.role eq 'staff'}">
-                                                                <span class="role-badge" style="background: #17a2b8; color: white;">
-                                                                    Nhân Viên
-                                                                </span>
+                                                                <span class="role-badge" style="background: #17a2b8; color: white;">Nhân viên</span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span class="role-badge" style="background: #6c757d; color: white;">
-                                                                    Người dùng
-                                                                </span>
+                                                                <span class="role-badge" style="background: #6c757d; color: white;">Người dùng</span>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${not empty user.createdAt}">
-                                                                <span class="date-display" style="background: #e3f2fd; color: #1565c0;">
-                                                                    ${user.createdAt}
-                                                                </span>
+                                                                <span class="date-display" style="background: #e3f2fd; color: #1565c0;">${user.createdAt}</span>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <span class="date-display" style="background: #efefef; color: #888;">-</span>
@@ -305,24 +306,16 @@
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${user.status eq 'Active'}">
-                                                                <span class="status-badge" style="background: #28a745; color: white;">
-                                                                    Active
-                                                                </span>
+                                                                <span class="status-badge" style="background: #28a745; color: white;">Active</span>
                                                             </c:when>
                                                             <c:when test="${user.status eq 'Suspended'}">
-                                                                <span class="status-badge" style="background: #ffc107; color: black;">
-                                                                    Suspended
-                                                                </span>
+                                                                <span class="status-badge" style="background: #ffc107; color: black;">Suspended</span>
                                                             </c:when>
                                                             <c:when test="${user.status eq 'banned'}">
-                                                                <span class="status-badge" style="background: #dc3545; color: white;">
-                                                                    Banned
-                                                                </span>
+                                                                <span class="status-badge" style="background: #dc3545; color: white;">Banned</span>
                                                             </c:when>
                                                             <c:when test="${user.status eq 'pending'}">
-                                                                <span class="status-badge" style="background: #fd7e14; color: white;">
-                                                                    Pending
-                                                                </span>
+                                                                <span class="status-badge" style="background: #fd7e14; color: white;">Pending</span>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <span class="status-badge" style="background: #6c757d; color: white;">-</span>
@@ -342,7 +335,11 @@
                                                                     data-username="${user.username}"
                                                                     data-email="${user.email}"
                                                                     data-phone="${user.phone_number}"
-                                                                    data-role="${user.role}">
+                                                                    data-role="${user.role}"
+                                                                    data-gender="${user.gender}"
+                                                                    data-firstname="${user.firstname}"
+                                                                    data-lastname="${user.lastname}"
+                                                                    data-dob="${user.dateOfBirth}">
                                                                 <i class="fas fa-edit"></i>Chỉnh
                                                             </button>
 
@@ -382,9 +379,10 @@
                                             </c:forEach>
                                         </tbody>
                                     </table>
+
                                 </div>
                             </div>
-                            
+
                             <!-- Pagination -->
                             <div class="card-footer bg-white py-2">
                                 <nav aria-label="Page navigation">
@@ -436,39 +434,92 @@
 
                     <!-- Modal Thêm User -->
                     <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-lg">
                             <form class="modal-content" action="users" method="post">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="addUserModalLabel"><i class="fas fa-user-plus"></i> Thêm Người Dùng</h5>
+                                    <h5 class="modal-title" id="addUserModalLabel">
+                                        <i class="fas fa-user-plus"></i> Thêm Người Dùng
+                                    </h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                                 </div>
                                 <div class="modal-body">
                                     <input type="hidden" name="action" value="add">
-                                    <div class="mb-3">
-                                        <label class="form-label">Username</label>
-                                        <input type="text" name="username" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Password</label>
-                                        <input type="password" name="password" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" name="email" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Số điện thoại</label>
-                                        <input type="text" name="phone_number" class="form-control">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Vai trò</label>
-                                        <select name="role" class="form-select" required>
-                                            <option value="user">Người dùng</option>
-                                            <option value="staff">Nhân viên</option>
-                                            <option value="admin">Quản lí</option>
-                                        </select>
-                                    </div>
+
+                                    <div class="row">
+                                        <!-- Cột trái -->
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Username</label>
+                                                <input type="text" name="username" class="form-control" required>
+                                            </div>
+
+                                         
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" name="email" class="form-control" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Số điện thoại</label>
+                                                <input type="text" name="phone_number" class="form-control">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Giới tính</label>
+                                                <select name="gender" class="form-select">
+                                                    <option value="">-- Chọn giới tính --</option>
+                                                    <option value="Male">Nam</option>
+                                                    <option value="Female">Nữ</option>
+                                                    <option value="Other">Khác</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Ngày sinh</label>
+                                                <input type="date" name="date_of_birth" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <!-- Cột phải -->
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Họ</label>
+                                                <input type="text" name="lastname" class="form-control">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Tên</label>
+                                                <input type="text" name="firstname" class="form-control">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Trạng thái</label>
+                                                <select name="status" class="form-select">
+                                                    <option value="Active">Đang hoạt động</option>
+                                                    <option value="Suspended">Tạm khóa</option>
+                                                    <option value="banned">Bị chặn</option>
+                                                    <option value="pending">Chờ duyệt</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Vai trò</label>
+                                                <select name="role" class="form-select" required>
+                                                    <option value="user">Người dùng</option>
+                                                    <option value="staff">Nhân viên</option>
+                                                    <option value="admin">Quản lí</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Ghi chú</label>
+                                                <input type="text" name="note" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div> <!-- End row -->
                                 </div>
+
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
@@ -477,9 +528,11 @@
                         </div>
                     </div>
 
+
+
                     <!-- Modal Sửa User -->
                     <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-lg">
                             <form class="modal-content" action="users" method="post">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="editUserModalLabel"><i class="fas fa-user-edit"></i> Sửa Người Dùng</h5>
@@ -488,26 +541,69 @@
                                 <div class="modal-body">
                                     <input type="hidden" name="action" value="update">
                                     <input type="hidden" name="userId" id="editUserId">
-                                    <div class="mb-3">
-                                        <label class="form-label">Username</label>
-                                        <input type="text" name="username" id="editUsername" class="form-control" required>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Tên đăng nhập</label>
+                                                <input type="text" name="username" id="editUsername" class="form-control" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" name="email" id="editEmail" class="form-control" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Số điện thoại</label>
+                                                <input type="text" name="phone_number" id="editPhone" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Giới tính</label>
+                                                <select name="gender" id="editGender" class="form-select">
+                                                    <option value="">-- Chọn giới tính --</option>
+                                                    <option value="Male">Nam</option>
+                                                    <option value="Female">Nữ</option>
+                                                    <option value="Other">Khác</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Ngày sinh</label>
+                                                <input type="date" name="date_of_birth" id="editDOB" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Họ</label>
+                                                <input type="text" name="lastname" id="editLastname" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Tên</label>
+                                                <input type="text" name="firstname" id="editFirstname" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Ghi chú</label>
+                                                <textarea name="note" id="editNote" class="form-control" rows="2"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Trạng thái</label>
+                                                <select name="status" id="editStatus" class="form-select">
+                                                    <option value="Active">Active</option>
+                                                    <option value="Suspended">Suspended</option>
+                                                    <option value="banned">Banned</option>
+                                                    <option value="pending">Pending</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Vai trò</label>
+                                                <select name="role" id="editRole" class="form-select" required>
+                                                    <option value="user">Người dùng</option>
+                                                    <option value="staff">Nhân viên</option>
+                                                    <option value="admin">Quản lí</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" name="email" id="editEmail" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Số điện thoại</label>
-                                        <input type="text" name="phone_number" id="editPhone" class="form-control">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Vai trò</label>
-                                        <select name="role" id="editRole" class="form-select" required>
-                                            <option value="user">Người dùng</option>
-                                            <option value="staff">Nhân viên</option>
-                                            <option value="admin">Quản lí</option>
-                                        </select>
-                                    </div>
+
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -516,68 +612,94 @@
                             </form>
                         </div>
                     </div>
+
+
+
+
                 </div>
             </div>
         </div>
 
         <!-- Bootstrap 5 JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        
+
         <script>
-            // Filter table functionality
-            document.addEventListener('DOMContentLoaded', function () {
-                const searchInput = document.querySelector('input[name="keyword"]');
-                const statusFilter = document.querySelector('select[name="status"]');
-                const tbody = document.getElementById('userTableBody');
-                const rows = Array.from(tbody.querySelectorAll('tr'));
+                                                                        // Filter table functionality
+                                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                                            const searchInput = document.querySelector('input[name="keyword"]');
+                                                                            const statusFilter = document.querySelector('select[name="status"]');
+                                                                            const tbody = document.getElementById('userTableBody');
+                                                                            const rows = Array.from(tbody.querySelectorAll('tr'));
 
-                function filterTable() {
-                    const keyword = searchInput?.value.toLowerCase() || '';
-                    const status = statusFilter?.value || '';
-                    
-                    rows.forEach(row => {
-                        const username = row.getAttribute('data-username')?.toLowerCase() || '';
-                        const email = row.getAttribute('data-email')?.toLowerCase() || '';
-                        const phone = row.getAttribute('data-phone')?.toLowerCase() || '';
-                        const rowStatus = row.getAttribute('data-status') || '';
+                                                                            function filterTable() {
+                                                                                const keyword = searchInput?.value.toLowerCase() || '';
+                                                                                const status = statusFilter?.value || '';
 
-                        const matchSearch = (
-                            username.includes(keyword) ||
-                            email.includes(keyword) ||
-                            phone.includes(keyword)
-                        );
-                        const matchStatus = (status === "" || rowStatus === status);
+                                                                                rows.forEach(row => {
+                                                                                    const username = row.getAttribute('data-username')?.toLowerCase() || '';
+                                                                                    const email = row.getAttribute('data-email')?.toLowerCase() || '';
+                                                                                    const phone = row.getAttribute('data-phone')?.toLowerCase() || '';
+                                                                                    const rowStatus = row.getAttribute('data-status') || '';
 
-                        row.style.display = (matchSearch && matchStatus) ? "" : "none";
-                    });
-                }
+                                                                                    const matchSearch = (
+                                                                                            username.includes(keyword) ||
+                                                                                            email.includes(keyword) ||
+                                                                                            phone.includes(keyword)
+                                                                                            );
+                                                                                    const matchStatus = (status === "" || rowStatus === status);
 
-                if (searchInput) searchInput.addEventListener('input', filterTable);
-                if (statusFilter) statusFilter.addEventListener('change', filterTable);
-            });
+                                                                                    row.style.display = (matchSearch && matchStatus) ? "" : "none";
+                                                                                });
+                                                                            }
 
-            // Modal handlers
-            var banUserModal = document.getElementById('banUserModal');
-            if (banUserModal) {
-                banUserModal.addEventListener('show.bs.modal', function (event) {
-                    var button = event.relatedTarget;
-                    var userId = button.getAttribute('data-userid');
-                    document.getElementById('banUserId').value = userId;
-                    document.getElementById('banNote').value = '';
-                });
-            }
+                                                                            if (searchInput)
+                                                                                searchInput.addEventListener('input', filterTable);
+                                                                            if (statusFilter)
+                                                                                statusFilter.addEventListener('change', filterTable);
+                                                                        });
 
+                                                                        // Modal handlers
+                                                                        var banUserModal = document.getElementById('banUserModal');
+                                                                        if (banUserModal) {
+                                                                            banUserModal.addEventListener('show.bs.modal', function (event) {
+                                                                                var button = event.relatedTarget;
+                                                                                var userId = button.getAttribute('data-userid');
+                                                                                document.getElementById('banUserId').value = userId;
+                                                                                document.getElementById('banNote').value = '';
+                                                                            });
+                                                                        }
+
+
+        </script>
+        <script>
             var editUserModal = document.getElementById('editUserModal');
             if (editUserModal) {
                 editUserModal.addEventListener('show.bs.modal', function (event) {
                     var button = event.relatedTarget;
+
                     document.getElementById('editUserId').value = button.getAttribute('data-userid');
                     document.getElementById('editUsername').value = button.getAttribute('data-username');
                     document.getElementById('editEmail').value = button.getAttribute('data-email');
                     document.getElementById('editPhone').value = button.getAttribute('data-phone');
                     document.getElementById('editRole').value = button.getAttribute('data-role');
+                    document.getElementById('editGender').value = button.getAttribute('data-gender');
+                    document.getElementById('editFirstname').value = button.getAttribute('data-firstname');
+                    document.getElementById('editLastname').value = button.getAttribute('data-lastname');
+                    document.getElementById('editDOB').value = button.getAttribute('data-dob');
+
+                    // Nếu bạn có thêm trường note và status
+                    var noteInput = document.getElementById('editNote');
+                    if (noteInput) {
+                        noteInput.value = button.getAttribute('data-note') || '';
+                    }
+
+                    var statusInput = document.getElementById('editStatus');
+                    if (statusInput) {
+                        statusInput.value = button.getAttribute('data-status') || '';
+                    }
                 });
             }
         </script>
+
     </body>
 </html>

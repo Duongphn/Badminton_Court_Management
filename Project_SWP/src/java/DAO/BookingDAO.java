@@ -24,7 +24,11 @@ import Model.Courts;
 import Model.Service;
 import DAO.ServiceDAO;
 import DAO.BookingServiceDAO;
-
+import Model.Promotion;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -82,44 +86,45 @@ public class BookingDAO extends DBContext {
 
         return 0;
     }
-public List<Bookings> getBookingsByCourtAndDate(int courtId, LocalDate date) {
-    List<Bookings> bookings = new ArrayList<>();
-    String sql = "SELECT * FROM Bookings WHERE court_id = ? AND date = ? AND status NOT IN ('cancelled', 'rejected')";
 
-    try (
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+    public List<Bookings> getBookingsByCourtAndDate(int courtId, LocalDate date) {
+        List<Bookings> bookings = new ArrayList<>();
+        String sql = "SELECT * FROM Bookings WHERE court_id = ? AND date = ? AND status NOT IN ('cancelled', 'rejected')";
 
-        ps.setInt(1, courtId);
-        ps.setDate(2, java.sql.Date.valueOf(date));
+        try (
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ResultSet rs = ps.executeQuery();
+            ps.setInt(1, courtId);
+            ps.setDate(2, java.sql.Date.valueOf(date));
 
-        while (rs.next()) {
-            Bookings booking = new Bookings();
-            booking.setBooking_id(rs.getInt("booking_id"));
-            booking.setUser_id(rs.getInt("user_id"));
-            booking.setCourt_id(rs.getInt("court_id"));
-            booking.setDate(rs.getDate("date").toLocalDate());
-            booking.setStart_time(rs.getTime("start_time"));
-            booking.setEnd_time(rs.getTime("end_time"));
-            booking.setStatus(rs.getString("status"));
-            booking.setRating(rs.getInt("rating"));
-            booking.setTotal_price(rs.getDouble("total_price"));
+            ResultSet rs = ps.executeQuery();
 
-            bookings.add(booking);
+            while (rs.next()) {
+                Bookings booking = new Bookings();
+                booking.setBooking_id(rs.getInt("booking_id"));
+                booking.setUser_id(rs.getInt("user_id"));
+                booking.setCourt_id(rs.getInt("court_id"));
+                booking.setDate(rs.getDate("date").toLocalDate());
+                booking.setStart_time(rs.getTime("start_time"));
+                booking.setEnd_time(rs.getTime("end_time"));
+                booking.setStatus(rs.getString("status"));
+                booking.setRating(rs.getInt("rating"));
+                booking.setTotal_price(rs.getDouble("total_price"));
+
+                bookings.add(booking);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return bookings;
     }
 
-    return bookings;
-}
-
     public boolean checkSlotAvailable(int courtId, LocalDate date, Time startTime, Time endTime) {
-       String sql = "SELECT * FROM Bookings " +
-             "WHERE court_id = ? AND date = ? AND status != 'cancelled' " +
-             "AND NOT (end_time <= CAST(? AS TIME) OR start_time >= CAST(? AS TIME))";
+        String sql = "SELECT * FROM Bookings "
+                + "WHERE court_id = ? AND date = ? AND status != 'cancelled' "
+                + "AND NOT (end_time <= CAST(? AS TIME) OR start_time >= CAST(? AS TIME))";
 
         try (
                 PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -173,45 +178,7 @@ public List<Bookings> getBookingsByCourtAndDate(int courtId, LocalDate date) {
         return true;
     }
 
-
-public int insertBooking1(int userId, int courtId, LocalDate date, Time startTime, Time endTime, String status) {
-    String sql = "INSERT INTO Bookings (user_id, court_id, date, start_time, end_time, status, total_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    int bookingId = -1;
-
-    try (PreparedStatement ps = conn.prepareStatement(sql )) {
-        ps.setInt(1, userId);
-        ps.setInt(2, courtId);
-        ps.setDate(3, java.sql.Date.valueOf(date));
-        ps.setTime(4, startTime);
-        ps.setTime(5, endTime);
-        ps.setString(6, status); // e.g., "pending"
-        try {
-            int areaId = new CourtDAO().getCourtById(courtId).getArea_id();
-        } catch (Exception e) {
-            ps.setDouble(7, 0);
-        }
-       
-        
-
-
-            int affectedRows = ps.executeUpdate();
-
-            if (affectedRows > 0) {
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        bookingId = rs.getInt(1); // lấy booking_id vừa tạo
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return bookingId;
-    }
-
-   
-public int insertBooking(int userId, int courtId, LocalDate date, Time startTime, Time endTime, String status) {
+   public int insertBooking1(int userId, int courtId, LocalDate date, Time startTime, Time endTime, String status, BigDecimal totalPrice) {
     String sql = "INSERT INTO Bookings (user_id, court_id, date, start_time, end_time, status, total_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
     int bookingId = -1;
 
@@ -221,20 +188,14 @@ public int insertBooking(int userId, int courtId, LocalDate date, Time startTime
         ps.setDate(3, java.sql.Date.valueOf(date));
         ps.setTime(4, startTime);
         ps.setTime(5, endTime);
-        ps.setString(6, status);
-
-        double totalPrice = 0;
-        Courts c = new CourtDAO().getCourtById(courtId);
-        if (c != null) {
-            totalPrice = c.getPrice();
-        }
-        ps.setDouble(7, totalPrice);
+        ps.setString(6, status); // e.g., "pending"
+        ps.setBigDecimal(7, totalPrice); // truyền giá đã tính toán
 
         int affectedRows = ps.executeUpdate();
         if (affectedRows > 0) {
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    bookingId = rs.getInt(1);
+                    bookingId = rs.getInt(1); // lấy booking_id vừa tạo
                 }
             }
         }
@@ -245,6 +206,40 @@ public int insertBooking(int userId, int courtId, LocalDate date, Time startTime
     return bookingId;
 }
 
+
+    public int insertBooking(int userId, int courtId, LocalDate date, Time startTime, Time endTime, String status) {
+        String sql = "INSERT INTO Bookings (user_id, court_id, date, start_time, end_time, status, total_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        int bookingId = -1;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, courtId);
+            ps.setDate(3, java.sql.Date.valueOf(date));
+            ps.setTime(4, startTime);
+            ps.setTime(5, endTime);
+            ps.setString(6, status);
+
+            double totalPrice = 0;
+            Courts c = new CourtDAO().getCourtById(courtId);
+            if (c != null) {
+                totalPrice = c.getPrice();
+            }
+            ps.setDouble(7, totalPrice);
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        bookingId = rs.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return bookingId;
+    }
 
     public Bookings getBookingById1(int bookingId) {
         String sql = "SELECT * FROM Bookings WHERE booking_id = ?";
@@ -265,75 +260,74 @@ public int insertBooking(int userId, int courtId, LocalDate date, Time startTime
         } catch (Exception e) {
             e.printStackTrace();
 
-    
-}return null;
+        }
+        return null;
     }
 
+    public Bookings getBookingById(int bookingId) {
+        String sql = "SELECT * FROM Bookings WHERE booking_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Bookings b = new Bookings();
+                b.setBooking_id(rs.getInt("booking_id"));
+                b.setUser_id(rs.getInt("user_id"));
+                b.setCourt_id(rs.getInt("court_id"));
+                b.setDate(rs.getDate("date").toLocalDate());
+                b.setStart_time(rs.getTime("start_time"));
+                b.setEnd_time(rs.getTime("end_time"));
+                b.setStatus(rs.getString("status"));
+                b.setRating(rs.getInt("rating"));
+                b.setTotal_price(rs.getDouble("total_price"));
+                return b;
 
-public Bookings getBookingById(int bookingId) {
-    String sql = "SELECT * FROM Bookings WHERE booking_id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, bookingId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            Bookings b = new Bookings();
-            b.setBooking_id(rs.getInt("booking_id"));
-            b.setUser_id(rs.getInt("user_id"));
-            b.setCourt_id(rs.getInt("court_id"));
-            b.setDate(rs.getDate("date").toLocalDate());
-            b.setStart_time(rs.getTime("start_time"));
-            b.setEnd_time(rs.getTime("end_time"));
-            b.setStatus(rs.getString("status"));
-            b.setRating(rs.getInt("rating"));
-            b.setTotal_price(rs.getDouble("total_price"));
-            return b;
+            }
 
-        }
-       
-    }catch(SQLException e){
-        System.out.println(e.getMessage());
-    } return null;
-}
-
-public List<Bookings> getBookingsByUserId(int userId) {
-    List<Bookings> list = new ArrayList<>();
-    String sql = "SELECT * FROM Bookings b JOIN Courts c ON b.court_id = c.court_id WHERE b.user_id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, userId);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Bookings b = new Bookings();
-            b.setBooking_id(rs.getInt("booking_id"));
-            b.setCourt_id(rs.getInt("court_id"));
-            b.setDate(rs.getDate("date").toLocalDate());
-            b.setStart_time(rs.getTime("start_time"));
-            b.setEnd_time(rs.getTime("end_time"));
-            b.setStatus(rs.getString("status"));
-            b.setRating(rs.getInt("rating"));
-            b.setTotal_price(rs.getDouble("total_price"));
-            list.add(b);
-
-        }
-       
-    
-        }catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
- return list;
-}
-    public boolean cancelBookingById(int bookingId) {
-    String sql = "UPDATE bookings SET status = ? WHERE booking_id = ?";
-    try (
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, "cancelled");
-        ps.setInt(2, bookingId);
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
+        return null;
     }
-    return false;
-}
 
+    public List<Bookings> getBookingsByUserId(int userId) {
+        List<Bookings> list = new ArrayList<>();
+        String sql = "SELECT * FROM Bookings b JOIN Courts c ON b.court_id = c.court_id WHERE b.user_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Bookings b = new Bookings();
+                b.setBooking_id(rs.getInt("booking_id"));
+                b.setCourt_id(rs.getInt("court_id"));
+                b.setDate(rs.getDate("date").toLocalDate());
+                b.setStart_time(rs.getTime("start_time"));
+                b.setEnd_time(rs.getTime("end_time"));
+                b.setStatus(rs.getString("status"));
+                b.setRating(rs.getInt("rating"));
+                b.setTotal_price(rs.getDouble("total_price"));
+                list.add(b);
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public boolean cancelBookingById(int bookingId) {
+        String sql = "UPDATE bookings SET status = ? WHERE booking_id = ?";
+        try (
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "cancelled");
+            ps.setInt(2, bookingId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     public List<BookingScheduleDTO> getManagerBookings(int managerId, Integer areaId, LocalDate start, LocalDate end, String status) {
         List<BookingScheduleDTO> list = new ArrayList<>();
@@ -386,7 +380,7 @@ public List<Bookings> getBookingsByUserId(int userId) {
                 dto.setCourtNumber(rs.getString("court_number"));
                 dto.setArea_id(rs.getInt("area_id"));
                 dto.setAreaName(rs.getString("area_name"));
-               
+
                 list.add(dto);
             }
         } catch (SQLException e) {
@@ -408,7 +402,7 @@ public List<Bookings> getBookingsByUserId(int userId) {
     }
 
     public boolean updateBooking(int bookingId, LocalDate date, Time startTime, Time endTime,
-                                 String status, List<Integer> serviceIds) {
+            String status, List<Integer> serviceIds) {
         String sql = "UPDATE Bookings SET date = ?, start_time = ?, end_time = ?, status = ?, total_price = ? WHERE booking_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(date));
@@ -452,7 +446,7 @@ public List<Bookings> getBookingsByUserId(int userId) {
     }
 
     public boolean checkSlotAvailableForUpdate(int bookingId, int courtId, LocalDate date,
-                                              Time startTime, Time endTime) {
+            Time startTime, Time endTime) {
         // Use the same overlap logic as when creating a new booking and exclude the
         // current booking by its id. Also ignore cancelled or rejected bookings.
         String sql = "SELECT COUNT(*) FROM Bookings "
@@ -477,34 +471,35 @@ public List<Bookings> getBookingsByUserId(int userId) {
         }
         return true;
     }
-public List<Bookings> getBookingsByCourtId(int courtId) {
-    List<Bookings> list = new ArrayList<>();
-    String sql = "SELECT * FROM Bookings WHERE court_id = ?";
 
-    try (
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+    public List<Bookings> getBookingsByCourtId(int courtId) {
+        List<Bookings> list = new ArrayList<>();
+        String sql = "SELECT * FROM Bookings WHERE court_id = ?";
 
-        ps.setInt(1, courtId);
-        ResultSet rs = ps.executeQuery();
+        try (
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        while (rs.next()) {
-            Bookings booking = new Bookings();
-            booking.setBooking_id(rs.getInt("booking_id"));
-            booking.setCourt_id(rs.getInt("court_id"));
-            booking.setUser_id(rs.getInt("user_id"));
-            booking.setDate(rs.getDate("date").toLocalDate());
-            booking.setStart_time(rs.getTime("start_time"));
-            booking.setEnd_time(rs.getTime("end_time"));
-            booking.setStatus(rs.getString("status"));
+            ps.setInt(1, courtId);
+            ResultSet rs = ps.executeQuery();
 
-            list.add(booking);
+            while (rs.next()) {
+                Bookings booking = new Bookings();
+                booking.setBooking_id(rs.getInt("booking_id"));
+                booking.setCourt_id(rs.getInt("court_id"));
+                booking.setUser_id(rs.getInt("user_id"));
+                booking.setDate(rs.getDate("date").toLocalDate());
+                booking.setStart_time(rs.getTime("start_time"));
+                booking.setEnd_time(rs.getTime("end_time"));
+                booking.setStatus(rs.getString("status"));
+
+                list.add(booking);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
 
-    return list;
-}
+        return list;
+    }
 
     public boolean updateRating(int bookingId, int rating) {
         String sql = "UPDATE Bookings SET rating = ? WHERE booking_id = ?";
@@ -517,11 +512,164 @@ public List<Bookings> getBookingsByCourtId(int courtId) {
         }
         return false;
     }
-    public static void main(String[] args) {
-        BookingDAO dao = new  BookingDAO();
-        List<Bookings> list = dao.getBookingsByUserId(2);
-        for(Bookings a : list){
-            System.out.println(a);
+
+public List<Bookings> getBookingHistoryByFilter(LocalDate from, LocalDate to, Integer courtId) {
+    List<Bookings> list = new ArrayList<>();
+    StringBuilder sql = new StringBuilder("SELECT * FROM Bookings WHERE status != 'cancelled'");
+    
+    // Kiểm tra và thêm điều kiện lọc ngày
+    if (from != null) {
+        sql.append(" AND date >= ?");
+    }
+    if (to != null) {
+        sql.append(" AND date <= ?");
+    }
+    
+    // Kiểm tra và thêm điều kiện lọc theo court_id
+    if (courtId != null) {
+        sql.append(" AND court_id = ?");
+    }
+    
+    sql.append(" ORDER BY date DESC, start_time");
+
+    try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        int parameterIndex = 1;
+        
+        // Gán giá trị cho các tham số PreparedStatement
+        if (from != null) {
+            ps.setDate(parameterIndex++, java.sql.Date.valueOf(from));
+        }
+        if (to != null) {
+            ps.setDate(parameterIndex++, java.sql.Date.valueOf(to));
+        }
+        if (courtId != null) {
+            ps.setInt(parameterIndex++, courtId);
+        }
+        
+        // Thực thi truy vấn
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Bookings b = new Bookings();
+            b.setBooking_id(rs.getInt("booking_id"));
+            b.setUser_id(rs.getInt("user_id"));
+            b.setCourt_id(rs.getInt("court_id"));
+            b.setDate(rs.getDate("date").toLocalDate());
+            b.setStart_time(rs.getTime("start_time"));
+            b.setEnd_time(rs.getTime("end_time"));
+            b.setStatus(rs.getString("status"));
+            b.setRating(rs.getInt("rating"));
+            b.setTotal_price(rs.getDouble("total_price"));
+            list.add(b);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
+
+
+public BigDecimal getTotalRevenue(LocalDate from, LocalDate to, Integer courtId) {
+    StringBuilder sql = new StringBuilder("SELECT SUM(total_price) FROM Bookings WHERE date >= ? AND date <= ? AND status != 'cancelled'");
+    if (courtId != null) {
+        sql.append(" AND court_id = ?");
+    }
+
+    try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        ps.setDate(1, java.sql.Date.valueOf(from));
+        ps.setDate(2, java.sql.Date.valueOf(to));
+        if (courtId != null) {
+            ps.setInt(3, courtId);
+        }
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            BigDecimal sum = rs.getBigDecimal(1);
+            return sum != null ? sum : BigDecimal.ZERO;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return BigDecimal.ZERO;
+}
+
+
+// Doanh thu từng tháng trong 1 năm
+public Map<String, BigDecimal> getRevenueByMonth(int year) {
+    Map<String, BigDecimal> result = new LinkedHashMap<>();
+    String sql = "SELECT MONTH([date]) AS month, SUM([total_price]) AS total " +
+                 "FROM [Bookings] WHERE YEAR([date]) = ? AND [status] != 'cancelled' " +
+                 "GROUP BY MONTH([date]) ORDER BY month";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, year);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int month = rs.getInt("month");
+            BigDecimal total = rs.getBigDecimal("total");
+            result.put(String.format("%02d", month), total != null ? total : BigDecimal.ZERO);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return result;
+}
+
+// Doanh thu từng tuần (ISO week) trong 1 năm
+public Map<String, BigDecimal> getRevenueByWeek(int year) {
+    Map<String, BigDecimal> result = new LinkedHashMap<>();
+    String sql = "SELECT DATEPART(iso_week, [date]) AS week, SUM([total_price]) AS total " +
+                 "FROM [Bookings] WHERE YEAR([date]) = ? AND [status] != 'cancelled' " +
+                 "GROUP BY DATEPART(iso_week, [date]) ORDER BY week";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, year);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int week = rs.getInt("week");
+            BigDecimal total = rs.getBigDecimal("total");
+            result.put(String.valueOf(week), total != null ? total : BigDecimal.ZERO);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return result;
+}
+public BigDecimal calculateSlotPriceWithPromotion(
+    Time startTime, 
+    Time endTime, 
+    BigDecimal pricePerHour,
+    Promotion promotion 
+) {
+   
+    long millisStart = startTime.getTime();
+    long millisEnd = endTime.getTime();
+    long durationMillis = millisEnd - millisStart;
+    long minutes = durationMillis / (1000 * 60); 
+    BigDecimal slotPrice;
+    if (minutes == 60) {
+        slotPrice = pricePerHour;
+    } else {
+        BigDecimal hours = new BigDecimal(minutes).divide(new BigDecimal(60), 2, RoundingMode.HALF_UP);
+        slotPrice = hours.multiply(pricePerHour);
+    }
+
+    if (promotion != null) {
+        
+        if (promotion.getDiscountPercent() > 0) {
+            BigDecimal percent = BigDecimal.valueOf(promotion.getDiscountPercent()).divide(BigDecimal.valueOf(100));
+            BigDecimal discount = slotPrice.multiply(percent);
+            slotPrice = slotPrice.subtract(discount);
+        }
+       
+        if (promotion.getDiscountAmount() > 0) {
+            slotPrice = slotPrice.subtract(BigDecimal.valueOf(promotion.getDiscountAmount()));
         }
     }
+
+    
+    if (slotPrice.compareTo(BigDecimal.ZERO) < 0) {
+        slotPrice = BigDecimal.ZERO;
+    }
+    return slotPrice.setScale(0, RoundingMode.HALF_UP); 
+}
+
+
 }

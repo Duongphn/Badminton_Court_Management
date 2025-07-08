@@ -81,7 +81,7 @@ public class DeleteService extends HttpServlet {
          HttpSession session = request.getSession(false);
         if (session != null) {
             User user = (User) session.getAttribute("user");
-            if (user.getRole().equals("staff")) {
+            if (user.getRole().equals("admin")) {
                 int image_id = Integer.parseInt(request.getParameter("image_id"));
                 String area_id = request.getParameter("area_id");
                 Branch_ImageDAO areasImageDAO = new Branch_ImageDAO();

@@ -155,11 +155,12 @@
                     <div><strong>Ngày:</strong> ${date}</div>
                     <div><strong>Giờ bắt đầu:</strong> ${startTime}</div>
                     <div><strong>Giờ kết thúc:</strong> ${endTime}</div>
-                   
-                    
-                    
+                    <div><strong>Giá tiền:</strong> ${totalPrice}</div>
+
+
+
                 </div>
-          
+
                 <!-- Form xác nhận -->
                 <form action="confirm-booking" method="post" class="p-2">
                     <!-- Hidden Inputs -->
@@ -169,13 +170,28 @@
                     <input type="hidden" name="startTime" value="${startTime}">
                     <input type="hidden" name="endTime" value="${endTime}">
                     <input type="hidden" name="totalPrice" value="${totalPrice}">
+                    <c:if test="${not empty promotion}">
+                        <div class="alert alert-success mt-2">
+                            <b>Khuyến mãi áp dụng:</b>
+                            <c:if test="${promotion.discountPercent > 0}">
+                                Giảm giá <b>${promotion.discountPercent}%</b>
+                            </c:if>
+                            <c:if test="${promotion.discountAmount > 0}">
+                                <c:if test="${promotion.discountPercent > 0}">, </c:if>
+                                trừ thẳng <b>${promotion.discountAmount} VNĐ</b>
+                            </c:if>
+                            <c:if test="${not empty promotion.title}">
+                                <br/><span style="font-style:italic;">${promotion.title}</span>
+                            </c:if>
+                        </div>
+                    </c:if>
 
 
                     <div class="court-info">
                         <h5 class="court-name">Dịch vụ đi kèm</h5>
                         <div class="form-group">
                             <c:forEach var="service" items="${availableServices}">
-                              
+
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="checkbox"
                                            name="selectedServices"

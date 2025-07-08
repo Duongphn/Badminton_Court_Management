@@ -88,11 +88,11 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         Time startTime = Time.valueOf(start + ":00");
         Time endTime = Time.valueOf(end + ":00");
 
-        // Lấy DAO
+       
         ShiftDAO dao = new ShiftDAO();
         AreaDAO aDao = new AreaDAO();
       
-        // Lấy giờ mở cửa và đóng cửa của khu vực
+      
         Time[] openClose = aDao.getAreaOpenAndCloseTime(areaId);
         if (openClose == null) {
             response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Không tìm thấy giờ hoạt động của khu vực.");
@@ -102,7 +102,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         Time openTime = openClose[0];
         Time closeTime = openClose[1];
 
-        // Validate giờ
+  
         if (startTime.compareTo(endTime) >= 0) {
             response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Giờ bắt đầu phải trước giờ kết thúc.");
             return;
@@ -116,7 +116,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             return;
         }
 
-        // Kiểm tra trùng với shift đã tồn tại trong khu vực
+     
         List<Shift> existingShifts = dao.getShiftsByArea(areaId);
         for (Shift s : existingShifts) {
             boolean overlap = !(endTime.compareTo(s.getStartTime()) <= 0 || startTime.compareTo(s.getEndTime()) >= 0);
@@ -126,7 +126,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             }
         }
 
-        // Nếu hợp lệ thì thêm shift
+ 
         Shift shift = new Shift(areaId, shiftName, startTime, endTime);
         dao.addShift(shift);
 

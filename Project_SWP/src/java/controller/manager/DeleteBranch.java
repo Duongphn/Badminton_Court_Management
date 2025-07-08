@@ -63,7 +63,7 @@ public class DeleteBranch extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null) {
             User user = (User) session.getAttribute("user");
-            if (user.getRole().equals("staff")) {
+            if (user.getRole().equals("admin")) {
                 int regionID = Integer.parseInt(request.getParameter("regionId"));
                 AreaDAO dao = new AreaDAO();
                 dao.deleteById(regionID);
@@ -74,6 +74,7 @@ public class DeleteBranch extends HttpServlet {
             response.sendRedirect("login");
         }
     }
+    
 
     /**
      * Handles the HTTP <code>POST</code> method.

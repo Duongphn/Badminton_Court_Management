@@ -61,69 +61,10 @@ public class PostDAO {
             p.setCreatedAt(rs.getTimestamp("created_at"));
             p.setStatus(rs.getString("status"));
             p.setCreatedByName(rs.getString("createdByName"));
+            p.setImage(rs.getString("image"));
             list.add(p);
         }
         return list;
-    }
-
-    public List<Post> getPostsForUser(String type, String keyword, int userId, int offset, int limit) throws SQLException {
-        StringBuilder sql = new StringBuilder("SELECT * FROM Posts WHERE (status = 'approved'");
-        List<Object> params = new ArrayList<>();
-
-        if (type != null && !type.isEmpty()) {
-            sql.append(" AND type = ?");
-            params.add(type);
-        }
-        if (keyword != null && !keyword.isEmpty()) {
-            sql.append(" AND title LIKE ?");
-            params.add("%" + keyword + "%");
-        }
-
-        sql.append(" OR (created_by = ? AND (status = 'rejected'))");
-        params.add(userId);
-
-        sql.append(") ORDER BY created_at DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        params.add(offset);
-        params.add(limit);
-
-        PreparedStatement stmt = conn.prepareStatement(sql.toString());
-        for (int i = 0; i < params.size(); i++) {
-            stmt.setObject(i + 1, params.get(i));
-        }
-
-        ResultSet rs = stmt.executeQuery();
-        List<Post> list = new ArrayList<>();
-        while (rs.next()) {
-            Post p = new Post();
-            p.setPostId(rs.getInt("post_id"));
-            p.setTitle(rs.getString("title"));
-            p.setContent(rs.getString("content"));
-            p.setType(rs.getString("type"));
-            p.setCreatedBy(rs.getInt("created_by"));
-            p.setCreatedAt(rs.getTimestamp("created_at"));
-            p.setStatus(rs.getString("status"));
-            list.add(p);
-        }
-        return list;
-    }
-
-    public Post getPostById(int postId) throws SQLException {
-        String sql = "SELECT * FROM Posts WHERE post_id = ?";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, postId);
-        ResultSet rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            Post p = new Post();
-            p.setPostId(rs.getInt("post_id"));
-            p.setTitle(rs.getString("title"));
-            p.setContent(rs.getString("content"));
-            p.setType(rs.getString("type"));
-            p.setCreatedBy(rs.getInt("created_by"));
-            p.setCreatedAt(rs.getTimestamp("created_at"));
-            return p;
-        }
-        return null;
     }
 
     public int getTotalPostManager(String type, String keyword, String status) throws SQLException {
@@ -156,6 +97,65 @@ public class PostDAO {
         return 0;
     }
 
+    public Post getPostById(int postId) throws SQLException {
+        String sql = "SELECT * FROM Posts WHERE post_id = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, postId);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            Post p = new Post();
+            p.setPostId(rs.getInt("post_id"));
+            p.setTitle(rs.getString("title"));
+            p.setContent(rs.getString("content"));
+            p.setType(rs.getString("type"));
+            p.setCreatedBy(rs.getInt("created_by"));
+            p.setCreatedAt(rs.getTimestamp("created_at"));
+            p.setImage(rs.getString("image"));
+            return p;
+        }
+        return null;
+    }
+
+    public List<Post> getPostsForUser(String type, String keyword, int userId, int offset, int limit) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT * FROM Posts WHERE status = 'approved'");
+        List<Object> params = new ArrayList<>();
+
+        if (type != null && !type.isEmpty()) {
+            sql.append(" AND type = ?");
+            params.add(type);
+        }
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND title LIKE ?");
+            params.add("%" + keyword + "%");
+        }
+
+        sql.append(" ORDER BY created_at DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        params.add(offset);
+        params.add(limit);
+
+        PreparedStatement stmt = conn.prepareStatement(sql.toString());
+        for (int i = 0; i < params.size(); i++) {
+            stmt.setObject(i + 1, params.get(i));
+        }
+
+        ResultSet rs = stmt.executeQuery();
+        List<Post> list = new ArrayList<>();
+        while (rs.next()) {
+            Post p = new Post();
+            p.setPostId(rs.getInt("post_id"));
+            p.setTitle(rs.getString("title"));
+            p.setContent(rs.getString("content"));
+            p.setType(rs.getString("type"));
+            p.setCreatedBy(rs.getInt("created_by"));
+            p.setCreatedAt(rs.getTimestamp("created_at"));
+            p.setStatus(rs.getString("status"));
+            p.setImage(rs.getString("image"));
+            list.add(p);
+        }
+        return list;
+    }
+
     public int getTotalApprovedPostCount(String type, String keyword) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Posts WHERE status = 'approved'";
         if (type != null && !type.isEmpty()) {
@@ -182,8 +182,94 @@ public class PostDAO {
         return 0;
     }
 
+    public List<Post> getLatestNews(int limit) throws SQLException {
+        String sql = "SELECT * FROM Posts WHERE status = 'approved' AND type = 'news' ORDER BY created_at DESC OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, limit);
+        ResultSet rs = stmt.executeQuery();
+        List<Post> list = new ArrayList<>();
+        while (rs.next()) {
+            Post p = new Post();
+            p.setPostId(rs.getInt("post_id"));
+            p.setTitle(rs.getString("title"));
+            p.setContent(rs.getString("content"));
+            p.setType(rs.getString("type"));
+            p.setCreatedBy(rs.getInt("created_by"));
+            p.setCreatedAt(rs.getTimestamp("created_at"));
+            p.setStatus(rs.getString("status"));
+            p.setImage(rs.getString("image"));
+            list.add(p);
+        }
+        return list;
+    }
+
+    public List<Post> getPostsByUser(int userId, String type, String keyword, int offset, int limit) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT * FROM Posts WHERE created_by = ?");
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
+
+        if (type != null && !type.isEmpty()) {
+            sql.append(" AND type = ?");
+            params.add(type);
+        }
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND title LIKE ?");
+            params.add("%" + keyword + "%");
+        }
+
+        sql.append(" ORDER BY created_at DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        params.add(offset);
+        params.add(limit);
+
+        PreparedStatement stmt = conn.prepareStatement(sql.toString());
+        for (int i = 0; i < params.size(); i++) {
+            stmt.setObject(i + 1, params.get(i));
+        }
+
+        ResultSet rs = stmt.executeQuery();
+        List<Post> list = new ArrayList<>();
+        while (rs.next()) {
+            Post p = new Post();
+            p.setPostId(rs.getInt("post_id"));
+            p.setTitle(rs.getString("title"));
+            p.setContent(rs.getString("content"));
+            p.setType(rs.getString("type"));
+            p.setCreatedBy(rs.getInt("created_by"));
+            p.setCreatedAt(rs.getTimestamp("created_at"));
+            p.setStatus(rs.getString("status"));
+            p.setImage(rs.getString("image"));
+            list.add(p);
+        }
+        return list;
+    }
+
+    public int getTotalUserPostCount(int userId, String type, String keyword) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Posts WHERE created_by = ?");
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
+
+        if (type != null && !type.isEmpty()) {
+            sql.append(" AND type = ?");
+            params.add(type);
+        }
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND title LIKE ?");
+            params.add("%" + keyword + "%");
+        }
+
+        PreparedStatement stmt = conn.prepareStatement(sql.toString());
+        for (int i = 0; i < params.size(); i++) {
+            stmt.setObject(i + 1, params.get(i));
+        }
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
     public void insertPost(Post post) throws SQLException {
-        String sql = "INSERT INTO Posts (title, content, created_by, type, status) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Posts (title, content, created_by, type, status, image) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement stmt = conn.prepareStatement(sql);
 
         stmt.setString(1, post.getTitle());
@@ -191,7 +277,7 @@ public class PostDAO {
         stmt.setInt(3, post.getCreatedBy());
         stmt.setString(4, post.getType());
         stmt.setString(5, post.getStatus());
-//        stmt.setString(6, post.getImage());
+        stmt.setString(6, post.getImage());
 
         stmt.executeUpdate();
     }
@@ -213,6 +299,7 @@ public class PostDAO {
         stmt.setString(3, post.getType());
         stmt.setInt(4, post.getPostId());
         stmt.setInt(5, post.getCreatedBy());
+        stmt.setString(6, post.getImage());
         stmt.executeUpdate();
     }
 

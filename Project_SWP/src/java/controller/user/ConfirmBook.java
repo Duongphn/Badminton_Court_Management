@@ -6,6 +6,7 @@ package controller.user;
 
 import DAO.BookingDAO;
 import DAO.BookingServiceDAO;
+import DAO.CourtDAO;
 import DAO.Service_BranchDAO;
 import Model.Branch_Service;
 import Model.User;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
@@ -94,8 +96,8 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         String dateStr = request.getParameter("date");
         String startTimeStr = request.getParameter("startTime");
         String endTimeStr = request.getParameter("endTime");
-        String totalPriceStr = request.getParameter("totalPrice");
-
+        String totalPriceStr = request.getParameter( "totalPrice");
+          BigDecimal totalPrice = new BigDecimal(totalPriceStr);
         LocalDate date = LocalDate.parse(dateStr);
         Time startTime = Time.valueOf(startTimeStr);
         Time endTime = Time.valueOf(endTimeStr);
@@ -106,7 +108,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             request.getRequestDispatcher("book_field.jsp").forward(request, response);
             return;
         }
-
+    
         // Check nếu đã có người đặt
         BookingDAO bookingDAO = new BookingDAO();
         boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
@@ -117,10 +119,10 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             return;
         }
 
-        // Lưu thông tin booking
-        int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending");
+        
+        int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending",totalPrice);
 
-        // Dịch vụ đi kèm (nếu có)
+       
         String[] selectedServices = request.getParameterValues("selectedServices");
         if (selectedServices != null && bookingId != -1) {
             BookingServiceDAO bookingServiceDAO = new BookingServiceDAO();

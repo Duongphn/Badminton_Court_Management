@@ -15,6 +15,10 @@ import java.util.logging.Logger;
 
 import Dal.DBContext;
 import Model.Courts;
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.time.Duration;
+import java.time.LocalTime;
 
 /**
  *
@@ -241,6 +245,35 @@ public int countCourtsByManager(int managerId) {
         System.out.println(e.getMessage());
     }
     return 0;
+}
+public BigDecimal getCourtPrice(int courtId) {
+    String sql = "SELECT price FROM Courts WHERE court_id = ?";
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, courtId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getBigDecimal("price");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return BigDecimal.ZERO;
+}
+public BigDecimal calculateSlotPrice(Time startTime, Time endTime, BigDecimal pricePerHour) {
+    // Sử dụng getTime() để lấy milliseconds
+    long millisStart = startTime.getTime();
+    long millisEnd = endTime.getTime();
+    long durationMillis = millisEnd - millisStart;
+
+    long minutes = durationMillis / (1000 * 60); 
+
+    if (minutes == 60) {
+        return pricePerHour;
+    } else {
+        // Nếu không phải 60 phút, tính giá theo giờ (hoặc throw exception nếu muốn)
+        BigDecimal hours = new BigDecimal(minutes).divide(new BigDecimal(60), 2, BigDecimal.ROUND_HALF_UP);
+        return hours.multiply(pricePerHour);
+    }
 }
     public static void main(String[] args) {
         CourtDAO dao = new CourtDAO();

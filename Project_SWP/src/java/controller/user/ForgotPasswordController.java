@@ -82,7 +82,7 @@ public class ForgotPasswordController extends HttpServlet {
         int code = (int) result[0];
         User user = (User) result[1];
 
-        if (code == 4) {
+        if (code == 0) {
             // ĐÚNG user → Gửi email reset password
 
             // Tạo token ngẫu nhiên và lưu vào DB

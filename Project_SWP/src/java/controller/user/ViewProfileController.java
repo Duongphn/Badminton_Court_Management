@@ -4,6 +4,8 @@
  */
 package controller.user;
 
+import DAO.UserDAO;
+import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -44,7 +46,17 @@ public class ViewProfileController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("viewprofile.jsp").forward(request, response);
+        
+        int userId = Integer.parseInt(request.getParameter("id"));
+        UserDAO dao = new UserDAO();
+        try {
+            User user = dao.getUserById(userId);
+            request.setAttribute("user", user);
+            request.getRequestDispatcher("viewprofile.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("error.jsp");
+        }
     }
 
     /**

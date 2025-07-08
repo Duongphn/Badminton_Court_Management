@@ -122,7 +122,7 @@ public class LoginController extends HttpServlet {
 
         } else {
 
-            request.setAttribute("error", "Invalid username or password!");
+            request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không hợp lệ");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }

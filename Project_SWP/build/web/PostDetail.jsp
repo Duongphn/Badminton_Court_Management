@@ -17,10 +17,24 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <div style="max-width: 800px; margin: auto; padding: 20px;">
-<% if (post != null) { %>
+    <% if (post != null) { %>
     <h2 style="color: #e63946;"><%= post.getTitle() %></h2>
     <div style="color: #666; font-size: 14px;">
         📅 <%= df.format(post.getCreatedAt()) %> | 🏷️ <%= post.getType() %>
+    </div>
+    <%
+    // Lấy link ảnh (nếu có) hoặc trả về ảnh mặc định
+    String imgSrc = (post.getImage() != null && !post.getImage().isEmpty()) 
+        ? request.getContextPath() + "/uploads/" + post.getImage() 
+        : request.getContextPath() + "/images/no-image.png";
+    %>
+    <div style="margin: 20px 0 10px 0;">
+        <img 
+            src="<%= imgSrc %>" 
+            style="max-width:100%;max-height:320px;object-fit:cover;border-radius:12px;box-shadow:0 1px 8px #eee;"
+            onerror="this.onerror=null;this.src='<%=request.getContextPath()%>/images/no-image.png';"
+            alt="Ảnh bài viết"
+            >
     </div>
 
     <div style="margin-top: 20px; font-size: 16px;">
@@ -116,9 +130,9 @@
         </div>
     </div>
     <% } %>
-<% } else { %>
+    <% } else { %>
     <div class="alert alert-danger">Không tìm thấy bài viết!</div>
-<% } %>
+    <% } %>
 </div>
 
 <jsp:include page="homefooter.jsp" />

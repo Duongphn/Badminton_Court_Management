@@ -26,34 +26,34 @@
         <div class="col-md-9">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h3 class="mb-3">Update Booking</h3>
+                    <h3 class="mb-3">Cập nhật Đặt sân</h3>
                     <c:if test="${not empty error}">
                         <div class="alert alert-danger">${error}</div>
                     </c:if>
                     <form action="update-booking" method="post" class="row g-3">
         <input type="hidden" name="bookingId" value="${booking.booking_id}" />
         <div class="col-md-6">
-            <label class="form-label">Court</label>
+            <label class="form-label">Sân</label>
             <input type="text" class="form-control" value="${court.court_number}" disabled>
         </div>
         <div class="col-md-6">
-            <label class="form-label">Customer</label>
+            <label class="form-label">Khách hàng</label>
             <input type="text" class="form-control" value="${customer.username}" disabled>
         </div>
         <div class="col-md-4">
-            <label class="form-label">Date</label>
+            <label class="form-label">Ngày</label>
             <input type="date" name="date" class="form-control" value="${booking.date}" min="<%= java.time.LocalDate.now().toString() %>" required>
         </div>
         <div class="col-md-4">
-            <label class="form-label">Start Time</label>
+            <label class="form-label">Giờ bắt đầu</label>
             <input type="time" name="startTime" class="form-control" value="${booking.start_time}" required>
         </div>
         <div class="col-md-4">
-            <label class="form-label">End Time</label>
+            <label class="form-label">Giờ kết thúc</label>
             <input type="time" name="endTime" class="form-control" value="${booking.end_time}" required>
         </div>
         <div class="col-md-12">
-            <label class="form-label">Services</label>
+            <label class="form-label">Dịch vụ</label>
             <c:forEach var="s" items="${services}">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="selectedServices" value="${s.service_id}" id="service${s.service_id}" <c:if test="${selectedServiceIds.contains(s.service_id)}">checked</c:if>>
@@ -62,7 +62,7 @@
             </c:forEach>
         </div>
         <div class="col-md-4">
-            <label class="form-label">Status</label>
+            <label class="form-label">Trạng thái</label>
             <select name="status" class="form-select">
                 <option value="pending" <c:if test="${booking.status eq 'pending'}">selected</c:if>>Pending</option>
                 <option value="confirmed" <c:if test="${booking.status eq 'confirmed'}">selected</c:if>>Confirmed</option>
@@ -71,8 +71,8 @@
             </select>
         </div>
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary">Save</button>
-                            <a href="manager-booking-schedule" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <a href="manager-booking-schedule" class="btn btn-secondary">Hủy</a>
                         </div>
                     </form>
                 </div>

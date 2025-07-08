@@ -20,12 +20,12 @@ public class Post {
     private String type;
     private String status;
     private String createdByName;
-//    private String image;
+    private String image;
 
     public Post() {
     }
 
-    public Post(int postId, String title, String content, int createdBy, Date createdAt, String type, String status) {
+    public Post(int postId, String title, String content, int createdBy, Date createdAt, String type, String status, String createdByName, String image) {
         this.postId = postId;
         this.title = title;
         this.content = content;
@@ -33,6 +33,8 @@ public class Post {
         this.createdAt = createdAt;
         this.type = type;
         this.status = status;
+        this.createdByName = createdByName;
+        this.image = image;
     }
 
     public int getPostId() {
@@ -97,6 +99,14 @@ public class Post {
 
     public void setCreatedByName(String createdByName) {
         this.createdByName = createdByName;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
 }

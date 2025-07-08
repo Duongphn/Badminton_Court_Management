@@ -41,11 +41,11 @@
                 <!-- Bộ lọc / Tìm kiếm -->
                 <form method="get" class="row mb-3 g-2">
                     <div class="col-md-5">
-                        <input type="text" name="keyword" value="${param.keyword}" class="form-control" placeholder="Tìm theo tiêu đề...">
+                        <input type="text" name="keyword" value="${param.keyword}" class="form-control" placeholder="Tìm theo câu hỏi...">
                     </div>
                     <div class="col-md-4">
                         <select name="tagId" class="form-select">
-                            <option value="">-- Tất cả tag --</option>
+                            <option value="">-- Tất cả chủ đề --</option>
                             <c:forEach var="tag" items="${tagList}">
                                 <option value="${tag.tagId}" ${param.tagId == tag.tagId ? 'selected' : ''}>${tag.name}</option>
                             </c:forEach>
@@ -63,8 +63,8 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>ID</th>
-                                        <th>Tiêu đề</th>
-                                        <th>Tag</th>
+                                        <th>Chủ đề</th>
+                                        <th>Câu hỏi</th>
                                         <th>Ngày tạo</th>
                                         <th>Ngày cập nhật</th>
                                         <th>Thao tác</th>
@@ -74,8 +74,8 @@
                                     <c:forEach var="q" items="${faqList}">
                                         <tr>
                                             <td>${q.questionId}</td>
-                                            <td class="text-start">${q.title}</td>
                                             <td><span class="badge bg-info">${q.tag.name}</span></td>
+                                            <td class="text-start">${q.title}</td>
                                             <td>${q.createdAt}</td>
                                             <td>
                                                 <c:choose>

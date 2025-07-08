@@ -11,6 +11,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
         <style>
             * {
                 margin: 0;
@@ -87,8 +89,8 @@
                 gap: 1rem;
                 align-items: center;
             }
-            
-            
+
+
             .header-btn {
                 background: rgba(255,255,255,0.2);
                 border: 1px solid rgba(255,255,255,0.3);
@@ -167,11 +169,22 @@
                     </form>
 
                 </div>
-                <div class="header-actions">
-                    
-                    <span>
-                        <a href="viewprofile.jsp" class="header-btn"><%=user.getUsername()%></a>
-                    </span>
+                <div class="header-actions" style="position: relative; display: flex; align-items: center;">
+                    <div class="profile-dropdown" style="position: relative; margin-right: 10px;">
+                        <a href="viewprofile.jsp" class="header-btn profile-btn" 
+                           style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <span style="font-weight: bold;"><%=user.getFirstname()%> <%=user.getLastname()%></span>
+                            <!-- Có thể thêm icon avatar hoặc mũi tên ▼ -->
+                            <!--<img src="avatar.png" style="width:30px; height:30px; border-radius:50%; margin-left:4px;" />-->
+                            <span style="font-size: 13px; margin-left:4px;">▼</span>
+                        </a>
+                        <div class="dropdown-content" 
+                             style="display: none; position: absolute; right: 0; top: 36px; background: #fff; min-width: 180px; box-shadow: 0 2px 8px rgba(0,0,0,0.18); border-radius: 10px; z-index: 100;">
+                            <a class="nav-item" href="viewprofile.jsp" style="padding: 12px; display: block; text-decoration: none; color: #222;">Thông tin cá nhân</a>
+
+                            <a class="nav-item" href="notifications?for=user" style="padding: 12px; display: block; text-decoration: none; color: #222;">Thông báo</a>
+                        </div>
+                    </div>
                     <a href="HomePage" class="header-btn">Thoát</a>
                 </div>
             </div>
@@ -181,13 +194,44 @@
         <nav class="nav">
             <div class="nav-container">
                 <div class="nav-item "><a href="HomePageUser">Trang Chủ</a></div>
-
-                <div class="nav-item"><a href="listBranch">Danh Sách Sân Bãi</a></div>
-                <div class="nav-item"><a href="booking-list">Danh sách đặt sân</a></div>
+                <div class="nav-dropdown" style="position: relative; display: inline-block;">
+                    <a class="nav-item" style="padding:10px 18px; cursor:pointer; display:inline-block;">
+                        Danh sách <span style="font-size:13px;">▼</span>
+                    </a>
+                    <div class="dropdown-content" style="
+                         display: none; position: absolute; left: 0; background: #fff; min-width: 210px;
+                         box-shadow: 0 2px 8px rgba(0,0,0,0.16); border-radius: 10px; z-index: 10;
+                         ">
+                        <a class="nav-item" href="listBranch" style="padding: 12px; display: block; text-decoration: none; color: #222;">Danh Sách Sân Bãi</a>
+                        <a class="nav-item" href="booking-list" style="padding: 12px; display: block; text-decoration: none; color: #222;">Danh sách đặt sân</a>
+                        <a class="nav-item" href="coach-list" style="padding: 12px; display: block; text-decoration: none; color: #222;">Danh sách huấn luyện viên</a>
+                    </div>
+                </div>
                 <div class="nav-item"><a href="PostView.jsp">Bài Viết</a></div>
-                <div class="nav-item"><a href="AboutUs.jsp">Giới Thiệu</a></div>
-                <div class="nav-item">Liên Hệ</div>
+                <div class="nav-item"><a href="AboutUs.jsp">Giới Thiệu</a></div>                
+                <div class="nav-item"> <a href="faq-list?for=user">FAQ</a></div>
+
             </div>
         </nav>
     </body>
+    <script>
+// Hiện dropdown khi hover vào profile-btn hoặc menu
+        const dropdown = document.querySelector('.profile-dropdown');
+        const dropdownContent = dropdown.querySelector('.dropdown-content');
+        const navDropdown = document.querySelector('.nav-dropdown');
+        const navDropdownContent = navDropdown.querySelector('.dropdown-content');
+
+        dropdown.addEventListener('mouseenter', function () {
+            dropdownContent.style.display = 'block';
+        });
+        dropdown.addEventListener('mouseleave', function () {
+            dropdownContent.style.display = 'none';
+        });
+        navDropdown.addEventListener('mouseenter', function () {
+            navDropdownContent.style.display = 'block';
+        });
+        navDropdown.addEventListener('mouseleave', function () {
+            navDropdownContent.style.display = 'none';
+        });
+    </script>
 </html>

@@ -97,7 +97,7 @@
         </style>
     </head>
     <body>
-        <jsp:include page="homehead.jsp" />
+         <jsp:include page="homehead.jsp" />
 
         <!-- Main -->
         <main class="main">
@@ -114,7 +114,9 @@
                             <th>Thời gian</th>
                             <th>Trạng thái</th>
                             <th>Đánh giá</th>
-                            <th>Hành động</th>
+                          
+                            <th>Tổng tiền</th>
+                              <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -163,6 +165,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
+                                <td>${booking.total_price}</td>
                                 <td>
                                     <c:if test="${booking.status eq 'confirmed'}">
                                         <form action="cancel_booking" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy?');">
@@ -171,6 +174,7 @@
                                         </form>
                                     </c:if>
                                 </td>
+                                 
                             </tr>
                         </c:forEach>
                     </tbody>

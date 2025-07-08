@@ -17,12 +17,12 @@
             <jsp:include page="Sidebar.jsp" />
         </div>
         <div class="col-md-9">
-            <h3 class="mb-3">Booking Schedule</h3>
+            <h3 class="mb-3">Quản lí lịch đặt sân</h3>
             <div class="d-flex justify-content-between mb-3">
                 <form class="row g-2" method="get" action="manager-booking-schedule">
                     <div class="col-auto">
                         <select name="areaId" class="form-select">
-                            <option value="">All Areas</option>
+                            <option value="">Tất cả các khu vực</option>
                             <c:forEach var="a" items="${areas}">
                                 <option value="${a.area_id}" <c:if test="${areaId == a.area_id}">selected</c:if>>${a.name}</option>
                             </c:forEach>
@@ -36,7 +36,7 @@
                     </div>
                     <div class="col-auto">
                         <select name="status" class="form-select">
-                            <option value="">All Status</option>
+                            <option value="">Tất cả các trạng thái</option>
                             <option value="pending" <c:if test="${status eq 'pending'}">selected</c:if>>Pending</option>
                             <option value="confirmed" <c:if test="${status eq 'confirmed'}">selected</c:if>>Confirmed</option>
                             <option value="cancelled" <c:if test="${status eq 'cancelled'}">selected</c:if>>Cancelled</option>
@@ -44,10 +44,10 @@
                         </select>
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <button type="submit" class="btn btn-primary">Lọc</button>
                     </div>
                 </form>
-                <a href="add-booking" class="btn btn-success">Add Booking</a>
+                <a href="add-booking" class="btn btn-success">Thêm đặt sân</a>
             </div>
             <div class="card shadow-sm">
                 <div class="card-body p-0">
@@ -56,15 +56,15 @@
                             <thead class="table-light text-center">
                             <tr>
                                 <th>ID</th>
-                                <th>Court</th>
-                                <th>Area</th>
-                                <th>Customer</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Total</th>
-                                <th>Services</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th>Sân</th>
+                                <th>Khu vực</th>
+                                <th>Khách hàng</th>
+                                <th>Ngày</th>
+                                <th>Giờ</th>
+                                <th>Tổng</th>
+                                <th>Dịch vụ</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -84,22 +84,22 @@
                                             <form action="confirm-booking-manager" method="post" style="display:inline-block">
                                                 <input type="hidden" name="bookingId" value="${b.booking_id}" />
                                                 <input type="hidden" name="action" value="confirm" />
-                                                <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                                                <button type="submit" class="btn btn-success btn-sm">Xác nhận</button>
                                             </form>
                                             <form action="confirm-booking-manager" method="post" style="display:inline-block;margin-left:5px;">
                                                 <input type="hidden" name="bookingId" value="${b.booking_id}" />
                                                 <input type="hidden" name="action" value="cancel" />
-                                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                                <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
                                             </form>
                                         </c:if>
                                         <c:if test="${b.status eq 'confirmed'}">
                                             <form action="confirm-booking-manager" method="post" style="display:inline-block">
                                                 <input type="hidden" name="bookingId" value="${b.booking_id}" />
                                                 <input type="hidden" name="action" value="complete" />
-                                                <button type="submit" class="btn btn-secondary btn-sm">Mark Completed</button>
+                                                <button type="submit" class="btn btn-secondary btn-sm">Đã hoàn thành</button>
                                             </form>
                                         </c:if>
-                                        <a href="update-booking?bookingId=${b.booking_id}" class="btn btn-primary btn-sm" style="margin-left:5px;">Edit</a>
+                                        <a href="update-booking?bookingId=${b.booking_id}" class="btn btn-primary btn-sm" style="margin-left:5px;">Sửa</a>
                                     </td>
                                 </tr>
                             </c:forEach>
