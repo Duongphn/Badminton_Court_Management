@@ -157,9 +157,16 @@ public class AddBookingServlet extends HttpServlet {
     private void populateFormData(HttpServletRequest request, int managerId) {
         CourtDAO courtDAO = new CourtDAO();
         UserDAO userDAO = new UserDAO();
+
         List<Courts> courts = courtDAO.getCourtsByManager(managerId);
+        if (courts == null || courts.isEmpty()) {
+            request.setAttribute("courtMessage", "Không tìm thấy sân nào thuộc khu vực bạn quản lý.");
+            courts = courts == null ? new java.util.ArrayList<>() : courts;
+        }
+
         List<User> customers = userDAO.getUsersByRole("user");
         List<Service> services = ServiceDAO.getAllService();
+
         request.setAttribute("courts", courts);
         request.setAttribute("customers", customers);
         request.setAttribute("services", services);
