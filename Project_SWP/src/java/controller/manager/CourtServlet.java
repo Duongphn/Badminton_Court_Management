@@ -3,6 +3,7 @@ package controller.manager;
 import DAO.AreaDAO;
 import DAO.CourtDAO;
 import Model.Courts;
+import Model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -55,8 +56,18 @@ public class CourtServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.sendRedirect("login");
+            return;
+        }
+        User user = (User) session.getAttribute("user");
         if (action.equals("add")) {
+            if (user == null || !"admin".equals(user.getRole())) {
+                session.setAttribute("errorMessage", "Bạn không có quyền thêm sân!");
+                response.sendRedirect("courts");
+                return;
+            }
             Courts court = new Courts();
             court.setCourt_number(request.getParameter("courtNumber"));
             court.setType(request.getParameter("type"));
@@ -126,6 +137,11 @@ public class CourtServlet extends HttpServlet {
             session.setAttribute("successMessage", "Cập nhật sân thành công!");
             session.setAttribute("messageType", "success");
         } else if (action.equals("delete")) {
+            if (user == null || !"admin".equals(user.getRole())) {
+                session.setAttribute("errorMessage", "Bạn không có quyền xóa sân!");
+                response.sendRedirect("courts");
+                return;
+            }
             String courtId = request.getParameter("courtId");
             courtDAO.deleteCourt(courtId);
             session.setAttribute("successMessage", "Xóa sân thành công!");
