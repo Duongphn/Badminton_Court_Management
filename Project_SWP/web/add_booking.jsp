@@ -41,6 +41,9 @@
         </div>
         <div class="col-md-6">
             <label class="form-label">Sân</label>
+            <c:if test="${not empty courtMessage}">
+                <div class="alert alert-info" role="alert">${courtMessage}</div>
+            </c:if>
             <select name="courtId" class="form-select" required>
                 <c:forEach var="co" items="${courts}">
                     <option value="${co.court_id}">${co.court_number}</option>
