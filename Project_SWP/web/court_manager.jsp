@@ -179,27 +179,30 @@
             <input type="text" id="searchInput" class="form-control mr-2" placeholder="Tìm kiếm theo số sân">
             <button class="btn btn-outline-primary" onclick="searchCourts()"><i class="fas fa-search"></i> Tìm kiếm</button>
         </div>
-        <button class="btn btn-success" data-toggle="modal" data-target="#addCourtModal"><i class="fas fa-plus"></i> Thêm Sân</button>
+        <c:if test="${sessionScope.user.role eq 'admin'}">
+            <button class="btn btn-success" data-toggle="modal" data-target="#addCourtModal"><i class="fas fa-plus"></i> Thêm Sân</button>
+        </c:if>
     </div>
 
-    <!-- Modal thêm sân -->
-    <div class="modal fade" id="addCourtModal" tabindex="-1" aria-labelledby="addCourtModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Thêm Sân</h5>
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <form action="courts" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="action" value="add">
-                        <c:if test="${not empty areaId}">
-                            <input type="hidden" name="redirectAreaId" value="${areaId}">
-                        </c:if>
-                        <div class="form-group">
-                            <label>Tên Sân</label>
-                            <input type="text" class="form-control" name="courtNumber" required>
-                        </div>
+    <c:if test="${sessionScope.user.role eq 'admin'}">
+        <!-- Modal thêm sân -->
+        <div class="modal fade" id="addCourtModal" tabindex="-1" aria-labelledby="addCourtModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Thêm Sân</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="courts" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="action" value="add">
+                            <c:if test="${not empty areaId}">
+                                <input type="hidden" name="redirectAreaId" value="${areaId}">
+                            </c:if>
+                            <div class="form-group">
+                                <label>Tên Sân</label>
+                                <input type="text" class="form-control" name="courtNumber" required>
+                            </div>
                         <div class="form-group">
                             <label>Loại Sân</label>
                             <input type="text" class="form-control" name="type">
@@ -246,6 +249,7 @@
             </div>
         </div>
     </div>
+    </c:if>
 
     <!-- Modal sửa sân -->
     <div class="modal fade" id="updateCourtModal" tabindex="-1">
@@ -359,17 +363,19 @@
                                         data-area="${court.area_id}"
                                         data-price="${court.price}"
                                         ><i class="fas fa-edit"></i> Sửa</button>
-                                <form action="courts" method="post" style="display: inline;">
-                                    <input type="hidden" name="action" value="delete">
-                                    <c:if test="${not empty areaId}">
-                                        <input type="hidden" name="redirectAreaId" value="${areaId}">
-                                    </c:if>
-                                    <input type="hidden" name="courtId" value="${court.court_id}">
-                                    <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Bạn có chắc muốn xóa sân này?')">
-                                        <i class="fas fa-trash-alt"></i> Xóa
-                                    </button>
-                                </form>
+                                <c:if test="${sessionScope.user.role eq 'admin'}">
+                                    <form action="courts" method="post" style="display: inline;">
+                                        <input type="hidden" name="action" value="delete">
+                                        <c:if test="${not empty areaId}">
+                                            <input type="hidden" name="redirectAreaId" value="${areaId}">
+                                        </c:if>
+                                        <input type="hidden" name="courtId" value="${court.court_id}">
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Bạn có chắc muốn xóa sân này?')">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </button>
+                                    </form>
+                                </c:if>
                             </td>
                         </tr>
                     </c:forEach>
