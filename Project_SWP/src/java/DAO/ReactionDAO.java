@@ -49,6 +49,20 @@ public class ReactionDAO {
         if (rs.next()) {
             return rs.getString("reaction_type");
         }
-        return null; 
+        return null;
     }
+
+    public Map<String, Integer> countReactionsByType(int postId) throws SQLException {
+        String sql = "SELECT reaction_type, COUNT(*) as cnt FROM PostReactions WHERE post_id = ? GROUP BY reaction_type";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, postId);
+        ResultSet rs = stmt.executeQuery();
+
+        Map<String, Integer> result = new HashMap<>();
+        while (rs.next()) {
+            result.put(rs.getString("reaction_type"), rs.getInt("cnt"));
+        }
+        return result;
+    }
+
 }

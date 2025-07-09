@@ -14,7 +14,7 @@ public class Slot {
        private LocalTime start;
     private LocalTime end;
     private boolean available;
-    // Constructor, getter, setter
+   
 
     public Slot() {
     }

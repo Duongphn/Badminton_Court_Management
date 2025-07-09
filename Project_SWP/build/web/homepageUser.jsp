@@ -5,6 +5,7 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -41,7 +42,7 @@
                 padding: 10px 20px;
                 border-radius: 5px;
             }
-            
+
 
             .title {
                 text-align: center;
@@ -205,38 +206,40 @@
         </div>
         <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
         <script>
-                            function toggleChatbot() {
-                                const panel = document.getElementById("chatbot-container");
-                                panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
+                    function toggleChatbot() {
+                        const panel = document.getElementById("chatbot-container");
+                        panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
+                    }
+
+                    function sendMessage() {
+                        var msg = $("#userMessage").val().trim();
+                        if (msg === "")
+                            return;
+
+                        $("#chatbox").append('<div class="msg-user"><span>' + escapeHTML(msg) + '</span></div>');
+                        $("#userMessage").val("");
+
+                        $.ajax({
+                            type: "POST",
+                            url: "${pageContext.request.contextPath}/chatbot",
+                            data: {message: msg},
+                            dataType: "text",
+                            contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+                            success: function (response) {
+                                $("#chatbox").append('<div class="msg-bot"><span>' + escapeHTML(response) + '</span></div>');
+                                $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
+                            },
+                            error: function () {
+                                $("#chatbox").append('<div class="msg-bot"><span style="color:red;">Lỗi phản hồi từ chatbot</span></div>');
                             }
+                        });
+                    }
 
-                            function sendMessage() {
-                                var msg = $("#userMessage").val().trim();
-                                if (msg === "")
-                                    return;
-
-                                $("#chatbox").append('<div class="msg-user"><span>' + escapeHTML(msg) + '</span></div>');
-                                $("#userMessage").val("");
-
-                                $.ajax({
-                                    type: "POST",
-                                    url: "${pageContext.request.contextPath}/chatbot",
-                                    data: {message: msg},
-                                    success: function (response) {
-                                        $("#chatbox").append('<div class="msg-bot"><span>' + escapeHTML(response) + '</span></div>');
-                                        $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
-                                    },
-                                    error: function () {
-                                        $("#chatbox").append('<div class="msg-bot"><span style="color:red;">Lỗi phản hồi từ chatbot</span></div>');
-                                    }
-                                });
-                            }
-
-                            function escapeHTML(str) {
-                                return str.replace(/&/g, "&amp;")
-                                        .replace(/</g, "&lt;")
-                                        .replace(/>/g, "&gt;");
-                            }
+                    function escapeHTML(str) {
+                        return str.replace(/&/g, "&amp;")
+                                .replace(/</g, "&lt;")
+                                .replace(/>/g, "&gt;");
+                    }
         </script>
         <main class="main">
 
@@ -286,13 +289,14 @@
     </body>
     <script>
         // JS chuyển slide đơn giản
-        window.onload = function() {
+        window.onload = function () {
             let slides = document.querySelectorAll('.banner-slide');
             let idx = 0;
-            if(slides.length > 0) slides[0].classList.add('active');
-            setInterval(function() {
+            if (slides.length > 0)
+                slides[0].classList.add('active');
+            setInterval(function () {
                 slides[idx].classList.remove('active');
-                idx = (idx+1)%slides.length;
+                idx = (idx + 1) % slides.length;
                 slides[idx].classList.add('active');
             }, 4000);
         }

@@ -6,6 +6,7 @@ package Model;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -21,7 +22,15 @@ public class Bookings {
     private String status;
     private int rating;
     private double total_price;
+   private List<String> services;
 
+public List<String> getServices() {
+    return services;
+}
+
+public void setServices(List<String> services) {
+    this.services = services;
+}
     @Override
     public String toString() {
         return "Bookings{" + "booking_id=" + booking_id + ", user_id=" + user_id + ", court_id=" + court_id + ", date=" + date + ", start_time=" + start_time + ", end_time=" + end_time + ", status=" + status + ", rating=" + rating + '}';

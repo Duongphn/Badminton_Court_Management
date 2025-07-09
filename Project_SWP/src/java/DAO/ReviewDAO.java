@@ -4,11 +4,12 @@
  */
 package DAO;
 
-import Dal.DBContext;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import Dal.DBContext;
 
 /**
  *
@@ -24,7 +25,7 @@ public class ReviewDAO  extends DBContext{
             System.out.println("Connect failed");
         }
     }
-    public int countReviewsByManager(int managerId) {
+public int countReviewsByManager(int managerId) {
         String sql = "SELECT COUNT(*) FROM Reviews r " +
                      "JOIN Areas a ON r.area_id = a.area_id " +
                      "WHERE a.manager_id = ?";

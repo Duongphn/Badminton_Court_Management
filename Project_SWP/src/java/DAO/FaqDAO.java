@@ -5,8 +5,7 @@
 package DAO;
 
 import Dal.DBContext;
-import Model.Branch_Equipments;
-import Model.Equipments;
+
 import Model.FaqAnswer;
 import Model.FaqQuestion;
 import Model.FaqTag;

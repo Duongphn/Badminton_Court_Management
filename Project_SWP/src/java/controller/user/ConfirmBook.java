@@ -102,14 +102,14 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         Time startTime = Time.valueOf(startTimeStr);
         Time endTime = Time.valueOf(endTimeStr);
 
-        // Validate giờ hợp lệ
+        
         if (startTime.after(endTime) || startTime.equals(endTime)) {
             request.setAttribute("message", "Giờ bắt đầu phải trước giờ kết thúc.");
             request.getRequestDispatcher("book_field.jsp").forward(request, response);
             return;
         }
     
-        // Check nếu đã có người đặt
+      
         BookingDAO bookingDAO = new BookingDAO();
         boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
 

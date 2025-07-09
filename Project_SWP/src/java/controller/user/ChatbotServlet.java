@@ -1,116 +1,198 @@
 package controller.user;
 
-import DAO.ChatDAO;
-import Model.ChatMessage;
-
+import DAO.*;
+import Model.*;
 import com.google.gson.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.regex.*;
 
-@WebServlet(name = "ChatboxServlet", urlPatterns = {"/chatbot"})
+@WebServlet(name = "ChatbotServlet", urlPatterns = {"/chatbot"})
 public class ChatbotServlet extends HttpServlet {
 
-    private static final String GEMINI_API_KEY = "AIzaSyCypH4mifQ5Th7SQVjc7Kyu2ubZvHowCNY";
+    private static final String GEMINI_API_KEY = "AIzaSyDNuTvU_1Q3bS-LXSqFymuEcVpESv6thl8";
     private static final String GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
+    private ChatDAO chatDAO = new ChatDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/plain;charset=UTF-8");
 
-        HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("user_id");
+        HttpSession session = request.getSession(false);
+        Integer userId = null;
+
+        if (session != null) {
+            User user = (User) session.getAttribute("user");
+            if (user != null) {
+                userId = user.getUser_Id();
+            }
+        }
 
         String userMessage = request.getParameter("message");
+        chatDAO.saveMessage(new ChatMessage(userId, userMessage, "user"));
+
+        String botResponse;
+
+        if (userMessage.toLowerCase().matches(".*(đặt|book).*sân.*\\d+.*từ.*đến.*")) {
+            botResponse = handleBookingSubmission(userId, userMessage);
+        } else if (userMessage.toLowerCase().matches(".*(đặt|book).*sân.*\\d{4}-\\d{2}-\\d{2}.*")) {
+            botResponse = handleBookingRequest(userId, userMessage);
+        } else {
+            botResponse = generateGeminiResponse(userMessage);
+        }
+
+        chatDAO.saveMessage(new ChatMessage(null, botResponse, "bot"));
+        response.getWriter().write(botResponse);
+    }
+
+    private String handleBookingRequest(Integer userId, String message) {
+        if (userId == null) {
+            return "Bạn cần đăng nhập trước khi đặt sân.";
+        }
+
+        Pattern pattern = Pattern.compile("đặt sân (\\d{4}-\\d{2}-\\d{2})");
+        Matcher matcher = pattern.matcher(message.toLowerCase());
+
+        if (!matcher.find()) {
+            return "Vui lòng nhập đúng mẫu: 'đặt sân yyyy-mm-dd'.";
+        }
 
         try {
-            ChatDAO chatDAO = new ChatDAO();
+            LocalDate date = LocalDate.parse(matcher.group(1));
+            CourtDAO courtDAO = new CourtDAO();
+            BookingDAO bookingDAO = new BookingDAO();
+            Service_BranchDAO serviceDAO = new Service_BranchDAO();
 
-            ChatMessage userChat = new ChatMessage(userId, userMessage, "user");
-            chatDAO.saveMessage(userChat);
+            List<Courts> courts = courtDAO.getAllCourts();
+            StringBuilder responseBuilder = new StringBuilder("Các slot trống vào ngày " + date + ":\n");
 
-            String botResponse = callGeminiAPI(userMessage);
+            for (Courts court : courts) {
+                List<Slot> availableSlots = bookingDAO.getAvailableSlots(court.getCourt_id(), date);
+                List<Branch_Service> services = serviceDAO.getAllAreaServices(court.getArea_id());
 
-            if (botResponse == null || botResponse.trim().isEmpty()) {
-                botResponse = "Xin lỗi, tôi không thể phản hồi lúc này.";
+                responseBuilder.append("\nSân ").append(court.getCourt_id()).append(":");
+                for (Slot slot : availableSlots) {
+                    responseBuilder.append("\n- Từ ").append(slot.getStart()).append(" đến ").append(slot.getEnd());
+                }
+                 responseBuilder.append("\n");
+                responseBuilder.append("\nDịch vụ: ");
+                for (Branch_Service service : services) {
+                    responseBuilder.append(service.getService().getName()).append(", ");
+                }
+                responseBuilder.setLength(responseBuilder.length() - 2); 
+                responseBuilder.append("\n");
             }
 
-            ChatMessage botChat = new ChatMessage(null, botResponse, "bot");
-            chatDAO.saveMessage(botChat);
-            response.getWriter().write(botResponse);
+            return responseBuilder.toString();
+
         } catch (Exception e) {
             e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("Lỗi: " + e.getMessage());
+            return "Có lỗi xảy ra khi lấy thông tin các slot trống. Vui lòng thử lại.";
         }
     }
 
-    private String callGeminiAPI(String userMessage) throws IOException {
-        URL url = new URL(GEMINI_ENDPOINT);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setDoOutput(true);
-        JsonObject partObj = new JsonObject();
-        partObj.addProperty("text", userMessage);  // đúng định dạng Gemini
+    private String handleBookingSubmission(Integer userId, String message) {
+        if (userId == null) return "Bạn cần đăng nhập trước khi đặt sân.";
 
-        JsonArray parts = new JsonArray();
-        parts.add(partObj);
+        Pattern pattern = Pattern.compile("đặt sân (\\d+) từ (\\d{2}:\\d{2}) đến (\\d{2}:\\d{2})(?: với dịch vụ (.*))?");
+        Matcher matcher = pattern.matcher(message.toLowerCase());
 
-        JsonObject contentObj = new JsonObject();
-        contentObj.addProperty("role", "user");
-        contentObj.add("parts", parts);
+        if (!matcher.find()) return "Câu lệnh chưa đúng định dạng. Hãy nhập: đặt sân [id] từ hh:mm đến hh:mm với dịch vụ [tên dịch vụ, cách nhau bởi dấu phẩy nếu nhiều]";
 
-        JsonArray contents = new JsonArray();
-        contents.add(contentObj);
+        try {
+            int courtId = Integer.parseInt(matcher.group(1));
+            LocalTime localStart = LocalTime.parse(matcher.group(2));
+            LocalTime localEnd = LocalTime.parse(matcher.group(3));
+            Time startTime = Time.valueOf(localStart);
+            Time endTime = Time.valueOf(localEnd);
 
-        JsonObject requestBody = new JsonObject();
-        requestBody.add("contents", contents);
-        JsonObject config = new JsonObject();
-        config.addProperty("temperature", 0.7);
-        config.addProperty("maxOutputTokens", 256);
-        requestBody.add("generationConfig", config);
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = requestBody.toString().getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
-        int status = conn.getResponseCode();
-        InputStream stream = (status >= 200 && status < 300) ? conn.getInputStream() : conn.getErrorStream();
+            LocalDate today = LocalDate.now();
+            CourtDAO courtDAO = new CourtDAO();
+            Courts court = courtDAO.getCourtById(courtId);
+            if (court == null) return "Không tìm thấy sân có ID: " + courtId;
 
-        StringBuilder response = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                response.append(line.trim());
+            BookingDAO bookingDAO = new BookingDAO();
+            if (!bookingDAO.checkSlotAvailable(courtId, today, startTime, endTime)) {
+                return "Slot đã được đặt. Vui lòng chọn slot khác.";
             }
-        }
 
-//    if (status != 200) {
-//        System.err.println("Gemini API error: " + response.toString());
-//        throw new IOException("Gemini API returned status: " + status);
-//    }
-        // ==== Parse response ====
-        JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
-        JsonArray candidates = jsonResponse.getAsJsonArray("candidates");
-        if (candidates != null && candidates.size() > 0) {
-            JsonObject content = candidates.get(0).getAsJsonObject().getAsJsonObject("content");
-            JsonArray partsArray = content.getAsJsonArray("parts");
-            if (partsArray != null && partsArray.size() > 0) {
-                return partsArray.get(0).getAsJsonObject().get("text").getAsString();
+            PromotionDAO proDAO = new PromotionDAO();
+            Promotion promotion = proDAO.getCurrentPromotionForArea(court.getArea_id(), today);
+            BigDecimal pricePerHour = courtDAO.getCourtPrice(courtId);
+            BigDecimal totalPrice = bookingDAO.calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, promotion);
+
+            Bookings booking = new Bookings();
+            booking.setUser_id(userId);
+            booking.setCourt_id(courtId);
+            booking.setDate(today);
+            booking.setStart_time(startTime);
+            booking.setEnd_time(endTime);
+            booking.setTotal_price(totalPrice.doubleValue());
+            booking.setStatus("pending");
+
+            if (matcher.group(4) != null) {
+                String[] services = matcher.group(4).split(",");
+                List<String> serviceList = new ArrayList<>();
+                for (String s : services) {
+                    serviceList.add(s.trim());
+                }
+                booking.setServices(serviceList);
             }
-        }
 
-        return "Xin lỗi, tôi không thể xử lý yêu cầu của bạn lúc này.";
+            if (bookingDAO.createBooking(booking)) {
+                return "✅ Đã đặt sân thành công!\nSân: " + courtId + "\nNgày: " + today + "\nTừ " + startTime + " đến " + endTime +
+                        "\nTổng tiền: " + totalPrice + " VNĐ." +
+                        (booking.getServices() != null ? "\nDịch vụ đi kèm: " + String.join(", ", booking.getServices()) : "");
+            } else {
+                return "❌ Có lỗi xảy ra khi đặt sân. Vui lòng thử lại sau.";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Có lỗi trong quá trình xử lý. Vui lòng thử lại.";
+        }
     }
 
-    @Override
-    public String getServletInfo() {
-        return "Chatbot servlet using Gemini API";
+    private String generateGeminiResponse(String message) {
+        try {
+            URL url = new URL(GEMINI_ENDPOINT);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setDoOutput(true);
+
+            JsonObject requestBody = new JsonObject();
+            requestBody.add("contents", JsonParser.parseString("[{\"role\":\"user\",\"parts\":[{\"text\":\"" + message + "\"}]}]"));
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestBody.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+            JsonObject jsonResponse = JsonParser.parseString(br.lines().collect(java.util.stream.Collectors.joining())).getAsJsonObject();
+
+            return jsonResponse.getAsJsonArray("candidates").get(0).getAsJsonObject()
+                    .get("content").getAsJsonObject()
+                    .get("parts").getAsJsonArray().get(0).getAsJsonObject()
+                    .get("text").getAsString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Hiện tôi không thể trả lời câu hỏi này.";
+        }
     }
 }

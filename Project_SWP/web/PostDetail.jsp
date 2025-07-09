@@ -51,12 +51,30 @@
     <div class="mt-4">
         <form action="ReactionUser" method="post" style="display: inline;">
             <input type="hidden" name="postId" value="<%= post.getPostId() %>"/>
-            <button type="submit" name="reaction" value="like" class="btn btn-outline-primary btn-sm">👍 Like</button>
-            <button type="submit" name="reaction" value="love" class="btn btn-outline-danger btn-sm">❤️ Love</button>
-            <button type="submit" name="reaction" value="haha" class="btn btn-outline-warning btn-sm">😂 Haha</button>
-            <button type="submit" name="reaction" value="sad" class="btn btn-outline-secondary btn-sm">😢 Buồn</button>
+            <% String userReaction = (String) request.getAttribute("userReaction"); %>
+            <button type="submit" name="reaction" value="like"
+                    class="btn btn-sm <%= "like".equals(userReaction) ? "btn-primary" : "btn-outline-primary" %>">👍 Like</button>
+            <button type="submit" name="reaction" value="love"
+                    class="btn btn-sm <%= "love".equals(userReaction) ? "btn-danger" : "btn-outline-danger" %>">❤️ Love</button>
+            <button type="submit" name="reaction" value="haha"
+                    class="btn btn-sm <%= "haha".equals(userReaction) ? "btn-warning" : "btn-outline-warning" %>">😂 Haha</button>
+            <button type="submit" name="reaction" value="sad"
+                    class="btn btn-sm <%= "sad".equals(userReaction) ? "btn-secondary" : "btn-outline-secondary" %>">😢 Buồn</button>
         </form>
+
+        <%-- HIỂN THỊ TỔNG SỐ TỪNG LOẠI REACTION --%>
+        <%
+            Map<String, Integer> reactionCounts = (Map<String, Integer>) request.getAttribute("reactionCounts");
+            if (reactionCounts == null) reactionCounts = new java.util.HashMap<>();
+        %>
+        <div class="mt-2">
+            <span class="me-2">👍 <%= reactionCounts.getOrDefault("like", 0) %> Like</span>
+            <span class="me-2">❤️ <%= reactionCounts.getOrDefault("love", 0) %> Love</span>
+            <span class="me-2">😂 <%= reactionCounts.getOrDefault("haha", 0) %> Haha</span>
+            <span class="me-2">😢 <%= reactionCounts.getOrDefault("sad", 0) %> Buồn</span>
+        </div>
     </div>
+
 
     <hr/>
     <% if (isOwner) { %>
@@ -134,5 +152,8 @@
     <div class="alert alert-danger">Không tìm thấy bài viết!</div>
     <% } %>
 </div>
+<jsp:include page="Comment.jsp">
+    <jsp:param name="postId" value="<%= post.getPostId() %>" />
+</jsp:include>
 
 <jsp:include page="homefooter.jsp" />

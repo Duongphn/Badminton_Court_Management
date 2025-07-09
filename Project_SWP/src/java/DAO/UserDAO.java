@@ -636,5 +636,17 @@ public class UserDAO extends DBContext {
         }
     }
 
+            public int getReturningUserCount() {
+        String sql = "SELECT COUNT(*) FROM (SELECT user_id FROM Bookings GROUP BY user_id HAVING COUNT(*) >= 2) AS sub";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
 }

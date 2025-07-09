@@ -216,7 +216,7 @@
     <body>
         <div class="sidebar">
             <div class="sidebar-logo">
-                <a href="host_dashboard.jsp">
+                <a href="Admin_DashBoard.jsp">
                     <img src="./uploads/Badminton.jpg" alt="Logo">
                 </a>
                 <h3>BadmintonCourt</h3>

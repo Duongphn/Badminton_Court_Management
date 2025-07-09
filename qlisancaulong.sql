@@ -1,4 +1,35 @@
 ﻿
+/****** Object:  Table [dbo].[Users]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[user_id] [int] IDENTITY(1,1) NOT NULL,
+	[username] [varchar](50) NOT NULL,
+	[password] [varchar](255) NOT NULL,
+	[email] [varchar](100) NULL,
+	[phone_number] [varchar](20) NULL,
+	[role] [varchar](50) NULL,
+	[created_at] [datetime] NULL,
+	[status] [nvarchar](50) NULL,
+	[note] [nvarchar](max) NULL,
+	[gender] [nvarchar](10) NULL,
+	[firstname] [nvarchar](100) NULL,
+	[lastname] [nvarchar](100) NULL,
+	[fullname]  AS (concat([lastname],' ',[firstname])) PERSISTED NOT NULL,
+	[date_of_birth] [date] NULL,
+
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
 GO
 /****** Object:  Table [dbo].[Area_Image]    Script Date: 6/22/2025 7:25:22 PM ******/
 SET ANSI_NULLS ON
@@ -113,23 +144,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Comments]    Script Date: 6/22/2025 7:25:22 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Comments](
-	[comment_id] [int] IDENTITY(1,1) NOT NULL,
-	[post_id] [int] NOT NULL,
-	[user_id] [int] NOT NULL,
-	[content] [varchar](max) NOT NULL,
-	[created_at] [datetime] NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[comment_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+
 /****** Object:  Table [dbo].[Courts]    Script Date: 6/22/2025 7:25:22 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -269,48 +284,71 @@ UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PostReactions]    Script Date: 6/22/2025 7:25:22 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PostReactions](
-	[id] [int] IDENTITY(1,1) NOT NULL,
-	[post_id] [int] NOT NULL,
-	[user_id] [int] NOT NULL,
-	[reaction_type] [varchar](20) NOT NULL,
-	[reacted_at] [datetime] NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [UQ_UserPost] UNIQUE NONCLUSTERED 
-(
-	[post_id] ASC,
-	[user_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Posts]    Script Date: 6/22/2025 7:25:22 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[Posts](
-	[post_id] [int] IDENTITY(1,1) NOT NULL,
-	[title] [nvarchar](255) NOT NULL,
-	[content] [nvarchar](max) NOT NULL,
-	[created_by] [int] NOT NULL,
-	[created_at] [datetime] NULL,
-	[image] [varchar](255) NULL,
-	[type] [varchar](20) NOT NULL,
-	[status] [varchar](20) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[post_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    [post_id] INT IDENTITY(1,1) NOT NULL,
+    [title] NVARCHAR(255) NOT NULL,
+    [content] NVARCHAR(MAX) NOT NULL,
+    [created_by] INT NOT NULL,
+    [created_at] DATETIME DEFAULT GETDATE(),
+    [image] VARCHAR(255) NULL,
+    [type] VARCHAR(20) NOT NULL CHECK ([type] IN ('common', 'partner', 'news')),
+    [status] VARCHAR(20) NULL DEFAULT 'pending' CHECK ([status] IN ('rejected', 'approved', 'pending')),
+    PRIMARY KEY CLUSTERED ([post_id])
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
+CREATE TABLE [dbo].[PartnerPostDetails] (
+    partner_post_id INT PRIMARY KEY,
+    preferred_level NVARCHAR(100),
+    preferred_gender NVARCHAR(10),
+    preferred_time NVARCHAR(100),
+    preferred_area NVARCHAR(100),
+    note NVARCHAR(MAX),
+    FOREIGN KEY (partner_post_id) REFERENCES [dbo].[Posts](post_id)
+)
+GO
+
+CREATE TABLE [dbo].[PostReactions](
+    [id] INT IDENTITY(1,1) NOT NULL,
+    [post_id] INT NOT NULL,
+    [user_id] INT NOT NULL,
+    [reaction_type] VARCHAR(20) NOT NULL,
+    [reacted_at] DATETIME DEFAULT GETDATE(),
+    PRIMARY KEY CLUSTERED ([id]),
+    CONSTRAINT [UQ_UserPost] UNIQUE ([post_id], [user_id]),
+    FOREIGN KEY ([post_id]) REFERENCES [dbo].[Posts](post_id) ON DELETE NO ACTION,
+    FOREIGN KEY ([user_id]) REFERENCES [dbo].[Users](user_id)
+)
+GO
+
+
+CREATE TABLE [dbo].[Comments](
+    [comment_id] INT IDENTITY(1,1) NOT NULL,
+    [post_id] INT NOT NULL,
+    [user_id] INT NOT NULL,
+    [content] VARCHAR(MAX) NOT NULL,
+    [created_at] DATETIME DEFAULT GETDATE(),
+    [parent_comment_id] INT NULL,
+    PRIMARY KEY CLUSTERED ([comment_id]),
+    FOREIGN KEY ([post_id]) REFERENCES [dbo].[Posts](post_id),
+    FOREIGN KEY ([user_id]) REFERENCES [dbo].[Users](user_id),
+    FOREIGN KEY ([parent_comment_id]) REFERENCES [dbo].[Comments](comment_id)
+)
+GO
+
+CREATE TABLE [dbo].[CommentReports] (
+    report_id INT IDENTITY(1,1) PRIMARY KEY,
+    comment_id INT NOT NULL,
+    reported_by INT NOT NULL,
+    reason NVARCHAR(255),
+    created_at DATETIME DEFAULT GETDATE(),
+
+    FOREIGN KEY (comment_id) REFERENCES Comments(comment_id) ON DELETE CASCADE,
+    FOREIGN KEY (reported_by) REFERENCES Users(user_id)
+);
+GO
+
 /****** Object:  Table [dbo].[Reviews]    Script Date: 6/22/2025 7:25:22 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -329,37 +367,8 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 6/22/2025 7:25:22 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Users](
-	[user_id] [int] IDENTITY(1,1) NOT NULL,
-	[username] [varchar](50) NOT NULL,
-	[password] [varchar](255) NOT NULL,
-	[email] [varchar](100) NULL,
-	[phone_number] [varchar](20) NULL,
-	[role] [varchar](50) NULL,
-	[created_at] [datetime] NULL,
-	[status] [nvarchar](50) NULL,
-	[note] [nvarchar](max) NULL,
-	[gender] [nvarchar](10) NULL,
-	[firstname] [nvarchar](100) NULL,
-	[lastname] [nvarchar](100) NULL,
-	[fullname]  AS (concat([lastname],' ',[firstname])) PERSISTED NOT NULL,
-	[date_of_birth] [date] NULL,
-	[send_mail] [bit] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[user_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-UNIQUE NONCLUSTERED 
-(
-	[username] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+
+
 ALTER TABLE [dbo].[BadmintonService] ADD  DEFAULT ('Active') FOR [status]
 GO
 ALTER TABLE [dbo].[BadmintonService] ADD  DEFAULT (getdate()) FOR [created_at]
@@ -475,7 +484,7 @@ CREATE TABLE Shift (
 );
 CREATE TABLE [dbo].[ChatbotMessages] (
     [message_id] INT IDENTITY(1,1) PRIMARY KEY,
-    [user_id] INT NULL, -- Nếu null là tin nhắn từ chatbot, ngược lại từ người dùng
+    [user_id] INT NULL,
     [message_content] NVARCHAR(MAX) NOT NULL,
     [created_at] DATETIME DEFAULT GETDATE(),
     [sender_type] VARCHAR(10) CHECK(sender_type IN ('user', 'bot')) NOT NULL
@@ -505,19 +514,5 @@ CREATE TABLE [dbo].[Coaches](
 
 ALTER TABLE [dbo].[ChatbotMessages] WITH CHECK ADD FOREIGN KEY([user_id])
 REFERENCES [dbo].[Users] ([user_id]);
-CREATE TABLE [dbo].[ChatbotResponses] (
-    [response_id] INT IDENTITY(1,1) PRIMARY KEY,
-    [intent] NVARCHAR(255) NOT NULL,
-    [response_text] NVARCHAR(MAX) NOT NULL,
-    [created_at] DATETIME DEFAULT GETDATE()
-);
-CREATE TABLE [dbo].[ChatbotSessions] (
-    [session_id] INT IDENTITY(1,1) PRIMARY KEY,
-    [user_id] INT NULL,
-    [started_at] DATETIME DEFAULT GETDATE(),
-    [ended_at] DATETIME NULL,
-    [session_status] VARCHAR(20) DEFAULT 'active'
-);
 
-ALTER TABLE [dbo].[ChatbotSessions] WITH CHECK ADD FOREIGN KEY([user_id])
-REFERENCES [dbo].[Users] ([user_id]);
+

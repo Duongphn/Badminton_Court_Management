@@ -89,7 +89,21 @@ public class ReactionUser extends HttpServlet {
 
             dao.reactToPost(user.getUser_Id(), postId, reactionType);
 
-            response.sendRedirect("PostDetail?id=" + postId); // hoặc trả về JSON nếu là AJAX
+            // Lấy lại cảm xúc user đã thả cho post này
+            String userReaction = dao.getUserReaction(user.getUser_Id(), postId);
+
+            // Lấy tổng số từng loại reaction cho post này
+            java.util.Map<String, Integer> reactionCounts = dao.countReactionsByType(postId);
+
+            // Lấy lại thông tin bài viết (tuỳ bạn dùng DAO nào để get)
+            Model.Post post = new DAO.PostDAO(conn).getPostById(postId);
+
+            request.setAttribute("post", post);
+            request.setAttribute("userReaction", userReaction);
+            request.setAttribute("reactionCounts", reactionCounts);
+
+            // Forward sang trang chi tiết bài viết
+            request.getRequestDispatcher("PostDetail.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();

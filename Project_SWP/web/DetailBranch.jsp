@@ -491,7 +491,7 @@
                         <jsp:include page="Sidebar.jsp" />
                     </div>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-10" style="margin-left: 280px">
                     <div class="main-content">
                         <h1 class="page-title">Chi tiết khu vực: ${area_id}</h1>
 
@@ -582,7 +582,58 @@
                                 </div>
                             </div>
                         </div>
+                         <!-- Courts Section -->
+                        <div class="section-header">
+                            <h4 class="section-title">
+                                <i class="fas fa-tennis-ball"></i>
+                                Sân trong khu vực
+                            </h4>
+                        </div>
 
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table" id="courtsTable">
+                                    <thead>
+                                        <tr>
+
+                                            <th>Số sân</th>
+                                            <th>Thể loại</th>
+                                            <th>Sàn sân</th>
+                                            <th>Ánh sáng</th>
+                                            <th>Mô tả</th>
+                                            <th>Ảnh</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="court" items="${areaCourts}" varStatus="loop">
+                                            <tr>
+
+                                                <td><strong>Sân ${court.court_number}</strong></td>
+                                                <td><span class="badge badge-info">${court.type}</span></td>
+                                                <td>${court.floor_material}</td>
+                                                <td>${court.lighting}</td>
+                                                <td>${court.description}</td>
+                                                <td>
+                                                    <c:if test="${not empty court.image_url}">
+                                                        <img src="${court.image_url}" 
+                                                             alt="court image" 
+                                                             width="100" 
+                                                             class="court-image"
+                                                             onclick="openImageModal('${court.image_url}')">
+                                                    </c:if>
+                                                </td>
+                                                <td>
+                                                    <span class="badge ${court.status == 'Active' ? 'badge-success' : 'badge-secondary'}">
+                                                        ${court.status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                         <!-- Shifts Section -->
                         <div class="section-header">
                             <h4 class="section-title">
@@ -723,58 +774,7 @@
                             </div>
                         </div>
 
-                        <!-- Courts Section -->
-                        <div class="section-header">
-                            <h4 class="section-title">
-                                <i class="fas fa-tennis-ball"></i>
-                                Sân trong khu vực
-                            </h4>
-                        </div>
-
-                        <div class="table-container">
-                            <div class="table-responsive">
-                                <table class="table" id="courtsTable">
-                                    <thead>
-                                        <tr>
-
-                                            <th>Số sân</th>
-                                            <th>Thể loại</th>
-                                            <th>Sàn sân</th>
-                                            <th>Ánh sáng</th>
-                                            <th>Mô tả</th>
-                                            <th>Ảnh</th>
-                                            <th>Trạng thái</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach var="court" items="${areaCourts}" varStatus="loop">
-                                            <tr>
-
-                                                <td><strong>Sân ${court.court_number}</strong></td>
-                                                <td><span class="badge badge-info">${court.type}</span></td>
-                                                <td>${court.floor_material}</td>
-                                                <td>${court.lighting}</td>
-                                                <td>${court.description}</td>
-                                                <td>
-                                                    <c:if test="${not empty court.image_url}">
-                                                        <img src="${court.image_url}" 
-                                                             alt="court image" 
-                                                             width="100" 
-                                                             class="court-image"
-                                                             onclick="openImageModal('${court.image_url}')">
-                                                    </c:if>
-                                                </td>
-                                                <td>
-                                                    <span class="badge ${court.status == 'Active' ? 'badge-success' : 'badge-secondary'}">
-                                                        ${court.status}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                       
                     </div>
                 </div>
             </div>

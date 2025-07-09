@@ -27,9 +27,27 @@ public class AreaCoachDAO {
             AreaCoach area = new AreaCoach();
             area.setAreaId(rs.getInt("area_id"));
             area.setName(rs.getString("name"));
+            area.setLocation(rs.getString("location"));
             list.add(area);
         }
         conn.close();
         return list;
     }
+    
+public AreaCoach getAreaById(int areaId) throws Exception {
+    String sql = "SELECT * FROM Areas WHERE area_id = ?";
+    Connection conn = new DBContext().getConnection();
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ps.setInt(1, areaId);
+    ResultSet rs = ps.executeQuery();
+    AreaCoach area = null;
+    if (rs.next()) {
+        area = new AreaCoach();
+        area.setAreaId(rs.getInt("area_id"));
+        area.setName(rs.getString("name"));
+        area.setLocation(rs.getString("location"));
+    }
+    conn.close();
+    return area;
+}
 }

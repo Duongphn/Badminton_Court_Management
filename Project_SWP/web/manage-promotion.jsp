@@ -70,10 +70,10 @@
         </nav>
         <div class="container-fluid">
             <div class="row mt-4">
-                <div class="col-md-2 mb-4">
+                <div class="col-md-2 mb-3">
                     <jsp:include page="Sidebar.jsp"/>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-10 " style="margin-left: 280px">
                     <div class="main-content">
                         <h3 class="mb-4 text-primary">🎫 Quản lý khuyến mãi</h3>
                         <!-- Search Bar -->

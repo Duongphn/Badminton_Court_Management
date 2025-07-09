@@ -11,13 +11,15 @@ package Model;
 public class AreaCoach {
     private int areaId;
     private String name;
+    private String location;
 
     public AreaCoach() {
     }
 
-    public AreaCoach(int areaId, String name) {
+    public AreaCoach(int areaId, String name, String location) {
         this.areaId = areaId;
         this.name = name;
+        this.location = location;
     }
 
     public int getAreaId() {
@@ -36,9 +38,19 @@ public class AreaCoach {
         this.name = name;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     @Override
     public String toString() {
-        return "AreaCoach{" + "areaId=" + areaId + ", name=" + name + '}';
+        return "AreaCoach{" + "areaId=" + areaId + ", name=" + name + ", location=" + location + '}';
     }
+
+    
     
 }

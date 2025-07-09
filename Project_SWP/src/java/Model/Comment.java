@@ -1,53 +1,43 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
 
-/**
- *
- * @author admin
- */
+import java.util.Date;
+import java.util.List;
+
 public class Comment {
-    private String comment_id;
-    private String post_id;
-    private String user_id;
+
+    private int commentId;
+    private int postId;
+    private int userId;
     private String content;
-    private String created_at;
+    private Date createdAt;
+    private Integer parentCommentId;
 
-    public Comment(String comment_id, String post_id, String user_id, String content, String created_at) {
-        this.comment_id = comment_id;
-        this.post_id = post_id;
-        this.user_id = user_id;
-        this.content = content;
-        this.created_at = created_at;
+    private User user; // thông tin người bình luận (nếu cần)
+    private List<Comment> replies; // danh sách phản hồi (reply) cấp con
+
+    // Getter & Setter
+    public int getCommentId() {
+        return commentId;
     }
 
-    public Comment() {
+    public void setCommentId(int commentId) {
+        this.commentId = commentId;
     }
 
-    public String getComment_id() {
-        return comment_id;
+    public int getPostId() {
+        return postId;
     }
 
-    public void setComment_id(String comment_id) {
-        this.comment_id = comment_id;
+    public void setPostId(int postId) {
+        this.postId = postId;
     }
 
-    public String getPost_id() {
-        return post_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setPost_id(String post_id) {
-        this.post_id = post_id;
-    }
-
-    public String getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getContent() {
@@ -58,13 +48,35 @@ public class Comment {
         this.content = content;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
-    
-    
+
+    public Integer getParentCommentId() {
+        return parentCommentId;
+    }
+
+    public void setParentCommentId(Integer parentCommentId) {
+        this.parentCommentId = parentCommentId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Comment> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<Comment> replies) {
+        this.replies = replies;
+    }
 }

@@ -114,7 +114,7 @@
                             <th>Thời gian</th>
                             <th>Trạng thái</th>
                             <th>Đánh giá</th>
-                          
+                            <th>Dịch vụ đã đặt</th>
                             <th>Tổng tiền</th>
                               <th>Hành động</th>
                         </tr>
@@ -165,7 +165,15 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
-                                <td>${booking.total_price}</td>
+                             
+                                  <td>
+                                <ul>
+                                    <c:forEach var="service" items="${booking.services}">
+                                        <li>${service}</li>
+                                    </c:forEach>
+                                </ul>
+                            </td>
+                               <td>${booking.total_price}</td>
                                 <td>
                                     <c:if test="${booking.status eq 'confirmed'}">
                                         <form action="cancel_booking" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy?');">
