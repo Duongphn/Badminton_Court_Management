@@ -30,7 +30,7 @@ public class ManagerBookingSchedule extends HttpServlet {
             return;
         }
         User user = (User) session.getAttribute("user");
-        if (user == null || !"staff".equals(user.getRole())) {
+        if (user == null || (!"staff".equals(user.getRole()) && !"admin".equals(user.getRole()))) {
             response.sendRedirect("login");
             return;
         }
