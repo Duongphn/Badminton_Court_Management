@@ -25,7 +25,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Servlet used by staff to create a new booking for customers.
+ * Servlet used by staff or admin to create a new booking for customers.
  */
 @WebServlet(name = "AddBookingServlet", urlPatterns = {"/add-booking"})
 public class AddBookingServlet extends HttpServlet {
@@ -34,7 +34,7 @@ public class AddBookingServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        if (!isStaff(session)) {
+        if (!hasAccess(session)) {
             response.sendRedirect("login");
             return;
         }
@@ -47,7 +47,7 @@ public class AddBookingServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        if (!isStaff(session)) {
+        if (!hasAccess(session)) {
             response.sendRedirect("login");
             return;
         }
@@ -142,10 +142,12 @@ public class AddBookingServlet extends HttpServlet {
         }
     }
 
-    private boolean isStaff(HttpSession session) {
+    private boolean hasAccess(HttpSession session) {
         if (session == null) return false;
         User user = (User) session.getAttribute("user");
-        return user != null && "staff".equals(user.getRole());
+        if (user == null) return false;
+        String role = user.getRole();
+        return "staff".equals(role) || "admin".equals(role);
     }
 
     private Time parseTime(String str) {
