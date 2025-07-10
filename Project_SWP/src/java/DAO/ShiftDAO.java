@@ -56,9 +56,9 @@ public class ShiftDAO extends DBContext{
 }
 
 
-   public List<Shift> getShiftsByArea(int areaId) {
-    List<Shift> shifts = new ArrayList<>();
-    String sql = "SELECT shift_id, area_id, shift_name, start_time, end_time FROM Shift WHERE area_id = ?";
+    public List<Shift> getShiftsByArea(int areaId) {
+        List<Shift> shifts = new ArrayList<>();
+        String sql = "SELECT shift_id, area_id, shift_name, start_time, end_time FROM Shift WHERE area_id = ?";
 
     try (
          PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -81,8 +81,28 @@ public class ShiftDAO extends DBContext{
         e.printStackTrace();
     }
 
-    return shifts;
-}
+        return shifts;
+    }
+
+    public Shift getShiftById(int shiftId) {
+        String sql = "SELECT shift_id, area_id, shift_name, start_time, end_time FROM Shift WHERE shift_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, shiftId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Shift(
+                        rs.getInt("shift_id"),
+                        rs.getInt("area_id"),
+                        rs.getString("shift_name"),
+                        rs.getTime("start_time"),
+                        rs.getTime("end_time")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
       public boolean addShift(Shift shift) {
