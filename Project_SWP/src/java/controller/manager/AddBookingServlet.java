@@ -108,6 +108,20 @@ public class AddBookingServlet extends HttpServlet {
             BookingDAO bookingDAO = new BookingDAO();
             Branch branch = new AreaDAO().getAreaByIdWithManager(court.getArea_id());
 
+            // Calculate total price for this booking
+            double total = court.getPrice();
+            if (selectedServices != null) {
+                for (String id : selectedServices) {
+                    try {
+                        Service s = ServiceDAO.getServiceById(Integer.parseInt(id));
+                        if (s != null) {
+                            total += s.getPrice();
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+
             java.util.List<String> conflicts = new java.util.ArrayList<>();
 
             for (String sidStr : shiftIdArr) {
@@ -147,16 +161,8 @@ public class AddBookingServlet extends HttpServlet {
                     continue;
                 }
 
-                double total = court.getPrice();
-                if (selectedServices != null) {
-                    for (String id : selectedServices) {
-                        try {
-                            Service s = ServiceDAO.getServiceById(Integer.parseInt(id));
-                            if (s != null) total += s.getPrice();
-                        } catch (NumberFormatException ignored) {}
-                    }
-                }
-                int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending", java.math.BigDecimal.valueOf(total));
+                int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date,
+                        startTime, endTime, "pending", java.math.BigDecimal.valueOf(total));
                 if (bookingId == -1) {
                     conflicts.add("Lỗi tạo booking " + sh.getShiftName());
                     continue;

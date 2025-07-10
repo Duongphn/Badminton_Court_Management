@@ -120,7 +120,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         }
 
         
-        int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending",totalPrice);
+        int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date, startTime, endTime, "pending", totalPrice);
 
        
         String[] selectedServices = request.getParameterValues("selectedServices");
