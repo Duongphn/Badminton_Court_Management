@@ -246,18 +246,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="notification_list">QUẢN LÝ THÔNG BÁO</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="promotion-admin">QUẢN LÝ KHUYẾN MÃI</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="faq-list">QUẢN LÝ CÂU HỎI THƯỜNG GẶP</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="revenue-report">BÁO CÁO</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="banner-list">BANNER</a>
-                    </li>
                 </ul>
             </div>
         </div>
