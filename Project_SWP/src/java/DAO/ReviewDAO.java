@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import Dal.DBContext;
+import Model.Reviews;
 
 /**
  *
