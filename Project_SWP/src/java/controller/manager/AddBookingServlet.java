@@ -12,6 +12,7 @@ import Model.Branch;
 import Model.Courts;
 import Model.Service;
 import Model.User;
+import utils.PasswordUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -57,7 +58,7 @@ public class AddBookingServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         String courtIdStr = request.getParameter("courtId");
-        String userIdStr = request.getParameter("userId");
+        String username = request.getParameter("username");
         String dateStr = request.getParameter("date");
         String shiftIdStr = request.getParameter("shiftId");
         String[] selectedServices = request.getParameterValues("selectedServices");
@@ -65,7 +66,8 @@ public class AddBookingServlet extends HttpServlet {
         // Validate required parameters
         if (courtIdStr == null || courtIdStr.isEmpty()
                 || dateStr == null || dateStr.isEmpty()
-                || shiftIdStr == null || shiftIdStr.isEmpty()) {
+                || shiftIdStr == null || shiftIdStr.isEmpty()
+                || username == null || username.trim().isEmpty()) {
             request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin ngày, giờ và sân.");
             populateFormData(request, managerId);
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
@@ -74,7 +76,23 @@ public class AddBookingServlet extends HttpServlet {
 
         try {
             int courtId = Integer.parseInt(courtIdStr);
-            int userId = (userIdStr != null && !userIdStr.isEmpty()) ? Integer.parseInt(userIdStr) : 0;
+            UserDAO userDao = new UserDAO();
+            User u = userDao.getUserByUsername(username.trim());
+            if (u == null) {
+                User newUser = new User();
+                newUser.setUsername(username.trim());
+                newUser.setPassword(PasswordUtil.hashPassword("123456"));
+                newUser.setRole("user");
+                newUser.setStatus("active");
+                if (!userDao.insertUser(newUser)) {
+                    request.setAttribute("error", "Không thể tạo người dùng mới.");
+                    populateFormData(request, managerId);
+                    request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+                    return;
+                }
+                u = userDao.getUserByUsername(username.trim());
+            }
+            int userId = u.getUser_Id();
             LocalDate date = LocalDate.parse(dateStr);
             int shiftId = Integer.parseInt(shiftIdStr);
             Shift shift = new ShiftDAO().getShiftById(shiftId);
@@ -167,7 +185,6 @@ public class AddBookingServlet extends HttpServlet {
 
     private void populateFormData(HttpServletRequest request, int managerId) {
         CourtDAO courtDAO = new CourtDAO();
-        UserDAO userDAO = new UserDAO();
         ShiftDAO shiftDAO = new ShiftDAO();
 
         List<Courts> courts = courtDAO.getCourtsByManager(managerId);
@@ -181,12 +198,10 @@ public class AddBookingServlet extends HttpServlet {
             courtShifts.put(c.getCourt_id(), shiftDAO.getShiftsByCourt(c.getCourt_id()));
         }
 
-        List<User> customers = userDAO.getUsersByRole("user");
         List<Service> services = ServiceDAO.getAllService();
 
         request.setAttribute("courts", courts);
         request.setAttribute("courtShifts", courtShifts);
-        request.setAttribute("customers", customers);
         request.setAttribute("services", services);
     }
 }

@@ -237,8 +237,9 @@ public List<Slot> getAvailableSlots(int courtId, LocalDate date) {
 
             ps.setInt(1, courtId);
             ps.setDate(2, java.sql.Date.valueOf(date));
-            ps.setObject(3, endTime, java.sql.Types.TIME);
-            ps.setObject(4, startTime, java.sql.Types.TIME);
+            // Check overlap using new booking's startTime and endTime
+            ps.setObject(3, startTime, java.sql.Types.TIME);
+            ps.setObject(4, endTime, java.sql.Types.TIME);
 
             ResultSet rs = ps.executeQuery();
             boolean hasConflict = rs.next();

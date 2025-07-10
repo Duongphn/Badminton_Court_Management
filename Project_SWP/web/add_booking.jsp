@@ -32,12 +32,8 @@
                     </c:if>
                     <form action="add-booking" method="post" class="row g-3">
         <div class="col-md-6">
-            <label class="form-label">Khách Hàng</label>
-            <select name="userId" class="form-select" required>
-                <c:forEach var="c" items="${customers}">
-                    <option value="${c.user_Id}">${c.username}</option>
-                </c:forEach>
-            </select>
+            <label class="form-label">Tên khách hàng</label>
+            <input type="text" name="username" class="form-control" required/>
         </div>
         <div class="col-md-6">
             <label class="form-label">Sân</label>
