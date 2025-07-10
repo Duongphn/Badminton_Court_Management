@@ -44,13 +44,15 @@
             <label class="form-label">Ngày</label>
             <input type="date" name="date" class="form-control" value="${booking.date}" min="<%= java.time.LocalDate.now().toString() %>" required>
         </div>
-        <div class="col-md-4">
-            <label class="form-label">Giờ bắt đầu</label>
-            <input type="time" name="startTime" class="form-control" value="${booking.start_time}" required>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Giờ kết thúc</label>
-            <input type="time" name="endTime" class="form-control" value="${booking.end_time}" required>
+        <div class="col-md-8">
+            <label class="form-label">Ca chơi</label>
+            <select name="shiftId" class="form-select" required>
+                <c:forEach var="sh" items="${shifts}">
+                    <option value="${sh.shiftId}" <c:if test="${sh.shiftId eq selectedShiftId}">selected</c:if>>
+                        ${sh.shiftName} (${sh.startTime} - ${sh.endTime})
+                    </option>
+                </c:forEach>
+            </select>
         </div>
         <div class="col-md-12">
             <label class="form-label">Dịch vụ</label>

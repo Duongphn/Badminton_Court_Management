@@ -6,11 +6,13 @@ import DAO.CourtDAO;
 import DAO.UserDAO;
 import DAO.AreaDAO;
 import DAO.ServiceDAO;
+import DAO.ShiftDAO;
 import Model.Branch;
 import Model.Bookings;
 import Model.Courts;
 import Model.User;
 import Model.Service;
+import Model.Shift;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -57,6 +59,16 @@ public class UpdateBookingServlet extends HttpServlet {
             }
             CourtDAO courtDAO = new CourtDAO();
             Courts court = courtDAO.getCourtById(booking.getCourt_id());
+            ShiftDAO shiftDAO = new ShiftDAO();
+            List<Shift> shifts = shiftDAO.getShiftsByCourt(booking.getCourt_id());
+            int selectedShiftId = -1;
+            for (Shift sh : shifts) {
+                if (sh.getStartTime().equals(booking.getStart_time()) &&
+                        sh.getEndTime().equals(booking.getEnd_time())) {
+                    selectedShiftId = sh.getShiftId();
+                    break;
+                }
+            }
             UserDAO userDAO = new UserDAO();
             User customer = userDAO.getUserById(booking.getUser_id());
             BookingServiceDAO bsDao = new BookingServiceDAO();
@@ -65,6 +77,8 @@ public class UpdateBookingServlet extends HttpServlet {
                     .stream().map(Service::getService_id).collect(Collectors.toList());
             request.setAttribute("booking", booking);
             request.setAttribute("court", court);
+            request.setAttribute("shifts", shifts);
+            request.setAttribute("selectedShiftId", selectedShiftId);
             request.setAttribute("customer", customer);
             request.setAttribute("services", services);
             request.setAttribute("selectedServiceIds", selectedIds);
@@ -90,8 +104,7 @@ public class UpdateBookingServlet extends HttpServlet {
         // 1. Lấy tham số từ form
         String bookingIdStr = request.getParameter("bookingId");
         String dateStr = request.getParameter("date");
-        String startStr = request.getParameter("startTime");
-        String endStr = request.getParameter("endTime");
+        String shiftIdStr = request.getParameter("shiftId");
         String status = request.getParameter("status");
         String[] selectedServices = request.getParameterValues("selectedServices");
         List<Service> servicesList = ServiceDAO.getAllService();
@@ -107,24 +120,31 @@ public class UpdateBookingServlet extends HttpServlet {
         // 2. Kiểm tra null/rỗng
         if (bookingIdStr == null || bookingIdStr.isEmpty()
                 || dateStr == null || dateStr.isEmpty()
-                || startStr == null || startStr.isEmpty()
-                || endStr == null || endStr.isEmpty()
+                || shiftIdStr == null || shiftIdStr.isEmpty()
                 || status == null || status.isEmpty()) {
             request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
             request.getRequestDispatcher("update_booking.jsp").forward(request, response);
             return;
         }
 
-        int bookingId, courtId;
+        int bookingId, courtId, shiftId = -1;
         LocalDate date;
         Time startTime, endTime;
         Bookings currentBooking = null;
+        List<Shift> shifts = null;
 
         try {
             bookingId = Integer.parseInt(bookingIdStr);
             date = LocalDate.parse(dateStr);
-            startTime = Time.valueOf(startStr.length() == 5 ? startStr + ":00" : startStr);
-            endTime = Time.valueOf(endStr.length() == 5 ? endStr + ":00" : endStr);
+            shiftId = Integer.parseInt(shiftIdStr);
+            Shift shift = new ShiftDAO().getShiftById(shiftId);
+            if (shift == null) {
+                request.setAttribute("error", "Ca chơi không tồn tại!");
+                request.getRequestDispatcher("update_booking.jsp").forward(request, response);
+                return;
+            }
+            startTime = shift.getStartTime();
+            endTime = shift.getEndTime();
 
             // 3. Lấy booking hiện tại để lấy courtId và hiển thị lại thông tin
             BookingDAO dao = new BookingDAO();
@@ -135,6 +155,8 @@ public class UpdateBookingServlet extends HttpServlet {
                 return;
             }
             courtId = currentBooking.getCourt_id();
+            ShiftDAO shiftDAO2 = new ShiftDAO();
+            shifts = shiftDAO2.getShiftsByCourt(courtId);
 
             // 4. Kiểm tra logic thời gian
             if (!startTime.before(endTime)) {
@@ -143,6 +165,8 @@ public class UpdateBookingServlet extends HttpServlet {
                 request.setAttribute("booking", currentBooking);
                 request.setAttribute("court", new CourtDAO().getCourtById(courtId));
                 request.setAttribute("customer", new UserDAO().getUserById(currentBooking.getUser_id()));
+                request.setAttribute("shifts", shifts);
+                request.setAttribute("selectedShiftId", shiftId);
                 request.getRequestDispatcher("update_booking.jsp").forward(request, response);
                 return;
             }
@@ -160,6 +184,8 @@ public class UpdateBookingServlet extends HttpServlet {
                     request.setAttribute("booking", currentBooking);
                     request.setAttribute("court", court);
                     request.setAttribute("customer", new UserDAO().getUserById(currentBooking.getUser_id()));
+                    request.setAttribute("shifts", shifts);
+                    request.setAttribute("selectedShiftId", shiftId);
                     request.getRequestDispatcher("update_booking.jsp").forward(request, response);
                     return;
                 }
@@ -171,6 +197,8 @@ public class UpdateBookingServlet extends HttpServlet {
                 request.setAttribute("booking", currentBooking);
                 request.setAttribute("court", court);
                 request.setAttribute("customer", new UserDAO().getUserById(currentBooking.getUser_id()));
+                request.setAttribute("shifts", shifts);
+                request.setAttribute("selectedShiftId", shiftId);
                 request.getRequestDispatcher("update_booking.jsp").forward(request, response);
                 return;
             }
@@ -182,6 +210,8 @@ public class UpdateBookingServlet extends HttpServlet {
                 request.setAttribute("booking", currentBooking);
                 request.setAttribute("court", new CourtDAO().getCourtById(courtId));
                 request.setAttribute("customer", new UserDAO().getUserById(currentBooking.getUser_id()));
+                request.setAttribute("shifts", shifts);
+                request.setAttribute("selectedShiftId", shiftId);
                 request.getRequestDispatcher("update_booking.jsp").forward(request, response);
                 return;
             }
@@ -206,6 +236,8 @@ public class UpdateBookingServlet extends HttpServlet {
                 request.setAttribute("booking", currentBooking);
                 request.setAttribute("court", new CourtDAO().getCourtById(courtId));
                 request.setAttribute("customer", new UserDAO().getUserById(currentBooking.getUser_id()));
+                request.setAttribute("shifts", shifts);
+                request.setAttribute("selectedShiftId", shiftId);
                 request.getRequestDispatcher("update_booking.jsp").forward(request, response);
             }
 
@@ -215,6 +247,8 @@ public class UpdateBookingServlet extends HttpServlet {
                 request.setAttribute("booking", currentBooking);
                 request.setAttribute("court", new CourtDAO().getCourtById(currentBooking.getCourt_id()));
                 request.setAttribute("customer", new UserDAO().getUserById(currentBooking.getUser_id()));
+                request.setAttribute("shifts", shifts);
+                request.setAttribute("selectedShiftId", shiftId);
             }
             request.getRequestDispatcher("update_booking.jsp").forward(request, response);
         }

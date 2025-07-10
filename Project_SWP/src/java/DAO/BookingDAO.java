@@ -281,7 +281,7 @@ public List<Slot> getAvailableSlots(int courtId, LocalDate date) {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
    public int insertBooking1(int userId, int courtId, LocalDate date, Time startTime, Time endTime, String status, BigDecimal totalPrice) {
@@ -610,12 +610,12 @@ public boolean createBooking(Bookings booking) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 // Slot is available when there is no overlapping booking
-                return rs.getInt(1) > 0;
+                return rs.getInt(1) == 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
     public List<Bookings> getBookingsByCourtId(int courtId) {
