@@ -522,7 +522,7 @@
                                 </div>
                                 <div class="form-floating icon-input">
                                     <i class="fas fa-clock"></i>
-                                    <select name="shiftId" class="form-select" id="shiftSelect" required>
+                                    <select name="shiftIds" class="form-select" id="shiftSelect" multiple required>
                                         <c:forEach var="sh" items="${shifts}">
                                             <option value="${sh.shiftId}" <c:if test="${sh.shiftId eq selectedShiftId}">selected</c:if>>
                                                 ${sh.shiftName} (${sh.startTime} - ${sh.endTime})

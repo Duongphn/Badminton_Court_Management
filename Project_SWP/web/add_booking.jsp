@@ -415,7 +415,7 @@
                                 <div class="form-floating icon-input">
                                     <i class="fas fa-clock"></i>
                                     <c:set var="defaultCourt" value="${not empty courts ? courts[0].court_id : -1}" />
-                                    <select name="shiftId" id="shiftSelect" class="form-select" required>
+                                    <select name="shiftIds" id="shiftSelect" class="form-select" multiple required>
                                         <c:forEach var="entry" items="${courtShifts}">
                                             <c:set var="cId" value="${entry.key}" />
                                             <c:forEach var="sh" items="${entry.value}">
@@ -484,8 +484,11 @@
                     o.style.display = 'none';
                 }
             });
-            const visible = Array.from(shiftSelect.options).find(o => o.style.display !== 'none');
-            if (visible) shiftSelect.value = visible.value;
+            const visibleOptions = Array.from(shiftSelect.options).filter(o => o.style.display !== 'none');
+            shiftSelect.selectedIndex = -1;
+            if (visibleOptions.length > 0) {
+                visibleOptions[0].selected = true;
+            }
         }
 
         function toggleService(card, checkboxId) {
