@@ -41,8 +41,8 @@ public class AddBookingServlet extends HttpServlet {
             response.sendRedirect("login");
             return;
         }
-        int managerId = ((User) session.getAttribute("user")).getUser_Id();
-        populateFormData(request, managerId);
+        User currentUser = (User) session.getAttribute("user");
+        populateFormData(request, currentUser);
         request.getRequestDispatcher("add_booking.jsp").forward(request, response);
     }
 
@@ -54,7 +54,7 @@ public class AddBookingServlet extends HttpServlet {
             response.sendRedirect("login");
             return;
         }
-        int managerId = ((User) session.getAttribute("user")).getUser_Id();
+        User currentUser = (User) session.getAttribute("user");
         request.setCharacterEncoding("UTF-8");
 
         String courtIdStr = request.getParameter("courtId");
@@ -69,7 +69,7 @@ public class AddBookingServlet extends HttpServlet {
                 || shiftIdArr == null || shiftIdArr.length == 0
                 || username == null || username.trim().isEmpty()) {
             request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin ngày, giờ và sân.");
-            populateFormData(request, managerId);
+            populateFormData(request, currentUser);
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
             return;
         }
@@ -86,7 +86,7 @@ public class AddBookingServlet extends HttpServlet {
                 newUser.setStatus("active");
                 if (!userDao.insertUser(newUser)) {
                     request.setAttribute("error", "Không thể tạo người dùng mới.");
-                    populateFormData(request, managerId);
+                    populateFormData(request, currentUser);
                     request.getRequestDispatcher("add_booking.jsp").forward(request, response);
                     return;
                 }
@@ -99,7 +99,7 @@ public class AddBookingServlet extends HttpServlet {
             Courts court = courtDAO.getCourtById(courtId);
             if (court == null) {
                 request.setAttribute("error", "Sân không tồn tại.");
-                populateFormData(request, managerId);
+                populateFormData(request, currentUser);
                 request.getRequestDispatcher("add_booking.jsp").forward(request, response);
                 return;
             }
@@ -180,7 +180,7 @@ public class AddBookingServlet extends HttpServlet {
 
             if (!conflicts.isEmpty()) {
                 request.setAttribute("error", "Không thể đặt một số ca: " + String.join(", ", conflicts));
-                populateFormData(request, managerId);
+                populateFormData(request, currentUser);
                 request.getRequestDispatcher("add_booking.jsp").forward(request, response);
                 return;
             }
@@ -189,7 +189,7 @@ public class AddBookingServlet extends HttpServlet {
             response.sendRedirect("manager-booking-schedule?msg=" + msg);
         } catch (Exception e) {
             request.setAttribute("error", "Dữ liệu không hợp lệ hoặc lỗi hệ thống!");
-            populateFormData(request, managerId);
+            populateFormData(request, currentUser);
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
         }
     }
@@ -202,14 +202,19 @@ public class AddBookingServlet extends HttpServlet {
         return "staff".equals(role) || "admin".equals(role);
     }
 
-    private void populateFormData(HttpServletRequest request, int managerId) {
+    private void populateFormData(HttpServletRequest request, User user) {
         CourtDAO courtDAO = new CourtDAO();
         ShiftDAO shiftDAO = new ShiftDAO();
 
-        List<Courts> courts = courtDAO.getCourtsByManager(managerId);
-        if (courts == null || courts.isEmpty()) {
-            request.setAttribute("courtMessage", "Không tìm thấy sân nào thuộc khu vực bạn quản lý.");
-            courts = courts == null ? new java.util.ArrayList<>() : courts;
+        List<Courts> courts;
+        if ("admin".equals(user.getRole())) {
+            courts = courtDAO.getAllCourts();
+        } else {
+            courts = courtDAO.getCourtsByManager(user.getUser_Id());
+            if (courts == null || courts.isEmpty()) {
+                request.setAttribute("courtMessage", "Không tìm thấy sân nào thuộc khu vực bạn quản lý.");
+                courts = courts == null ? new java.util.ArrayList<>() : courts;
+            }
         }
 
         java.util.Map<Integer, java.util.List<Shift>> courtShifts = new java.util.HashMap<>();
