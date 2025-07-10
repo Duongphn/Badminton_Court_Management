@@ -285,33 +285,48 @@ public List<Slot> getAvailableSlots(int courtId, LocalDate date) {
         return false;
     }
 
-   public int insertBooking1(int userId, int courtId, LocalDate date, Time startTime, Time endTime, String status, BigDecimal totalPrice) {
-    String sql = "INSERT INTO Bookings (user_id, court_id, date, start_time, end_time, status, total_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    int bookingId = -1;
+    /**
+     * Insert a booking and specify the total price for the reservation.
+     *
+     * @param userId      id of the user making the booking
+     * @param courtId     id of the court
+     * @param date        booking date
+     * @param startTime   shift start time
+     * @param endTime     shift end time
+     * @param status      booking status
+     * @param totalPrice  total price to persist
+     * @return generated booking id or -1 on failure
+     */
+    public int insertBookingWithTotalPrice(int userId, int courtId, LocalDate date,
+                                           Time startTime, Time endTime, String status,
+                                           BigDecimal totalPrice) {
+        String sql = "INSERT INTO Bookings (user_id, court_id, date, start_time, end_time, status, total_price) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        int bookingId = -1;
 
-    try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-        ps.setInt(1, userId);
-        ps.setInt(2, courtId);
-        ps.setDate(3, java.sql.Date.valueOf(date));
-        ps.setTime(4, startTime);
-        ps.setTime(5, endTime);
-        ps.setString(6, status); // e.g., "pending"
-        ps.setBigDecimal(7, totalPrice); // truyền giá đã tính toán
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, courtId);
+            ps.setDate(3, java.sql.Date.valueOf(date));
+            ps.setTime(4, startTime);
+            ps.setTime(5, endTime);
+            ps.setString(6, status);
+            ps.setBigDecimal(7, totalPrice);
 
-        int affectedRows = ps.executeUpdate();
-        if (affectedRows > 0) {
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    bookingId = rs.getInt(1); // lấy booking_id vừa tạo
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        bookingId = rs.getInt(1);
+                    }
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
 
-    return bookingId;
-}
+        return bookingId;
+    }
 public boolean createBooking(Bookings booking) {
     String sql = "INSERT INTO Bookings(user_id, court_id, date, start_time, end_time, status, total_price) VALUES (?, ?, ?, ?, ?, 'pending', ?)";
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
