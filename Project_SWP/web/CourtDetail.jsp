@@ -63,7 +63,7 @@
                     <div class="text-end small text-muted">${rv.created_at}</div>
                 </div>
             </c:forEach>
-        </div
+        </div>
 
 
         <jsp:include page="homefooter.jsp" />
