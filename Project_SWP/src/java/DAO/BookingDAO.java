@@ -552,6 +552,68 @@ public boolean createBooking(Bookings booking) {
         return list;
     }
 
+    /**
+     * Retrieve bookings across all areas. This is used by admin accounts to
+     * view every booking in the system without filtering by manager.
+     */
+    public List<BookingScheduleDTO> getAllBookings(Integer areaId, LocalDate start, LocalDate end, String status) {
+        List<BookingScheduleDTO> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT b.booking_id, b.user_id, b.court_id, b.date, b.start_time, b.end_time, b.status, b.total_price, u.username, c.court_number, c.area_id, a.name AS area_name "
+                + "FROM Bookings b JOIN Courts c ON b.court_id = c.court_id "
+                + "JOIN Areas a ON c.area_id = a.area_id "
+                + "JOIN Users u ON b.user_id = u.user_id WHERE 1=1");
+        if (areaId != null) {
+            sql.append(" AND a.area_id = ?");
+        }
+        if (start != null) {
+            sql.append(" AND b.date >= ?");
+        }
+        if (end != null) {
+            sql.append(" AND b.date <= ?");
+        }
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND b.status = ?");
+        }
+        sql.append(" ORDER BY b.date, b.start_time");
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (areaId != null) {
+                ps.setInt(idx++, areaId);
+            }
+            if (start != null) {
+                ps.setDate(idx++, Date.valueOf(start));
+            }
+            if (end != null) {
+                ps.setDate(idx++, Date.valueOf(end));
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(idx++, status);
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                BookingScheduleDTO dto = new BookingScheduleDTO();
+                dto.setBooking_id(rs.getInt("booking_id"));
+                dto.setUser_id(rs.getInt("user_id"));
+                dto.setCourt_id(rs.getInt("court_id"));
+                dto.setDate(rs.getDate("date").toLocalDate());
+                dto.setStart_time(rs.getTime("start_time"));
+                dto.setEnd_time(rs.getTime("end_time"));
+                dto.setStatus(rs.getString("status"));
+                dto.setTotalPrice(rs.getDouble("total_price"));
+                dto.setCustomerName(rs.getString("username"));
+                dto.setCourtNumber(rs.getString("court_number"));
+                dto.setArea_id(rs.getInt("area_id"));
+                dto.setAreaName(rs.getString("area_name"));
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public boolean updateBookingStatus(int bookingId, String status) {
         String sql = "UPDATE Bookings SET status = ? WHERE booking_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

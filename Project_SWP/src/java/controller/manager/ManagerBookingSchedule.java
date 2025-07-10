@@ -35,6 +35,7 @@ public class ManagerBookingSchedule extends HttpServlet {
             return;
         }
         int managerId = user.getUser_Id();
+        String role = user.getRole();
 
         String msgParam = request.getParameter("msg");
         if (msgParam != null && !msgParam.isEmpty()) {
@@ -67,7 +68,12 @@ public class ManagerBookingSchedule extends HttpServlet {
         }
 
         BookingDAO dao = new BookingDAO();
-        List<BookingScheduleDTO> bookings = dao.getManagerBookings(managerId, areaId, startDate, endDate, status);
+        List<BookingScheduleDTO> bookings;
+        if ("admin".equals(role)) {
+            bookings = dao.getAllBookings(areaId, startDate, endDate, status);
+        } else {
+            bookings = dao.getManagerBookings(managerId, areaId, startDate, endDate, status);
+        }
         BookingServiceDAO bsDao = new BookingServiceDAO();
         Map<Integer, String> serviceNames = new HashMap<>();
         for (BookingScheduleDTO b : bookings) {
@@ -77,7 +83,12 @@ public class ManagerBookingSchedule extends HttpServlet {
         }
 
         AreaDAO areaDAO = new AreaDAO();
-        List<Branch> areas = areaDAO.getAreasByManager(managerId);
+        List<Branch> areas;
+        if ("admin".equals(role)) {
+            areas = areaDAO.getAllAreas();
+        } else {
+            areas = areaDAO.getAreasByManager(managerId);
+        }
 
         request.setAttribute("bookings", bookings);
         request.setAttribute("serviceNames", serviceNames);
