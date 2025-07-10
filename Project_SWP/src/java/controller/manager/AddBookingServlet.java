@@ -60,13 +60,13 @@ public class AddBookingServlet extends HttpServlet {
         String courtIdStr = request.getParameter("courtId");
         String username = request.getParameter("username");
         String dateStr = request.getParameter("date");
-        String shiftIdStr = request.getParameter("shiftId");
+        String[] shiftIdArr = request.getParameterValues("shiftIds");
         String[] selectedServices = request.getParameterValues("selectedServices");
 
         // Validate required parameters
         if (courtIdStr == null || courtIdStr.isEmpty()
                 || dateStr == null || dateStr.isEmpty()
-                || shiftIdStr == null || shiftIdStr.isEmpty()
+                || shiftIdArr == null || shiftIdArr.length == 0
                 || username == null || username.trim().isEmpty()) {
             request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin ngày, giờ và sân.");
             populateFormData(request, managerId);
@@ -94,23 +94,6 @@ public class AddBookingServlet extends HttpServlet {
             }
             int userId = u.getUser_Id();
             LocalDate date = LocalDate.parse(dateStr);
-            int shiftId = Integer.parseInt(shiftIdStr);
-            Shift shift = new ShiftDAO().getShiftById(shiftId);
-            if (shift == null) {
-                request.setAttribute("error", "Ca chơi không tồn tại.");
-                populateFormData(request, managerId);
-                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-                return;
-            }
-            Time startTime = shift.getStartTime();
-            Time endTime = shift.getEndTime();
-
-            if (!startTime.before(endTime)) {
-                request.setAttribute("error", "Giờ bắt đầu phải trước giờ kết thúc.");
-                populateFormData(request, managerId);
-                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-                return;
-            }
 
             CourtDAO courtDAO = new CourtDAO();
             Courts court = courtDAO.getCourtById(courtId);
@@ -121,49 +104,79 @@ public class AddBookingServlet extends HttpServlet {
                 return;
             }
 
-            Branch branch = new AreaDAO().getAreaByIdWithManager(court.getArea_id());
-            if (branch != null) {
-                Time open = branch.getOpenTime();
-                Time close = branch.getCloseTime();
-                if (startTime.before(open) || endTime.after(close)) {
-                    request.setAttribute("error", "Thời gian đặt sân phải trong khoảng mở cửa: " + open + " - " + close);
-                    populateFormData(request, managerId);
-                    request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-                    return;
-                }
-            }
-
-            LocalDateTime startDateTime = LocalDateTime.of(date, startTime.toLocalTime());
-            if (startDateTime.isBefore(LocalDateTime.now())) {
-                request.setAttribute("error", "Không thể đặt sân trong thời gian đã qua.");
-                populateFormData(request, managerId);
-                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-                return;
-            }
-
+            ShiftDAO shiftDAO = new ShiftDAO();
             BookingDAO bookingDAO = new BookingDAO();
-            boolean slotAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
-            if (!slotAvailable) {
-                request.setAttribute("error", "Khung giờ này đã có người đặt, vui lòng chọn khung giờ khác.");
-                populateFormData(request, managerId);
-                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-                return;
-            }
-            int bookingId = bookingDAO.insertBooking(userId, courtId, date, startTime, endTime, "pending");
-            if (bookingId == -1) {
-                request.setAttribute("error", "Có lỗi xảy ra, vui lòng thử lại sau!");
-                populateFormData(request, managerId);
-                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-                return;
+            Branch branch = new AreaDAO().getAreaByIdWithManager(court.getArea_id());
+
+            java.util.List<String> conflicts = new java.util.ArrayList<>();
+
+            for (String sidStr : shiftIdArr) {
+                int sid;
+                try { sid = Integer.parseInt(sidStr); } catch (NumberFormatException ex) { continue; }
+                Shift sh = shiftDAO.getShiftById(sid);
+                if (sh == null) {
+                    conflicts.add("Ca " + sidStr + " không tồn tại");
+                    continue;
+                }
+                Time startTime = sh.getStartTime();
+                Time endTime = sh.getEndTime();
+
+                if (!startTime.before(endTime)) {
+                    conflicts.add(sh.getShiftName() + " giờ bắt đầu phải trước giờ kết thúc");
+                    continue;
+                }
+
+                if (branch != null) {
+                    Time open = branch.getOpenTime();
+                    Time close = branch.getCloseTime();
+                    if (startTime.before(open) || endTime.after(close)) {
+                        conflicts.add(sh.getShiftName() + " ngoài giờ mở cửa");
+                        continue;
+                    }
+                }
+
+                LocalDateTime startDateTime = LocalDateTime.of(date, startTime.toLocalTime());
+                if (startDateTime.isBefore(LocalDateTime.now())) {
+                    conflicts.add(sh.getShiftName() + " đã qua");
+                    continue;
+                }
+
+                boolean slotAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
+                if (!slotAvailable) {
+                    conflicts.add(sh.getShiftName() + "(" + startTime + "-" + endTime + ")");
+                    continue;
+                }
+
+                double total = court.getPrice();
+                if (selectedServices != null) {
+                    for (String id : selectedServices) {
+                        try {
+                            Service s = ServiceDAO.getServiceById(Integer.parseInt(id));
+                            if (s != null) total += s.getPrice();
+                        } catch (NumberFormatException ignored) {}
+                    }
+                }
+                int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending", java.math.BigDecimal.valueOf(total));
+                if (bookingId == -1) {
+                    conflicts.add("Lỗi tạo booking " + sh.getShiftName());
+                    continue;
+                }
+
+                if (selectedServices != null) {
+                    BookingServiceDAO bsDao = new BookingServiceDAO();
+                    for (String id : selectedServices) {
+                        try {
+                            bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
+                        } catch (NumberFormatException ignored) { }
+                    }
+                }
             }
 
-            if (selectedServices != null) {
-                BookingServiceDAO bsDao = new BookingServiceDAO();
-                for (String id : selectedServices) {
-                    try {
-                        bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
-                    } catch (NumberFormatException ignored) { }
-                }
+            if (!conflicts.isEmpty()) {
+                request.setAttribute("error", "Không thể đặt một số ca: " + String.join(", ", conflicts));
+                populateFormData(request, managerId);
+                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+                return;
             }
 
             String msg = URLEncoder.encode("Đặt sân thành công!", StandardCharsets.UTF_8);
