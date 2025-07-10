@@ -497,14 +497,18 @@ public boolean createBooking(Bookings booking) {
         return false;
     }
 
-    public List<BookingScheduleDTO> getManagerBookings(int managerId, Integer areaId, LocalDate start, LocalDate end, String status) {
+    public List<BookingScheduleDTO> getManagerBookings(int managerId, Integer areaId,
+            LocalDate start, LocalDate end, String status) {
         List<BookingScheduleDTO> list = new ArrayList<>();
+
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT b.booking_id, b.user_id, b.court_id, b.date, b.start_time, b.end_time, b.status, b.total_price, u.username, c.court_number, c.area_id, a.name AS area_name "
-                + "FROM Bookings b JOIN Courts c ON b.court_id = c.court_id "
-                + "JOIN Areas a ON c.area_id = a.area_id "
-                + "JOIN Users u ON b.user_id = u.user_id "
-                + "WHERE a.manager_id = ?");
+        sql.append("SELECT b.booking_id, b.user_id, b.court_id, b.date, b.start_time, ")
+                .append("b.end_time, b.status, u.username, c.court_number, c.area_id ")
+                .append("FROM Bookings b ")
+                .append("JOIN Courts c ON b.court_id = c.court_id ")
+                .append("JOIN Areas a ON c.area_id = a.area_id ")
+                .append("JOIN Users u ON b.user_id = u.user_id ")
+                .append("WHERE a.manager_id = ?");
         if (areaId != null) {
             sql.append(" AND a.area_id = ?");
         }
@@ -517,23 +521,26 @@ public boolean createBooking(Bookings booking) {
         if (status != null && !status.isEmpty()) {
             sql.append(" AND b.status = ?");
         }
+
         sql.append(" ORDER BY b.date, b.start_time");
 
         try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-            int idx = 1;
-            ps.setInt(idx++, managerId);
+            int paramIndex = 1;
+            ps.setInt(paramIndex++, managerId);
+
             if (areaId != null) {
-                ps.setInt(idx++, areaId);
+                ps.setInt(paramIndex++, areaId);
             }
             if (start != null) {
-                ps.setDate(idx++, Date.valueOf(start));
+                ps.setDate(paramIndex++, Date.valueOf(start));
             }
             if (end != null) {
-                ps.setDate(idx++, Date.valueOf(end));
+                ps.setDate(paramIndex++, Date.valueOf(end));
             }
             if (status != null && !status.isEmpty()) {
-                ps.setString(idx++, status);
+                ps.setString(paramIndex++, status);
             }
+
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 BookingScheduleDTO dto = new BookingScheduleDTO();
