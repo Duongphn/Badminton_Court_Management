@@ -21,6 +21,7 @@ public class Bookings {
     private Time end_time;
     private String status;
     private int rating;
+    private String reviewComment;
     private double total_price;
    private List<String> services;
 
@@ -33,13 +34,18 @@ public void setServices(List<String> services) {
 }
     @Override
     public String toString() {
-        return "Bookings{" + "booking_id=" + booking_id + ", user_id=" + user_id + ", court_id=" + court_id + ", date=" + date + ", start_time=" + start_time + ", end_time=" + end_time + ", status=" + status + ", rating=" + rating + '}';
+        return "Bookings{" + "booking_id=" + booking_id + ", user_id=" + user_id
+                + ", court_id=" + court_id + ", date=" + date
+                + ", start_time=" + start_time + ", end_time=" + end_time
+                + ", status=" + status + ", rating=" + rating
+                + ", reviewComment=" + reviewComment + '}';
     }
 
     public Bookings() {
     }
 
-    public Bookings(int booking_id, int user_id, int court_id, LocalDate date, Time start_time, Time end_time, String status, int rating, double total_price) {
+    public Bookings(int booking_id, int user_id, int court_id, LocalDate date, Time start_time,
+                    Time end_time, String status, int rating, double total_price, String reviewComment) {
         this.booking_id = booking_id;
         this.user_id = user_id;
         this.court_id = court_id;
@@ -49,6 +55,7 @@ public void setServices(List<String> services) {
         this.status = status;
         this.rating = rating;
         this.total_price = total_price;
+        this.reviewComment = reviewComment;
     }
 
     public int getBooking_id() {
@@ -115,14 +122,22 @@ public void setServices(List<String> services) {
         this.total_price = total_price;
     }
 
-    
-    
+
+
     public int getRating() {
         return rating;
     }
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public String getReviewComment() {
+        return reviewComment;
+    }
+
+    public void setReviewComment(String reviewComment) {
+        this.reviewComment = reviewComment;
     }
 
 }

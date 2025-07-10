@@ -187,6 +187,7 @@ public class BookingDAO extends DBContext {
                 booking.setStatus(rs.getString("status"));
                 booking.setRating(rs.getInt("rating"));
                 booking.setTotal_price(rs.getDouble("total_price"));
+                booking.setReviewComment(rs.getString("review_comment"));
 
                 bookings.add(booking);
             }
@@ -430,7 +431,11 @@ public boolean createBooking(Bookings booking) {
     public List<Bookings> getBookingsByUserId(int userId) {
     List<Bookings> bookings = new ArrayList<>();
     
-    String sql = "SELECT b.*, c.court_number, s.name AS service_name " +
+    String sql = "SELECT b.*, c.court_number, c.area_id, " +
+                 "       s.name AS service_name, " +
+                 "       (SELECT TOP 1 comment FROM Reviews r " +
+                 "        WHERE r.user_id = b.user_id AND r.area_id = c.area_id " +
+                 "          AND r.rating = b.rating ORDER BY r.created_at DESC) AS review_comment " +
                  "FROM Bookings b " +
                  "JOIN Courts c ON b.court_id = c.court_id " +
                  "LEFT JOIN Booking_Services bs ON b.booking_id = bs.booking_id " +
@@ -458,8 +463,9 @@ public boolean createBooking(Bookings booking) {
                 booking.setStatus(rs.getString("status"));
                 booking.setRating(rs.getInt("rating"));
                 booking.setTotal_price(rs.getDouble("total_price"));
-                
-                booking.setServices(new ArrayList<>()); 
+                booking.setReviewComment(rs.getString("review_comment"));
+
+                booking.setServices(new ArrayList<>());
                 bookingMap.put(bookingId, booking);
             }
 

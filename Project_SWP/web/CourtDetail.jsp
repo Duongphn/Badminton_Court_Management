@@ -51,6 +51,18 @@
                     </div>
                 </c:forEach>
             </div>
+
+            <h4 class="mt-5 text-success fw-semibold">Đánh giá của người dùng</h4>
+            <c:if test="${empty reviews}">
+                <p class="text-muted">Chưa có đánh giá.</p>
+            </c:if>
+            <c:forEach var="rv" items="${reviews}">
+                <div class="border rounded p-3 mb-3">
+                    <div class="fw-bold">${rv.username} - ${rv.rating}★</div>
+                    <div>${rv.comment}</div>
+                    <div class="text-end small text-muted">${rv.created_at}</div>
+                </div>
+            </c:forEach>
         </div
 
 
