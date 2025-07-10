@@ -6,6 +6,8 @@ import DAO.CourtDAO;
 import DAO.UserDAO;
 import DAO.AreaDAO;
 import DAO.ServiceDAO;
+import DAO.ShiftDAO;
+import Model.Shift;
 import Model.Branch;
 import Model.Courts;
 import Model.Service;
@@ -57,15 +59,13 @@ public class AddBookingServlet extends HttpServlet {
         String courtIdStr = request.getParameter("courtId");
         String userIdStr = request.getParameter("userId");
         String dateStr = request.getParameter("date");
-        String startStr = request.getParameter("startTime");
-        String endStr = request.getParameter("endTime");
+        String shiftIdStr = request.getParameter("shiftId");
         String[] selectedServices = request.getParameterValues("selectedServices");
 
         // Validate required parameters
         if (courtIdStr == null || courtIdStr.isEmpty()
                 || dateStr == null || dateStr.isEmpty()
-                || startStr == null || startStr.isEmpty()
-                || endStr == null || endStr.isEmpty()) {
+                || shiftIdStr == null || shiftIdStr.isEmpty()) {
             request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin ngày, giờ và sân.");
             populateFormData(request, managerId);
             request.getRequestDispatcher("add_booking.jsp").forward(request, response);
@@ -76,8 +76,16 @@ public class AddBookingServlet extends HttpServlet {
             int courtId = Integer.parseInt(courtIdStr);
             int userId = (userIdStr != null && !userIdStr.isEmpty()) ? Integer.parseInt(userIdStr) : 0;
             LocalDate date = LocalDate.parse(dateStr);
-            Time startTime = parseTime(startStr);
-            Time endTime = parseTime(endStr);
+            int shiftId = Integer.parseInt(shiftIdStr);
+            Shift shift = new ShiftDAO().getShiftById(shiftId);
+            if (shift == null) {
+                request.setAttribute("error", "Ca chơi không tồn tại.");
+                populateFormData(request, managerId);
+                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+                return;
+            }
+            Time startTime = shift.getStartTime();
+            Time endTime = shift.getEndTime();
 
             if (!startTime.before(endTime)) {
                 request.setAttribute("error", "Giờ bắt đầu phải trước giờ kết thúc.");
@@ -150,13 +158,10 @@ public class AddBookingServlet extends HttpServlet {
         return "staff".equals(role) || "admin".equals(role);
     }
 
-    private Time parseTime(String str) {
-        return Time.valueOf(str.length() == 5 ? str + ":00" : str);
-    }
-
     private void populateFormData(HttpServletRequest request, int managerId) {
         CourtDAO courtDAO = new CourtDAO();
         UserDAO userDAO = new UserDAO();
+        ShiftDAO shiftDAO = new ShiftDAO();
 
         List<Courts> courts = courtDAO.getCourtsByManager(managerId);
         if (courts == null || courts.isEmpty()) {
@@ -164,10 +169,16 @@ public class AddBookingServlet extends HttpServlet {
             courts = courts == null ? new java.util.ArrayList<>() : courts;
         }
 
+        java.util.Map<Integer, java.util.List<Shift>> courtShifts = new java.util.HashMap<>();
+        for (Courts c : courts) {
+            courtShifts.put(c.getCourt_id(), shiftDAO.getShiftsByCourt(c.getCourt_id()));
+        }
+
         List<User> customers = userDAO.getUsersByRole("user");
         List<Service> services = ServiceDAO.getAllService();
 
         request.setAttribute("courts", courts);
+        request.setAttribute("courtShifts", courtShifts);
         request.setAttribute("customers", customers);
         request.setAttribute("services", services);
     }

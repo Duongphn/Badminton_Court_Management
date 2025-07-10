@@ -44,23 +44,29 @@
             <c:if test="${not empty courtMessage}">
                 <div class="alert alert-info" role="alert">${courtMessage}</div>
             </c:if>
-            <select name="courtId" class="form-select" required>
+            <select name="courtId" id="courtSelect" class="form-select" required>
                 <c:forEach var="co" items="${courts}">
                     <option value="${co.court_id}">${co.court_number}</option>
                 </c:forEach>
             </select>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <label class="form-label">Ngày</label>
             <input type="date" name="date" class="form-control" min="<%= java.time.LocalDate.now().toString() %>" required>
         </div>
-        <div class="col-md-4">
-            <label class="form-label">Thời gian bắt đầu</label>
-            <input type="time" name="startTime" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Thời gian kết thúc</label>
-            <input type="time" name="endTime" class="form-control" required>
+        <div class="col-md-6">
+            <label class="form-label">Ca chơi</label>
+            <c:set var="defaultCourt" value="${not empty courts ? courts[0].court_id : -1}" />
+            <select name="shiftId" id="shiftSelect" class="form-select" required>
+                <c:forEach var="entry" items="${courtShifts}">
+                    <c:set var="cId" value="${entry.key}" />
+                    <c:forEach var="sh" items="${entry.value}">
+                        <option value="${sh.shiftId}" data-court="${cId}" <c:if test='${cId ne defaultCourt}'>style="display:none"</c:if>>
+                            ${sh.shiftName} (${sh.startTime} - ${sh.endTime})
+                        </option>
+                    </c:forEach>
+                </c:forEach>
+            </select>
         </div>
         <div class="col-md-12">
             <label class="form-label">Dịch vụ</label>
@@ -81,5 +87,23 @@
         </div>
     </div>
 </div>
+<script>
+    const courtSelect = document.getElementById('courtSelect');
+    const shiftSelect = document.getElementById('shiftSelect');
+    function updateShifts() {
+        const cid = courtSelect.value;
+        Array.from(shiftSelect.options).forEach(o => {
+            if (o.dataset.court === cid) {
+                o.style.display = 'block';
+            } else {
+                o.style.display = 'none';
+            }
+        });
+        const visible = Array.from(shiftSelect.options).find(o => o.style.display !== 'none');
+        if (visible) shiftSelect.value = visible.value;
+    }
+    courtSelect.addEventListener('change', updateShifts);
+    updateShifts();
+</script>
 </body>
 </html>
