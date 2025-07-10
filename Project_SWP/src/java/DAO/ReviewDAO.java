@@ -16,8 +16,9 @@ import Model.Reviews;
  *
  * @author admin
  */
-public class ReviewDAO  extends DBContext{
-     Connection conn;
+public class ReviewDAO extends DBContext {
+
+    Connection conn;
 
     public ReviewDAO() {
         try {
@@ -26,19 +27,22 @@ public class ReviewDAO  extends DBContext{
             System.out.println("Connect failed");
         }
     }
-public int countReviewsByManager(int managerId) {
-        String sql = "SELECT COUNT(*) FROM Reviews r " +
-                     "JOIN Areas a ON r.area_id = a.area_id " +
-                     "WHERE a.manager_id = ?";
-    
-    try (
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setInt(1, managerId);
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) return rs.getInt(1);
-    }catch(SQLException e){
-        System.out.println(e.getMessage());
-    }
+
+    public int countReviewsByManager(int managerId) {
+        String sql = "SELECT COUNT(*) FROM Reviews r "
+                + "JOIN Areas a ON r.area_id = a.area_id "
+                + "WHERE a.manager_id = ?";
+
+        try (
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, managerId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         return 0;
     }
 
@@ -47,7 +51,9 @@ public int countReviewsByManager(int managerId) {
         String sql = "SELECT COUNT(*) FROM Reviews";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getInt(1);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -86,8 +92,8 @@ public int countReviewsByManager(int managerId) {
 
     public java.util.List<Reviews> getReviewsByArea(int areaId) {
         java.util.List<Reviews> list = new java.util.ArrayList<>();
-        String sql = "SELECT r.review_id, r.user_id, r.area_id, r.rating, r.comment, r.created_at, u.username " +
-                     "FROM Reviews r JOIN Users u ON r.user_id = u.user_id WHERE r.area_id = ? ORDER BY r.created_at DESC";
+        String sql = "SELECT r.review_id, r.user_id, r.area_id, r.rating, r.comment, r.created_at, u.username "
+                + "FROM Reviews r JOIN Users u ON r.user_id = u.user_id WHERE r.area_id = ? ORDER BY r.created_at DESC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, areaId);
             ResultSet rs = ps.executeQuery();
@@ -107,9 +113,10 @@ public int countReviewsByManager(int managerId) {
         }
         return list;
     }
-BookingDAO dao = new BookingDAO();
-public int countByArea(int areaId) {
-    return dao.countBookingsByArea(areaId);
-}
+    BookingDAO dao = new BookingDAO();
+
+    public int countByArea(int areaId) {
+        return dao.countBookingsByArea(areaId);
+    }
 
 }
