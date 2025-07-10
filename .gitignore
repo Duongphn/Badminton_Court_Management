@@ -1,0 +1,8 @@
+# Ignore NetBeans build directory
+Project_SWP/build/
+
+# Ignore NetBeans private configuration
+Project_SWP/nbproject/private/
+
+# Ignore IDE settings
+Project_SWP/.idea/
