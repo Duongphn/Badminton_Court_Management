@@ -13,6 +13,7 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import utils.EmailUtils;
 
 @WebServlet("/send-notification")
 public class SendNotificationServlet extends HttpServlet {
@@ -100,7 +101,12 @@ public class SendNotificationServlet extends HttpServlet {
                 int userId = Integer.parseInt(uid);
                 UserDAO udao = new UserDAO();
                 User user = udao.getUserById(userId);
-
+                if (udao.getSendMail(userId) && user.getEmail() != null && !user.getEmail().isEmpty()) {
+                    // Gửi email thông báo
+                    String emailSubject = notification.getTitle();
+                    String emailContent = notification.getContent();
+                    EmailUtils.sendEmail(user.getEmail(), emailSubject, emailContent);
+                }
                 NotificationReceiver receiver = new NotificationReceiver();
                 receiver.setNotificationId(notification);
                 receiver.setUserId(user);
@@ -109,6 +115,9 @@ public class SendNotificationServlet extends HttpServlet {
 
                 ndao.insertReceiver(receiver);
             }
+            notification.setSentTime(LocalDateTime.now());
+notification.setStatus("sent");
+ndao.update(notification);
 
             response.sendRedirect("notification_list?msg=sent");
         } catch (NumberFormatException e) {

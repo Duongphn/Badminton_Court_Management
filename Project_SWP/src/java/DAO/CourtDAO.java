@@ -4,16 +4,21 @@
  */
 package DAO;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import Dal.DBContext;
+import Model.AdminDashBoard;
 import Model.Courts;
 
 /**
@@ -31,8 +36,42 @@ public class CourtDAO extends DBContext{
         }
     }
     AreaDAO dao = new AreaDAO();
+    
+    public List<Courts> getCourtsByAreaId(int areaId) {
+
+        List<Courts> listCourt = new ArrayList<>();
+        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price FROM Courts WHERE area_id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, areaId); // Set tham số ở đây
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int courtID = rs.getInt("court_id");
+                    String courtNumber = rs.getString("court_number");
+                    String type = rs.getString("type");
+                    String floorMaterial = rs.getString("floor_material");
+                    String lighting = rs.getString("lighting");
+                    String description = rs.getString("description");
+                    String imageUrl = rs.getString("image_url");
+                    String status = rs.getString("status");
+                    int areaID = rs.getInt("area_id");
+                    double price = rs.getDouble("price");
+
+                    Courts court = new Courts(courtID, courtNumber, type, floorMaterial, lighting, description, imageUrl, status, areaID, price);
+                    listCourt.add(court);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return listCourt;
+    }
+    
     public void addCourt(Courts court) {
-        String sql = "INSERT INTO Courts (court_number, type, floor_material, lighting, description, image_url, status, area_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Courts (court_number, type, floor_material, lighting, description, image_url, status, area_id, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, court.getCourt_number());
@@ -43,15 +82,35 @@ public class CourtDAO extends DBContext{
             ps.setString(6, court.getImage_url());
             ps.setString(7, court.getStatus());
             ps.setInt(8, court.getArea_id());
+            ps.setDouble(9, court.getPrice());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
+    public void increaseCourtOfArea(int area_id){
+        String sql = "UPDATE Areas SET court = court+1 WHERE area_id = ?";
+        try{
+             PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, area_id);
+             ps.executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+  public void decreaseCourtOfArea(int area_id){
+        String sql = "UPDATE Areas SET court = court - 1 WHERE area_id = ?";
+        try{
+             PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, area_id);
+             ps.executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public List<Courts> getAllCourts() {
         List<Courts> courts = new ArrayList<>();
-        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id FROM Courts";
+        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price FROM Courts";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
@@ -66,6 +125,7 @@ public class CourtDAO extends DBContext{
                 court.setImage_url(rs.getString("image_url"));
                 court.setStatus(rs.getString("status"));
                 court.setArea_id(rs.getInt("area_id"));
+                court.setPrice(rs.getDouble("price"));
                 courts.add(court);
             }
         } catch (SQLException e) {
@@ -78,7 +138,7 @@ public class CourtDAO extends DBContext{
 
     public Courts getCourtById(int courtId) {
         Courts court = null;
-        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id FROM Courts WHERE court_id = ?";
+        String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price FROM Courts WHERE court_id = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, courtId);
             ResultSet rs = stmt.executeQuery();
@@ -93,6 +153,7 @@ public class CourtDAO extends DBContext{
                 court.setImage_url(rs.getString("image_url"));
                 court.setStatus(rs.getString("status"));
                 court.setArea_id(rs.getInt("area_id"));
+                court.setPrice(rs.getDouble("price"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -103,7 +164,7 @@ public class CourtDAO extends DBContext{
     }
 
     public void updateCourt(Courts court) {
-        String sql = "UPDATE Courts SET court_number = ?, type = ?, floor_material = ?, lighting = ?, description = ?, image_url = ?, status = ?, area_id = ? WHERE court_id = ?";
+        String sql = "UPDATE Courts SET court_number = ?, type = ?, floor_material = ?, lighting = ?, description = ?, image_url = ?, status = ?, area_id = ?, price = ? WHERE court_id = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, court.getCourt_number());
             stmt.setString(2, court.getType());
@@ -113,7 +174,8 @@ public class CourtDAO extends DBContext{
             stmt.setString(6, court.getImage_url());
             stmt.setString(7, court.getStatus());
             stmt.setInt(8, court.getArea_id());
-            stmt.setInt(9, court.getCourt_id());
+            stmt.setDouble(9, court.getPrice());
+            stmt.setInt(10, court.getCourt_id());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -151,6 +213,7 @@ public class CourtDAO extends DBContext{
                 court.setImage_url(rs.getString("image_url"));
                 court.setStatus(rs.getString("status"));
                 court.setArea_id(rs.getInt("area_id"));
+                court.setPrice(rs.getDouble("price"));
                 courts.add(court);
             }
         } catch (SQLException e) {
@@ -184,6 +247,94 @@ public int countCourtsByManager(int managerId) {
     }
     return 0;
 }
+// Get counts of courts by status for a manager
+public Map<String, Integer> getCourtStatusCounts(int managerId) {
+    Map<String, Integer> result = new LinkedHashMap<>();
+    String sql = "SELECT c.status, COUNT(*) AS cnt FROM Courts c JOIN Areas a ON c.area_id = a.area_id "
+            + "WHERE a.manager_id = ? GROUP BY c.status";
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, managerId);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            result.put(rs.getString("status"), rs.getInt("cnt"));
+        }
+    } catch (SQLException e) {
+        System.out.println(e.getMessage());
+    }
+    return result;
+}
+public BigDecimal getCourtPrice(int courtId) {
+    String sql = "SELECT price FROM Courts WHERE court_id = ?";
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, courtId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getBigDecimal("price");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return BigDecimal.ZERO;
+}
+public BigDecimal calculateSlotPrice(Time startTime, Time endTime, BigDecimal pricePerHour) {
+    // Sử dụng getTime() để lấy milliseconds
+    long millisStart = startTime.getTime();
+    long millisEnd = endTime.getTime();
+    long durationMillis = millisEnd - millisStart;
 
+    long minutes = durationMillis / (1000 * 60); 
+
+    if (minutes == 60) {
+        return pricePerHour;
+    } else {
+        // Nếu không phải 60 phút, tính giá theo giờ (hoặc throw exception nếu muốn)
+        BigDecimal hours = new BigDecimal(minutes).divide(new BigDecimal(60), 2, BigDecimal.ROUND_HALF_UP);
+        return hours.multiply(pricePerHour);
+    }
+}
+    public static void main(String[] args) {
+        CourtDAO dao = new CourtDAO();
+        int a = dao .countCourtsByArea(5);
+        System.out.println(a);
+    }
+    
+    public List<AdminDashBoard> getAllCourtReports() {
+        List<AdminDashBoard> list = new ArrayList<>();
+        String sql
+                = "SELECT c.court_id, c.court_name, u.username AS manager_name, "
+                + "       COUNT(DISTINCT b.booking_id) AS total_bookings, "
+                + "       ISNULL(SUM(b.total_price),0) AS total_revenue, "
+                + "       ISNULL(AVG(CAST(b.rating AS FLOAT)), 0) AS avg_rating, "
+                + "       COUNT(DISTINCT CASE WHEN ucount.booking_count > 1 THEN b.user_id END) AS returning_users "
+                + "FROM Courts c "
+                + "LEFT JOIN Areas a ON c.area_id = a.area_id "
+                + "LEFT JOIN Users u ON a.manager_id = u.user_id "
+                + "LEFT JOIN Bookings b ON c.court_id = b.court_id AND b.status != 'cancelled' "
+                + "LEFT JOIN ( "
+                + "    SELECT user_id, court_id, COUNT(*) AS booking_count "
+                + "    FROM Bookings "
+                + "    WHERE status != 'cancelled' "
+                + "    GROUP BY user_id, court_id "
+                + ") ucount ON ucount.user_id = b.user_id AND ucount.court_id = b.court_id "
+                + "GROUP BY c.court_id, c.court_name, u.username";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String courtName = rs.getString("court_name");
+                String managerName = rs.getString("manager_name");
+                double revenue = rs.getDouble("total_revenue");
+                int bookings = rs.getInt("total_bookings");
+                int returningUsers = rs.getInt("returning_users");
+                double avgRating = rs.getDouble("avg_rating");
+
+                AdminDashBoard report = new AdminDashBoard(courtName, managerName, revenue, bookings, returningUsers, avgRating);
+                list.add(report);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
     
 }

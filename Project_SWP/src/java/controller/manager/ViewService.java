@@ -4,7 +4,9 @@
  */
 package controller.manager;
 
+
 import DAO.ServiceDAO;
+
 import Model.Service;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,7 +21,7 @@ import java.util.List;
  *
  * @author admin
  */
-@WebServlet(name = "ViewService", urlPatterns = {"/ViewService"})
+@WebServlet(name = "ViewEquipments", urlPatterns = {"/ViewEquipments"})
 public class ViewService extends HttpServlet {
 
     /**
@@ -50,7 +52,7 @@ public class ViewService extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method. 
      *
      * @param request servlet request
      * @param response servlet response
@@ -61,10 +63,22 @@ public class ViewService extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ServiceDAO dao = new ServiceDAO();
-        List<Service> service = dao.getAllService();  
+
+        // Lấy tham số từ ô search
+        String keyword = request.getParameter("keyword");
+        List<Service> service;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            // Tìm kiếm theo tên
+            service = dao.searchServiceByName(keyword.trim());
+        } else {
+            service = dao.getAllService();
+        }
         request.setAttribute("service", service);
 
-        String status = request.getParameter("status"); 
+        // Truyền lại keyword để giữ giá trị trong ô input
+        request.setAttribute("keyword", keyword);
+
+        String status = request.getParameter("status");
         request.setAttribute("status", status);
 
         request.getRequestDispatcher("ServiceView.jsp").forward(request, response);

@@ -341,12 +341,12 @@
             <p>Để đảm bảo quyền lợi và trải nghiệm tốt nhất cho người dùng trong dự án SWP391, vui lòng tham khảo các chính sách của nhóm chúng em:</p>
             
             <div class="links-grid">
-                <a href="#privacy-policy" class="link-card">
+                <a href="Security.jsp" class="link-card">
                     <h4>🔒 Chính Sách Bảo Mật</h4>
                     <p>Cam kết bảo vệ thông tin cá nhân và dữ liệu của người dùng</p>
                 </a>
                 
-                <a href="#terms-of-service" class="link-card">
+                <a href="Terms.jsp" class="link-card">
                     <h4>📜 Điều Khoản Sử Dụng</h4>
                     <p>Quy định về quyền và nghĩa vụ của người dùng khi sử dụng dịch vụ</p>
                 </a>

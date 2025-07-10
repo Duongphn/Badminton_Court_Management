@@ -58,6 +58,19 @@ public class Branch_ImageDAO extends DBContext{
 
         return imageUrls;
     }
+      public void removeImageFromArea(int areaImage) {
+        String query = "DELETE FROM Area_Image WHERE imageID = ?";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, areaImage);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            System.out.println(rowsAffected);
+        } catch (SQLException e) {
+            System.out.println("removeServiceFromRoom: " + e.getMessage());
+        }
+    }
        public static void main(String[] args) {
         try {
             // Tạo đối tượng DAO để thao tác với cơ sở dữ liệu

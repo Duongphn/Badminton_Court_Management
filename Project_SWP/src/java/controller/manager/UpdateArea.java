@@ -5,6 +5,8 @@
 package controller.manager;
 
 import DAO.AreaDAO;
+import DAO.UserDAO;
+import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -79,22 +81,31 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         int id = Integer.parseInt(request.getParameter("regionID"));
         String name = request.getParameter("RegionName");
         String address = request.getParameter("address");
-              int empty = Integer.parseInt(request.getParameter("empty"));
 
-        // Lấy chuỗi giờ từ input
+       
         String openTimeStr = request.getParameter("openTime");
         String closeTimeStr = request.getParameter("closeTime");
-       String description = request.getParameter("description");
-        // Chuyển từ chuỗi sang java.sql.Time
-        java.sql.Time openTime = java.sql.Time.valueOf(openTimeStr );
-        java.sql.Time closeTime = java.sql.Time.valueOf(closeTimeStr );
+        String description = request.getParameter("description");
+
+       
+        java.sql.Time openTime = java.sql.Time.valueOf(openTimeStr);
+        java.sql.Time closeTime = java.sql.Time.valueOf(closeTimeStr);
+        String phone_branch = request.getParameter("phone_branch");
+
+       
+        int manager_id = Integer.parseInt(request.getParameter("manager_id"));
+
+     
+        UserDAO userDAO = new UserDAO();
+        User staff = userDAO.getUserById(manager_id);
+        String nameStaff = staff.getLastname() + " " + staff.getFirstname();
 
         AreaDAO dao = new AreaDAO();
-        System.out.println(id+","+name+","+address);
-        dao.UpdateArea(id, name, address, empty, openTime, closeTime,description);
-        
+      
+        dao.UpdateArea(id, name, address, openTime, closeTime, description, phone_branch, manager_id, nameStaff);
+
         response.sendRedirect("view-region");
-    } catch ( NumberFormatException  e) {
+    } catch (NumberFormatException e) {
         e.printStackTrace();
         request.setAttribute("error", "Lỗi dữ liệu nhập vào!");
         response.sendRedirect("view-region");
@@ -103,6 +114,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Có lỗi xảy ra trong quá trình cập nhật.");
     }
 }
+
 
 
     /**

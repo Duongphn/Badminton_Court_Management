@@ -8,12 +8,12 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     </head>
     <body>
-        <!-- Navbar -->
+        <!-- Thanh điều hướng -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Manager</a>
+                <a class="navbar-brand" href="#">Quản lý</a>
                 <div class="d-flex">
-                    <a class="nav-link text-light" href="login">Logout</a>
+                    <a class="nav-link text-light" href="login">Đăng xuất</a>
                 </div>
             </div>
         </nav>
@@ -25,7 +25,7 @@
                     <jsp:include page="Sidebar.jsp" />
                 </div>
 
-                <!-- Main Content -->
+                <!-- Nội dung chính -->
                 <div class="col-md-9">
                     <div class="container py-4">
                         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -35,15 +35,22 @@
                             </a>
                         </div>
 
-                        <!-- Form -->
+                        <!-- Hiển thị lỗi nếu có -->
+                        <c:if test="${not empty error}">
+                            <div class="alert alert-danger" role="alert">
+                                ${error}
+                            </div>
+                        </c:if>
+
+                        <!-- Form thêm câu hỏi -->
                         <form action="faq-add" method="post" class="card shadow-sm p-4">
                             <div class="mb-3">
-                                <label class="form-label">Tiêu đề câu hỏi</label>
+                                <label class="form-label">Câu hỏi</label>
                                 <input type="text" name="title" class="form-control" required />
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Tag</label>
+                                <label class="form-label">Chủ đề</label>
                                 <select name="tagId" class="form-select" required>
                                     <c:forEach var="tag" items="${tagList}">
                                         <option value="${tag.tagId}">${tag.name}</option>

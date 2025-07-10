@@ -19,47 +19,33 @@ public class AddService extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        // Lấy thông tin từ form
         String name = request.getParameter("name");
         double price = Double.parseDouble(request.getParameter("price"));
         String description = request.getParameter("description");
         String image_url = request.getParameter("image_url");
         String status = request.getParameter("status");
+
         if (status == null || status.isEmpty()) {
-            status = "Active"; // giá trị mặc định
+            status = "Active";
         }
 
-        // Kiểm tra trùng tên dịch vụ
+        // Kiểm tra trùng tên
         if (ServiceDAO.isDuplicateService(name)) {
-            List<Service> service = ServiceDAO.getAllService();
-            request.setAttribute("service", service);
-            request.setAttribute("status", "duplicate");
-            request.getRequestDispatcher("ServiceView.jsp").forward(request, response);
+            response.sendRedirect("ViewService?status=duplicate");
             return;
         }
 
-        // Tạo đối tượng Service mới
+        // Tạo mới
         Service s = new Service(0, name, price, description, image_url, status);
 
         try {
             ServiceDAO.addService(s);
-
-            List<Service> service = ServiceDAO.getAllService();
-            request.setAttribute("service", service);
-            request.setAttribute("status", "success");
-            request.getRequestDispatcher("ServiceView.jsp").forward(request, response);
+            response.sendRedirect("ViewEquipments?status=success");
         } catch (Exception e) {
             e.printStackTrace();
-
-            List<Service> service = ServiceDAO.getAllService();
-            request.setAttribute("service", service);
-            request.setAttribute("status", "fail");
-            request.getRequestDispatcher("ServiceView.jsp").forward(request, response);
+            response.sendRedirect("ViewEquipments?status=fail");
         }
-
     }
-
-
     @Override
     public String getServletInfo() {
         return "Add new equipment service";

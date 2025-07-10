@@ -38,6 +38,13 @@ public class CreateNotificationServlet extends HttpServlet {
 
         LocalDateTime scheduledTime = LocalDateTime.parse(scheduledTimeStr);
         LocalDateTime now = LocalDateTime.now();
+        
+        if (scheduledTime.isBefore(now)) {
+    request.setAttribute("error", "❗ Không thể tạo thông báo với thời gian trong quá khứ.");
+    request.getRequestDispatcher("/create_notification.jsp").forward(request, response);
+    return;
+}
+
 
         // Xử lý file upload
         Part filePart = request.getPart("file");

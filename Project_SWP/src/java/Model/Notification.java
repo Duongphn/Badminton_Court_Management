@@ -17,6 +17,7 @@ public class Notification {
     private LocalDateTime sentTime;
     private String status;
     private LocalDateTime createdAt;
+    private boolean isEditable;  // Thêm thuộc tính để xác định thông báo có thể sửa không
 
     public Notification() {
     }
@@ -31,6 +32,7 @@ public class Notification {
         this.sentTime = sentTime;
         this.status = status;
         this.createdAt = createdAt;
+        this.isEditable = !"sent".equals(status);  // Nếu trạng thái là "sent", không thể chỉnh sửa
     }
 
     public int getNotificationId() {
@@ -105,9 +107,26 @@ public class Notification {
         this.createdAt = createdAt;
     }
 
+    public boolean isIsEditable() {
+        return isEditable;
+    }
+
+    public void setIsEditable(boolean isEditable) {
+        this.isEditable = isEditable;
+    }
+
+   
+
+    public boolean isEditable() {
+        return isEditable;
+    }
+
+    public void setEditable(boolean editable) {
+        isEditable = editable;
+    }
+
     @Override
     public String toString() {
         return "Notification{" + "notificationId=" + notificationId + ", title=" + title + ", content=" + content + ", imageUrl=" + imageUrl + ", createdBy=" + createdBy + ", scheduledTime=" + scheduledTime + ", sentTime=" + sentTime + ", status=" + status + ", createdAt=" + createdAt + '}';
     }
-
 }

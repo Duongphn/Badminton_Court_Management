@@ -7,15 +7,19 @@ package controller.manager;
 
 import DAO.AreaDAO;
 import DAO.Branch_ImageDAO;
+import DAO.CourtDAO;
 import DAO.ServiceDAO;
 import DAO.Service_BranchDAO;
+import DAO.ShiftDAO;
 
 
 import Model.Branch;
 
 import Model.Branch_Service;
 import Model.Branch_pictures;
+import Model.Courts;
 import Model.Service;
+import Model.Shift;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -72,7 +76,7 @@ throws ServletException, IOException {
     HttpSession session = request.getSession(false);
     if (session != null) {
         User user = (User) session.getAttribute("user");
-        if (user != null && "staff".equals(user.getRole())) {
+        if (user != null && "admin".equals(user.getRole())) {
             int area_id = Integer.parseInt(request.getParameter("area_id"));
 
             AreaDAO dao = new AreaDAO();
@@ -80,9 +84,12 @@ throws ServletException, IOException {
             
             Service_BranchDAO sdao = new Service_BranchDAO();
             Branch_ImageDAO idao = new Branch_ImageDAO();
-
+            CourtDAO cdao = new CourtDAO();
             ServiceDAO eDao = new ServiceDAO();
-
+            ShiftDAO shiftDao = new ShiftDAO();
+            List <Shift> listShift = shiftDao.getShiftsByArea(area_id);
+            request.setAttribute("listShift", listShift);
+            
            
 
             Branch areaDetail = dao.getAreaByIdWithManager(area_id);
@@ -92,7 +99,8 @@ throws ServletException, IOException {
             List<Branch_pictures> areaImages = idao.getRoomImagesByDormID(area_id);
             request.setAttribute("areaImages", areaImages);
 
-         
+            List<Courts> areaCourts = cdao.getCourtsByAreaId(area_id);
+            request.setAttribute("areaCourts", areaCourts);
 
             List<Branch_Service> areaAllServices = eDao.getAllAreaServices(area_id);
 

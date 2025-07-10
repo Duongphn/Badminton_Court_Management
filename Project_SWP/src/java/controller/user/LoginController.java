@@ -113,16 +113,16 @@ public class LoginController extends HttpServlet {
             }
 
             if ("staff".equalsIgnoreCase(user.getRole())) {
-                response.sendRedirect("view-region");
+                response.sendRedirect("staff-dashboard");
             } else if ("admin".equalsIgnoreCase(user.getRole())) {
-                response.sendRedirect("user_manager.jsp");
+                response.sendRedirect("Admin_DashBoard.jsp");
             } else {
-                response.sendRedirect("homepageUser.jsp");
+                response.sendRedirect("HomePageUser");
             }
 
         } else {
 
-            request.setAttribute("error", "Invalid username or password!");
+            request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không hợp lệ");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }

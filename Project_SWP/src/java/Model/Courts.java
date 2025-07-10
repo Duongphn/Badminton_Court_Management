@@ -20,13 +20,14 @@ public class Courts {
     private String image_url;
     private String status;
     private int area_id;
+    private double price;
 
     public Courts() {
     }
 
     public Courts(int court_id, String court_number, String type, String floor_material,
                   String lighting, String description, String image_url,
-                  String status, int area_id) {
+                  String status, int area_id, double price) {
         this.court_id = court_id;
         this.court_number = court_number;
         this.type = type;
@@ -36,6 +37,7 @@ public class Courts {
         this.image_url = image_url;
         this.status = status;
         this.area_id = area_id;
+        this.price = price;
     }
 
     public int getCourt_id() {
@@ -110,7 +112,18 @@ public class Courts {
         this.area_id = area_id;
     }
 
+    public double getPrice() {
+        return price;
+    }
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "Courts{" + "court_id=" + court_id + ", court_number=" + court_number + ", type=" + type + ", floor_material=" + floor_material + ", lighting=" + lighting + ", description=" + description + ", image_url=" + image_url + ", status=" + status + ", area_id=" + area_id + ", price=" + price + '}';
+    }
 
    
 }

@@ -5,9 +5,13 @@
 package DAO;
 
 import Dal.DBContext;
+import Model.Service;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -34,5 +38,35 @@ public class BookingServiceDAO extends DBContext{
         e.printStackTrace();
     }
 }
+
+    public void removeServicesByBookingId(int bookingId) {
+        String sql = "DELETE FROM Booking_Services WHERE booking_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Service> getServicesByBookingId(int bookingId) {
+        List<Service> services = new ArrayList<>();
+        String sql = "SELECT s.service_id, s.name, s.price, s.description, s.image_url, s.status "
+                + "FROM Booking_Services bs JOIN BadmintonService s ON bs.service_id = s.service_id "
+                + "WHERE bs.booking_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bookingId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Service s = new Service(rs.getInt("service_id"), rs.getString("name"),
+                        rs.getDouble("price"), rs.getString("description"),
+                        rs.getString("image_url"), rs.getString("status"));
+                services.add(s);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return services;
+    }
 
 }

@@ -71,10 +71,10 @@ public class ChangePassword extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-
+@Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
+    // Lấy thông tin từ form
     String username = request.getParameter("username");
     String oldPass = request.getParameter("old-password");
     String newPass = request.getParameter("new-password");
@@ -83,40 +83,45 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     UserDAO dao = new UserDAO();
     User user = dao.getUserByUsername(username);
 
+    // Kiểm tra nếu không tìm thấy người dùng
     if (user == null) {
-        request.setAttribute("error", "username"); 
+        request.setAttribute("error", "Không tìm thấy tài khoản với tên đăng nhập này!"); 
         request.getRequestDispatcher("forgotPassword.jsp").forward(request, response);
         return;
     }
 
-   
+    // Kiểm tra mật khẩu cũ
     String hashedOldPass = PasswordUtil.hashPassword(oldPass);
     if (!user.getPassword().equals(hashedOldPass)) {
-        request.setAttribute("error", "Wrong old password"); 
+        request.setAttribute("error", "Mật khẩu cũ không chính xác!"); 
         request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
         return;
     }
-   
 
-
-
+    // Kiểm tra mật khẩu mới và xác nhận mật khẩu
     if (!newPass.equals(confirmPass)) {
-        request.setAttribute("error", "Mismatch"); 
+        request.setAttribute("error", "Mật khẩu mới và mật khẩu xác nhận không khớp!"); 
         request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
         return;
     }
 
-    
+    // Kiểm tra mật khẩu mới có trùng với mật khẩu cũ không
     String hashedNewPass = PasswordUtil.hashPassword(newPass);
     if (hashedNewPass.equals(user.getPassword())) {
-    request.setAttribute("error", "New password must be different from old password"); 
-    request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
-    return;
-}
+        request.setAttribute("error", "Mật khẩu mới phải khác mật khẩu cũ!"); 
+        request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
+        return;
+    }
+
+    // Nếu tất cả kiểm tra thành công, cập nhật mật khẩu mới
     user.setPassword(hashedNewPass);
     dao.updatePassword(user);
+
+    // Thêm thông báo thành công
+    request.setAttribute("success", "Đổi mật khẩu thành công! Bạn có thể đăng nhập lại.");
     
-    response.sendRedirect("login");
+    // Chuyển hướng người dùng trở lại trang đổi mật khẩu với thông báo thành công
+    request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
 }
 
 

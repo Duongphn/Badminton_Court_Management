@@ -12,99 +12,263 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <style>
-            .container {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                background-color: #fafafa;
-                /*                gap: 0px;                */
-                padding-left:150px;
-                padding-right: 150px;
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
+            .container {
+                max-width: 1500px;
+                margin: 30px auto;
+                display: grid;
+                grid-template-columns: 280px 1fr;
+                gap: 30px;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+                overflow: hidden;
             }
 
             .sidebar {
-                width: 250px;
-                /*background-color: #ffffff;*/
-                padding: 20px;
+                background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+                padding: 30px 25px;
+                color: white;
             }
 
             .user-info {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 30px;
+                text-align: center;
+                margin-bottom: 40px;
+                padding-bottom: 25px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             }
 
             .user-info img {
-                width: 40px;
-                height: 40px;
+                width: 80px;
+                height: 80px;
                 border-radius: 50%;
+                border: 3px solid rgba(255, 255, 255, 0.3);
+                margin-bottom: 15px;
+                object-fit: cover;
             }
 
-            .userName {
-                font-weight: bold;
+            .user-info span {
+                display: block;
+                font-size: 18px;
+                font-weight: 600;
+                color: white;
             }
 
             .menu {
                 list-style: none;
-                padding: 0;
-                margin: 0;
             }
 
             .menu li {
-                margin: 10px 0;
-                cursor: pointer;
+                margin-bottom: 15px;
+            }
+
+            .menu li strong {
+                display: block;
+                font-size: 16px;
+                color: #fff;
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             }
 
             .menu li a {
+                color: rgba(255, 255, 255, 0.8);
                 text-decoration: none;
-                color: black;
+                font-size: 14px;
+                padding: 8px 15px;
+                border-radius: 8px;
+                display: block;
+                transition: all 0.3s ease;
+            }
+
+            .menu li a:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                transform: translateX(5px);
             }
 
             .main-content {
-                flex-grow: 1;
                 padding: 40px;
             }
 
-            h1 {
+            .main-content h1 {
+                color: #333;
                 font-size: 28px;
-                margin-bottom: 20px;
+                margin-bottom: 30px;
+                font-weight: 600;
+                position: relative;
+            }
+
+            .main-content h1::after {
+                content: '';
+                width: 60px;
+                height: 3px;
+                background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+                display: block;
+                margin-top: 10px;
+                border-radius: 2px;
             }
 
             .info-box {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                background-color: #fff;
-                padding: 30px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-                max-width: 600px;
-            }
-
-            .avt-view-profile img {
-                width: 100px;
-                height: 100px;
-                border-radius: 50%;
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 40px;
+                background: white;
+                padding: 35px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+                border: 1px solid rgba(0, 0, 0, 0.05);
             }
 
             .info-row {
+                display: grid;
+                grid-template-columns: 150px 1fr;
+                gap: 20px;
+                align-items: center;
+                padding: 15px 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+            .info-row label {
+                font-weight: 600;
+                color: #555;
+                font-size: 14px;
+            }
+
+            .info-row p {
+                color: #333;
+                font-size: 15px;
+                padding: 8px 15px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                border: 1px solid #e9ecef;
+            }
+            
+            .sumit a{
+                text-decoration: none;
+            }
+            .avt-view-profile {
                 display: flex;
-                justify-content: space-between;
-                padding: 12px 0;
-                border-bottom: 1px solid #eee;
-                gap: 40px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .avt-view-profile img {
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+                border: 4px solid #e9ecef;
+                object-fit: cover;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease;
+            }
+
+            .avt-view-profile img:hover {
+                transform: scale(1.05);
             }
 
             .edit-btn {
-                margin-top: 20px;
-                background-color: #003b95;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
-                padding: 10px 18px;
                 border: none;
-                border-radius: 5px;
+                padding: 12px 30px;
+                border-radius: 25px;
+                font-size: 14px;
+                font-weight: 600;
                 cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+                margin-top: 20px;
+            }
+
+            .edit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            }
+
+            .edit-btn:active {
+                transform: translateY(0);
+            }
+
+            /* Badge styles for badminton theme */
+            .badge {
+                display: inline-block;
+                background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+                color: white;
+                padding: 4px 12px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: 600;
+                margin-left: 10px;
+            }
+
+            /* Responsive design */
+            @media (max-width: 768px) {
+                .container {
+                    grid-template-columns: 1fr;
+                    margin: 20px;
+                    gap: 0;
+                }
+
+                .sidebar {
+                    order: 2;
+                    padding: 20px;
+                }
+
+                .main-content {
+                    order: 1;
+                    padding: 20px;
+                }
+
+                .info-box {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                    padding: 20px;
+                }
+
+                .info-row {
+                    grid-template-columns: 1fr;
+                    gap: 8px;
+                }
+
+                .avt-view-profile img {
+                    width: 120px;
+                    height: 120px;
+                }
+            }
+
+            /* Animation for smooth loading */
+            .container {
+                animation: fadeInUp 0.6s ease;
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Hover effects for info rows */
+            .info-row:hover {
+                background: rgba(79, 172, 254, 0.02);
+                border-radius: 8px;
+                transition: all 0.3s ease;
             }
 
         </style>
@@ -119,9 +283,9 @@
         <div class="container">
             <div class="sidebar">
                 <div class="user-info">
-                    <img src="./images/avt/avt.jpg" alt="avt" />
-<!--                    <p class="userName">Sáng Nguyễn</p>-->
-                    <span><b><%=user.getUsername()%></b></span>
+                    <img src="./uploads/avt.jpg" alt="avt" />
+                    <!--                    <p class="userName">Sáng Nguyễn</p>-->
+                    <span><b><%=user.getFirstname()%> <%=user.getLastname()%></b></span>
                 </div>
                 <ul class="menu">
                     <li><strong>Tài khoản của tôi</strong></li>
@@ -135,31 +299,50 @@
                 <h1>Thông tin cá nhân</h1>
                 <div class="info-box">
                     <div>
-                        <form id="form-1" action="updateprofile" method="post" >
-                            <div class="info-row">
-                                <label>Username</label>
-                                <input type="text" name="username" value="<%=user.getUsername()%>">
-                            </div>
-                            <div class="info-row">
-                                <label>Email</label>
-                                <input type="text" name="email" value="<%=user.getEmail()%>">
-                            </div>
-                            <div class="info-row">
-                                <label>Phone</label>
-                                <input type="text" name="phoneNumber" value="<%=user.getPhone_number()%>">
-                            </div>
-                            <div >
-                                <button type="submit" class="edit-btn">Update</button>
-<!--                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>-->
-                            </div>
-                        </form>
+
+                        <div class="info-row">
+                            <label>Tên đăng nhập</label>
+                            <p><%=user.getUsername()%></p>
+                        </div>
+                        <div class="info-row">
+                            <label>Họ và tên</label>
+                            <p><%=user.getFirstname()%> <%=user.getLastname()%></p>
+                        </div>
+                        <div class="info-row">
+                            <label>Họ</label>
+                            <p><%=user.getFirstname()%></p>
+                        </div>
+                        <div class="info-row">
+                            <label>Tên</label>
+                            <p><%=user.getLastname()%></p>
+                        </div>
+                        <div class="info-row">
+                            <label>Email</label>
+                            <p><%=user.getEmail()%></p>
+                        </div>
+                        <div class="info-row">
+                            <label>Số điện thoại</label>
+                            <p><%=user.getPhone_number()%></p>
+                        </div>
+                        <div class="info-row">
+                            <label>Giới tính</label>
+                            <p><%=user.getGender()%></p>
+                        </div>
+                        <div class="info-row">
+                            <label>Ngày sinh</label>
+                            <p><%=user.getDateOfBirth()%></p>
+                        </div>
+                        <div class="sumit">
+                            <a href="UpdateProfile.jsp" class="edit-btn">Sửa</a>
+                        </div>
+
                     </div>
                     <div class="avt-view-profile">
-                        <img src="./images/avt/avt.jpg" alt="avt" />
+                        <img src="./uploads/avt.jpg" alt="avt" />
                     </div>
                 </div>
             </div>
         </div>
-                               <jsp:include page="homefooter.jsp" />
+        <jsp:include page="homefooter.jsp" />
     </body>
 </html>

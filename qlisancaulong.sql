@@ -1,21 +1,9 @@
-﻿-- ==========================
--- BẢNG NGƯỜI DÙNG
--- ==========================
-
-CREATE TABLE Users (
-    user_id INT PRIMARY KEY IDENTITY(1,1),
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    email VARCHAR(100),
-    phone_number VARCHAR(20),
-    role VARCHAR(50),
-    status VARCHAR(50),
-    note NVARCHAR(MAX),
-    created_at DATETIME DEFAULT GETDATE()
-);
-
--- ==========================
-
+﻿
+/****** Object:  Table [dbo].[Users]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 CREATE TABLE [dbo].[Users](
 	[user_id] [int] IDENTITY(1,1) NOT NULL,
 	[username] [varchar](50) NOT NULL,
@@ -26,6 +14,12 @@ CREATE TABLE [dbo].[Users](
 	[created_at] [datetime] NULL,
 	[status] [nvarchar](50) NULL,
 	[note] [nvarchar](max) NULL,
+	[gender] [nvarchar](10) NULL,
+	[firstname] [nvarchar](100) NULL,
+	[lastname] [nvarchar](100) NULL,
+	[fullname]  AS (concat([lastname],' ',[firstname])) PERSISTED NOT NULL,
+	[date_of_birth] [date] NULL,
+
 PRIMARY KEY CLUSTERED 
 (
 	[user_id] ASC
@@ -35,243 +29,207 @@ UNIQUE NONCLUSTERED
 	[username] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-
--- ==========================
--- BẢNG STAFF (ĐỔI TÊN TỪ HOST)
--- ==========================
-
-
--- ==========================
-
--- BẢNG KHU VỰC
--- ==========================
-CREATE TABLE Areas (
-    area_id INT PRIMARY KEY IDENTITY(1,1),
-    name NVARCHAR(100) NOT NULL,
-    location NVARCHAR(255), 
-    manager_id INT NOT NULL,
-    court INT,
-    open_time TIME NOT NULL,
-    close_time TIME NOT NULL,
-    descriptions NVARCHAR(MAX),
-
-    FOREIGN KEY (manager_id) REFERENCES Users(user_id),
-   FOREIGN KEY (manager_id) REFERENCES Users(user_id),
-
-
-    CONSTRAINT chk_area_time CHECK (open_time < close_time)
-);
-
--- ==========================
--- BẢNG HÌNH ẢNH KHU VỰC
--- ==========================
-CREATE TABLE Area_Image (
-    imageID INT PRIMARY KEY IDENTITY(1,1),
-    area_id INT,
-    imageURL TEXT,
-    FOREIGN KEY (area_id) REFERENCES Areas(area_id)
-);
-
--- ==========================
--- BẢNG GIÁ THUÊ SÂN
--- ==========================
-CREATE TABLE Court_Pricing (
-    pricing_id INT PRIMARY KEY IDENTITY(1,1),
-    area_id INT NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (area_id) REFERENCES Areas(area_id),
-    CONSTRAINT chk_pricing_time CHECK (start_time < end_time)
-);
-
--- ==========================
--- BẢNG SÂN
--- ==========================
-CREATE TABLE Courts (
-    court_id INT PRIMARY KEY IDENTITY(1,1),
-    court_number VARCHAR(50) NOT NULL,
-    type NVARCHAR(50),
-    floor_material NVARCHAR(50),
-    lighting NVARCHAR(50),
-    description NVARCHAR(255),
-    image_url NVARCHAR(255),
-    [status] NVARCHAR(50),
-    area_id INT NOT NULL,
-    FOREIGN KEY (area_id) REFERENCES Areas(area_id),
-    CONSTRAINT chk_court_time CHECK (open_time IS NULL OR close_time IS NULL OR open_time < close_time),
-    CONSTRAINT uq_court_number UNIQUE (court_number, area_id)
-);
-
--- ==========================
--- BẢNG ĐẶT SÂN
--- ==========================
-CREATE TABLE Bookings (
-    booking_id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT NOT NULL,
-    court_id INT NOT NULL,
-    date DATE NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    [status] NVARCHAR(50),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (court_id) REFERENCES Courts(court_id),
-    CONSTRAINT chk_booking_time CHECK (start_time < end_time)
-);
-
--- ==========================
--- BẢNG DỊCH VỤ (THUÊ VỢT, NƯỚC UỐNG...)
--- ==========================
-CREATE TABLE BadmintonService (
-    service_id INT PRIMARY KEY IDENTITY(1,1),
-    name NVARCHAR(100) NOT NULL UNIQUE,
-    price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
-    description NVARCHAR(MAX),
-image_url NVARCHAR(255),
-    status NVARCHAR(50) DEFAULT 'Active',
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME,
-    is_deleted BIT DEFAULT 0
-);
-
--- ==========================
--- BẢNG DỊCH VỤ TRONG BOOKING
--- ==========================
-CREATE TABLE Booking_Services (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    booking_id INT,
-    service_id INT,
-    FOREIGN KEY (booking_id) REFERENCES Bookings(booking_id),
-    FOREIGN KEY (service_id) REFERENCES BadmintonService(service_id)
-);
-
--- ==========================
--- BẢNG DỊCH VỤ ÁP DỤNG CHO KHU VỰC
--- ==========================
-CREATE TABLE Areas_Services (
-    AreaServices_id INT PRIMARY KEY IDENTITY(1,1),
-    service_id INT NOT NULL,
-    area_id INT,
-    FOREIGN KEY (area_id) REFERENCES Areas(area_id),
-    FOREIGN KEY (service_id) REFERENCES BadmintonService(service_id)
-);
-
--- ==========================
--- BẢNG BÀI VIẾT
--- ==========================
-CREATE TABLE Posts (
-    post_id INT PRIMARY KEY IDENTITY(1,1),
-    title VARCHAR(255) NOT NULL,
-    content VARCHAR(MAX) NOT NULL,
-    created_by INT NOT NULL,
-    created_at DATETIME DEFAULT GETDATE(),
-    type VARCHAR(20),
-    FOREIGN KEY (created_by) REFERENCES Users(user_id)
-);
-
--- ==========================
--- BẢNG BÌNH LUẬN
--- ==========================
-CREATE TABLE Comments (
-    comment_id INT PRIMARY KEY IDENTITY(1,1),
-    post_id INT NOT NULL,
-    user_id INT NOT NULL,
-    content VARCHAR(MAX) NOT NULL,
-    created_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (post_id) REFERENCES Posts(post_id),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
-);
-
--- ==========================
--- BẢNG ĐÁNH GIÁ
--- ==========================
-CREATE TABLE Reviews (
-    review_id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT NOT NULL,
-    area_id INT NOT NULL,
-    rating INT CHECK (rating BETWEEN 1 AND 5),
-    comment VARCHAR(MAX),
-    created_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (area_id) REFERENCES Areas(area_id)
-);
-
--- ==========================
--- BẢNG TOKEN RESET MẬT KHẨU
--- ==========================
-CREATE TABLE password_reset_tokens (
-    id INT IDENTITY(1,1) NOT NULL,
-    user_id INT NOT NULL,
-    token VARCHAR(255) NOT NULL,
-    created_at DATETIME DEFAULT GETDATE(),
-    is_used BIT DEFAULT 0,
-    PRIMARY KEY (id),
-    UNIQUE (token),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
-);
-CREATE TABLE [dbo].[Notification] (
-    [notification_id] INT IDENTITY(1,1) PRIMARY KEY,
-    [title] NVARCHAR(255) NOT NULL,
-    [content] NVARCHAR(MAX) NOT NULL,
-    [image_url] NVARCHAR(255),
-    [created_by] INT, -- Không có ràng buộc FK
-    [scheduled_time] DATETIME,
-    [sent_time] DATETIME,
-    [status] VARCHAR(20),
-    [created_at] DATETIME DEFAULT GETDATE()
-);
 GO
-CREATE TABLE [dbo].[Notification_Receiver] (
-    [id] INT IDENTITY(1,1) PRIMARY KEY,
-    [notification_id] INT, -- Không có ràng buộc FK
-[user_id] INT,
-    [is_read] BIT DEFAULT 0,
-    [read_at] DATETIME,
-    [opened_at] DATETIME
-);
 GO
--- ==========================
--- BẢNG THẺ TAG CHO CÂU HỎI (faq_tag)
--- ==========================
-CREATE TABLE [dbo].[faq_tag] (
-    [tag_id] INT IDENTITY(1,1) PRIMARY KEY,
-    [name] NVARCHAR(100) NOT NULL UNIQUE
-);
+/****** Object:  Table [dbo].[Area_Image]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Area_Image](
+	[imageID] [int] IDENTITY(1,1) NOT NULL,
+	[area_id] [int] NULL,
+	[imageURL] [text] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[imageID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Areas]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Areas](
+	[area_id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [nvarchar](100) NOT NULL,
+	[location] [nvarchar](255) NULL,
+	[manager_id] [int] NOT NULL,
+	[court] [int] NULL,
+	[open_time] [time](7) NOT NULL,
+	[close_time] [time](7) NOT NULL,
+	[descriptions] [nvarchar](max) NULL,
+	[phone_area] [varchar](20) NULL,
+	[nameStaff] [nvarchar](100) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[area_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Areas_Services]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Areas_Services](
+	[AreaServices_id] [int] IDENTITY(1,1) NOT NULL,
+	[service_id] [int] NOT NULL,
+	[area_id] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[AreaServices_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[BadmintonService]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[BadmintonService](
+	[service_id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [nvarchar](100) NOT NULL,
+	[price] [decimal](10, 2) NOT NULL,
+	[description] [nvarchar](max) NULL,
+	[image_url] [nvarchar](255) NULL,
+	[status] [nvarchar](50) NULL,
+	[created_at] [datetime] NULL,
+	[updated_at] [datetime] NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[service_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Booking_Services]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Booking_Services](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[booking_id] [int] NULL,
+	[service_id] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Bookings]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Bookings](
+	[booking_id] [int] IDENTITY(1,1) NOT NULL,
+	[user_id] [int] NOT NULL,
+	[court_id] [int] NOT NULL,
+	[date] [date] NOT NULL,
+	[start_time] [time](7) NOT NULL,
+	[end_time] [time](7) NOT NULL,
+	[status] [nvarchar](50) NULL,
+	[rating] [int] NULL,
+	[total_price] [decimal](10, 2) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[booking_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
-
--- ==========================
--- BẢNG CÂU HỎI (faq_question)
--- ==========================
-CREATE TABLE [dbo].[faq_question] (
-    [question_id] INT IDENTITY(1,1) PRIMARY KEY,
-    [title] NVARCHAR(255) NOT NULL,
-    [tag_id] INT NOT NULL,
-    [created_at] DATETIME DEFAULT GETDATE(),
-    [updated_at] DATETIME,
-    FOREIGN KEY ([tag_id]) REFERENCES [dbo].[faq_tag]([tag_id])
-);
+/****** Object:  Table [dbo].[Courts]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
 GO
-
--- ==========================
--- BẢNG TRẢ LỜI (faq_answer)
--- ==========================
-CREATE TABLE [dbo].[faq_answer] (
-    [answer_id] INT IDENTITY(1,1) PRIMARY KEY,
-    [question_id] INT NOT NULL,
-    [content] NVARCHAR(MAX) NOT NULL,
-    [created_at] DATETIME DEFAULT GETDATE(),
-    [updated_at] DATETIME,
-    FOREIGN KEY ([question_id]) REFERENCES [dbo].[faq_question]([question_id])
-);
-
-ALTER TABLE [dbo].[password_reset_tokens] ADD  DEFAULT (getdate()) FOR [created_at];
-ALTER TABLE [dbo].[password_reset_tokens] ADD  DEFAULT ((0)) FOR [is_used];
-ALTER TABLE [dbo].[password_reset_tokens] 
-    ADD CONSTRAINT FK_password_reset_user 
-    FOREIGN KEY([user_id]) REFERENCES [dbo].[Users] ([user_id]) ON DELETE CASCADE;
-
-	CREATE TABLE [dbo].[Notification](
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Courts](
+	[court_id] [int] IDENTITY(1,1) NOT NULL,
+	[court_number] [varchar](50) NOT NULL,
+	[type] [nvarchar](50) NULL,
+	[floor_material] [nvarchar](50) NULL,
+	[lighting] [nvarchar](50) NULL,
+	[description] [nvarchar](255) NULL,
+	[image_url] [nvarchar](255) NULL,
+	[status] [nvarchar](50) NULL,
+	[area_id] [int] NOT NULL,
+	[price] [decimal](10, 2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[court_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [uq_court_number] UNIQUE NONCLUSTERED 
+(
+	[court_number] ASC,
+	[area_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[faq_answer]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[faq_answer](
+	[answer_id] [int] IDENTITY(1,1) NOT NULL,
+	[question_id] [int] NOT NULL,
+	[content] [nvarchar](max) NOT NULL,
+	[created_at] [datetime] NULL,
+	[updated_at] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[answer_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[faq_question]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[faq_question](
+	[question_id] [int] IDENTITY(1,1) NOT NULL,
+	[title] [nvarchar](255) NOT NULL,
+	[tag_id] [int] NOT NULL,
+	[created_at] [datetime] NULL,
+	[updated_at] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[question_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[faq_tag]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[faq_tag](
+	[tag_id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [nvarchar](100) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[tag_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Notification]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Notification](
 	[notification_id] [int] IDENTITY(1,1) NOT NULL,
 	[title] [nvarchar](255) NOT NULL,
 	[content] [nvarchar](max) NOT NULL,
@@ -287,7 +245,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Notification_Receiver]    Script Date: 6/14/2025 11:42:53 AM ******/
+/****** Object:  Table [dbo].[Notification_Receiver]    Script Date: 6/22/2025 7:25:22 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -305,3 +263,256 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[password_reset_tokens]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[password_reset_tokens](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[user_id] [int] NOT NULL,
+	[token] [varchar](255) NOT NULL,
+	[created_at] [datetime] NULL,
+	[is_used] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[token] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Posts](
+    [post_id] INT IDENTITY(1,1) NOT NULL,
+    [title] NVARCHAR(255) NOT NULL,
+    [content] NVARCHAR(MAX) NOT NULL,
+    [created_by] INT NOT NULL,
+    [created_at] DATETIME DEFAULT GETDATE(),
+    [image] VARCHAR(255) NULL,
+    [type] VARCHAR(20) NOT NULL CHECK ([type] IN ('common', 'partner', 'news')),
+    [status] VARCHAR(20) NULL DEFAULT 'pending' CHECK ([status] IN ('rejected', 'approved', 'pending')),
+    PRIMARY KEY CLUSTERED ([post_id])
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[PartnerPostDetails] (
+    partner_post_id INT PRIMARY KEY,
+    preferred_level NVARCHAR(100),
+    preferred_gender NVARCHAR(10),
+    preferred_time NVARCHAR(100),
+    preferred_area NVARCHAR(100),
+    note NVARCHAR(MAX),
+    FOREIGN KEY (partner_post_id) REFERENCES [dbo].[Posts](post_id)
+)
+GO
+
+CREATE TABLE [dbo].[PostReactions](
+    [id] INT IDENTITY(1,1) NOT NULL,
+    [post_id] INT NOT NULL,
+    [user_id] INT NOT NULL,
+    [reaction_type] VARCHAR(20) NOT NULL,
+    [reacted_at] DATETIME DEFAULT GETDATE(),
+    PRIMARY KEY CLUSTERED ([id]),
+    CONSTRAINT [UQ_UserPost] UNIQUE ([post_id], [user_id]),
+    FOREIGN KEY ([post_id]) REFERENCES [dbo].[Posts](post_id) ON DELETE NO ACTION,
+    FOREIGN KEY ([user_id]) REFERENCES [dbo].[Users](user_id)
+)
+GO
+
+
+CREATE TABLE [dbo].[Comments](
+    [comment_id] INT IDENTITY(1,1) NOT NULL,
+    [post_id] INT NOT NULL,
+    [user_id] INT NOT NULL,
+    [content] VARCHAR(MAX) NOT NULL,
+    [created_at] DATETIME DEFAULT GETDATE(),
+    [parent_comment_id] INT NULL,
+    PRIMARY KEY CLUSTERED ([comment_id]),
+    FOREIGN KEY ([post_id]) REFERENCES [dbo].[Posts](post_id),
+    FOREIGN KEY ([user_id]) REFERENCES [dbo].[Users](user_id),
+    FOREIGN KEY ([parent_comment_id]) REFERENCES [dbo].[Comments](comment_id)
+)
+GO
+
+CREATE TABLE [dbo].[CommentReports] (
+    report_id INT IDENTITY(1,1) PRIMARY KEY,
+    comment_id INT NOT NULL,
+    reported_by INT NOT NULL,
+    reason NVARCHAR(255),
+    created_at DATETIME DEFAULT GETDATE(),
+
+    FOREIGN KEY (comment_id) REFERENCES Comments(comment_id) ON DELETE CASCADE,
+    FOREIGN KEY (reported_by) REFERENCES Users(user_id)
+);
+GO
+
+/****** Object:  Table [dbo].[Reviews]    Script Date: 6/22/2025 7:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Reviews](
+	[review_id] [int] IDENTITY(1,1) NOT NULL,
+	[user_id] [int] NOT NULL,
+	[area_id] [int] NOT NULL,
+	[rating] [int] NULL,
+	[comment] [varchar](max) NULL,
+	[created_at] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[review_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+
+ALTER TABLE [dbo].[BadmintonService] ADD  DEFAULT ('Active') FOR [status]
+GO
+ALTER TABLE [dbo].[BadmintonService] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[BadmintonService] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Comments] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[faq_answer] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[faq_question] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[password_reset_tokens] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[password_reset_tokens] ADD  DEFAULT ((0)) FOR [is_used]
+GO
+ALTER TABLE [dbo].[PostReactions] ADD  DEFAULT (getdate()) FOR [reacted_at]
+GO
+ALTER TABLE [dbo].[Posts] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Posts] ADD  DEFAULT ('pending') FOR [status]
+GO
+ALTER TABLE [dbo].[Reviews] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Area_Image]  WITH CHECK ADD FOREIGN KEY([area_id])
+REFERENCES [dbo].[Areas] ([area_id])
+GO
+ALTER TABLE [dbo].[Areas]  WITH CHECK ADD FOREIGN KEY([manager_id])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[Areas_Services]  WITH CHECK ADD FOREIGN KEY([area_id])
+REFERENCES [dbo].[Areas] ([area_id])
+GO
+ALTER TABLE [dbo].[Areas_Services]  WITH CHECK ADD FOREIGN KEY([service_id])
+REFERENCES [dbo].[BadmintonService] ([service_id])
+GO
+ALTER TABLE [dbo].[Booking_Services]  WITH CHECK ADD FOREIGN KEY([booking_id])
+REFERENCES [dbo].[Bookings] ([booking_id])
+GO
+ALTER TABLE [dbo].[Booking_Services]  WITH CHECK ADD FOREIGN KEY([service_id])
+REFERENCES [dbo].[BadmintonService] ([service_id])
+GO
+ALTER TABLE [dbo].[Bookings]  WITH CHECK ADD FOREIGN KEY([court_id])
+REFERENCES [dbo].[Courts] ([court_id])
+GO
+ALTER TABLE [dbo].[Bookings]  WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[Comments]  WITH CHECK ADD FOREIGN KEY([post_id])
+REFERENCES [dbo].[Posts] ([post_id])
+GO
+ALTER TABLE [dbo].[Comments]  WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[Courts]  WITH CHECK ADD FOREIGN KEY([area_id])
+REFERENCES [dbo].[Areas] ([area_id])
+GO
+ALTER TABLE [dbo].[faq_answer]  WITH CHECK ADD FOREIGN KEY([question_id])
+REFERENCES [dbo].[faq_question] ([question_id])
+GO
+ALTER TABLE [dbo].[faq_question]  WITH CHECK ADD FOREIGN KEY([tag_id])
+REFERENCES [dbo].[faq_tag] ([tag_id])
+GO
+ALTER TABLE [dbo].[password_reset_tokens]  WITH CHECK ADD  CONSTRAINT [FK_password_reset_user] FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[password_reset_tokens] CHECK CONSTRAINT [FK_password_reset_user]
+GO
+ALTER TABLE [dbo].[PostReactions]  WITH CHECK ADD FOREIGN KEY([post_id])
+REFERENCES [dbo].[Posts] ([post_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[PostReactions]  WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[Posts]  WITH CHECK ADD FOREIGN KEY([created_by])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[Reviews]  WITH CHECK ADD FOREIGN KEY([area_id])
+REFERENCES [dbo].[Areas] ([area_id])
+GO
+ALTER TABLE [dbo].[Reviews]  WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [chk_area_time] CHECK  (([open_time]<[close_time]))
+GO
+ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [chk_area_time]
+GO
+ALTER TABLE [dbo].[BadmintonService]  WITH CHECK ADD CHECK  (([price]>=(0)))
+GO
+ALTER TABLE [dbo].[Bookings]  WITH CHECK ADD  CONSTRAINT [chk_booking_time] CHECK  (([start_time]<[end_time]))
+GO
+ALTER TABLE [dbo].[Bookings] CHECK CONSTRAINT [chk_booking_time]
+GO
+ALTER TABLE [dbo].[Bookings]  WITH CHECK ADD CHECK  (([rating]>=(1) AND [rating]<=(5)))
+GO
+ALTER TABLE [dbo].[Courts]  WITH CHECK ADD CHECK  (([price]>=(0)))
+GO
+ALTER TABLE [dbo].[Posts]  WITH CHECK ADD CHECK  (([status]='rejected' OR [status]='approved' OR [status]='pending'))
+GO
+ALTER TABLE [dbo].[Posts]  WITH CHECK ADD CHECK  (([type]='common' OR [type]='partner' OR [type]='news'))
+GO
+ALTER TABLE [dbo].[Reviews]  WITH CHECK ADD CHECK  (([rating]>=(1) AND [rating]<=(5)))
+GO
+CREATE TABLE Shift (
+    shift_id INT IDENTITY(1,1) PRIMARY KEY,
+    area_id INT NOT NULL,
+    shift_name VARCHAR(255) NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL
+     FOREIGN KEY (area_id) REFERENCES Areas(area_id)  
+);
+CREATE TABLE [dbo].[ChatbotMessages] (
+    [message_id] INT IDENTITY(1,1) PRIMARY KEY,
+    [user_id] INT NULL,
+    [message_content] NVARCHAR(MAX) NOT NULL,
+    [created_at] DATETIME DEFAULT GETDATE(),
+    [sender_type] VARCHAR(10) CHECK(sender_type IN ('user', 'bot')) NOT NULL
+);
+
+CREATE TABLE [dbo].[Banners](
+    [banner_id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    [image_url] NVARCHAR(255) NOT NULL,
+    [title] NVARCHAR(255) NOT NULL,
+    [caption] NVARCHAR(500) NULL,
+    [status] BIT DEFAULT 1,
+    [created_at] DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE [dbo].[Coaches](
+    [coach_id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    [area_id] INT NOT NULL,
+    [fullname] NVARCHAR(100) NOT NULL,
+    [email] NVARCHAR(100) NOT NULL,
+    [phone] NVARCHAR(20) NOT NULL,
+    [specialty] NVARCHAR(255) NULL,
+    [description] NVARCHAR(MAX) NULL,
+    [image_url] NVARCHAR(255) NULL,
+    [status] NVARCHAR(50) DEFAULT 'active',
+    CONSTRAINT FK_Coaches_Area FOREIGN KEY (area_id) REFERENCES [dbo].[Areas](area_id)
+) ON [PRIMARY]
+
+ALTER TABLE [dbo].[ChatbotMessages] WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id]);
+
+

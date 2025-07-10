@@ -15,17 +15,20 @@ public class Reviews {
     private String rating;
     private String comment;
     private String created_at;
+    private String username;
 
     public Reviews() {
     }
 
-    public Reviews(String review_id, String user_id, String area_id, String rating, String comment, String created_at) {
+    public Reviews(String review_id, String user_id, String area_id, String rating,
+                   String comment, String created_at, String username) {
         this.review_id = review_id;
         this.user_id = user_id;
         this.area_id = area_id;
         this.rating = rating;
         this.comment = comment;
         this.created_at = created_at;
+        this.username = username;
     }
 
     public String getReview_id() {
@@ -75,5 +78,13 @@ public class Reviews {
     public void setCreated_at(String created_at) {
         this.created_at = created_at;
     }
-    
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
 }

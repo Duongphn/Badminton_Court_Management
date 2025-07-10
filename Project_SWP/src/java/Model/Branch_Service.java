@@ -12,7 +12,7 @@ public class Branch_Service {
    private int AreaService_id;
    private int service_id;
    private int area_id;
-   private Service equipment;
+   private Service service;
 
    
 
@@ -49,13 +49,19 @@ public class Branch_Service {
         this.area_id = area_id;
     }
 
-    public Service getEquipment() {
-        return equipment;
+    public Service getService() {
+        return service;
     }
 
-    public void setEquipment(Service equipment) {
-        this.equipment = equipment;
+    public void setService(Service service) {
+        this.service = service;
     }
+
+    @Override
+    public String toString() {
+        return "Branch_Service{" + "AreaService_id=" + AreaService_id + ", service_id=" + service_id + ", area_id=" + area_id + ", service=" + service + '}';
+    }
+    
 }
 
     

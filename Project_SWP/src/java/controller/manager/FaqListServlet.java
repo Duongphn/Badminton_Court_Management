@@ -21,8 +21,8 @@ public class FaqListServlet extends HttpServlet {
         String keyword = request.getParameter("keyword");
         String tagIdRaw = request.getParameter("tagId");
         String pageRaw = request.getParameter("page");
+        String forUser = request.getParameter("for");
 
-        // Nếu không có gì thì mặc định là tất cả
         String safeKeyword = (keyword != null) ? keyword.trim() : "";
         int tagId = (tagIdRaw != null && !tagIdRaw.isEmpty()) ? Integer.parseInt(tagIdRaw) : 0;
         int page = (pageRaw != null && !pageRaw.isEmpty()) ? Integer.parseInt(pageRaw) : 1;
@@ -40,6 +40,10 @@ public class FaqListServlet extends HttpServlet {
         request.setAttribute("keyword", safeKeyword);
         request.setAttribute("selectedTag", tagId);
 
-        request.getRequestDispatcher("faq_list.jsp").forward(request, response);
+        if ("user".equalsIgnoreCase(forUser)) {
+            request.getRequestDispatcher("faq-user.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("faq_list.jsp").forward(request, response);
+        }
     }
 }

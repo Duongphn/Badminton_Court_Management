@@ -3,16 +3,23 @@ package controller.manager;
 import DAO.AreaDAO;
 import DAO.CourtDAO;
 import Model.Courts;
+import Model.User;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet("/courts")
+@MultipartConfig(fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 1024 * 1024 * 10,
+        maxRequestSize = 1024 * 1024 * 20)
 public class CourtServlet extends HttpServlet {
 
     private CourtDAO courtDAO;
@@ -25,8 +32,16 @@ public class CourtServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
+        String areaParam = request.getParameter("area_id");
         if (action == null) {
-            List<Courts> courts = courtDAO.getAllCourts();
+            List<Courts> courts;
+            if (areaParam != null && !areaParam.isEmpty()) {
+                int areaId = Integer.parseInt(areaParam);
+                courts = courtDAO.getCourtsByAreaId(areaId);
+                request.setAttribute("areaId", areaId);
+            } else {
+                courts = courtDAO.getAllCourts();
+            }
             request.setAttribute("courts", courts);
             request.getRequestDispatcher("/court_manager.jsp").forward(request, response);
         } else if (action.equals("edit")) {
@@ -41,19 +56,48 @@ public class CourtServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.sendRedirect("login");
+            return;
+        }
+        User user = (User) session.getAttribute("user");
         if (action.equals("add")) {
+            if (user == null || !"admin".equals(user.getRole())) {
+                session.setAttribute("errorMessage", "Bạn không có quyền thêm sân!");
+                response.sendRedirect("courts");
+                return;
+            }
             Courts court = new Courts();
             court.setCourt_number(request.getParameter("courtNumber"));
             court.setType(request.getParameter("type"));
             court.setFloor_material(request.getParameter("floorMaterial"));
             court.setLighting(request.getParameter("lighting"));
             court.setDescription(request.getParameter("description"));
-            court.setImage_url(request.getParameter("imageUrl"));
+            String priceStr = request.getParameter("price");
+            if (priceStr != null && !priceStr.isEmpty()) {
+                try {
+                    court.setPrice(Double.parseDouble(priceStr));
+                } catch (NumberFormatException e) {
+                    court.setPrice(0);
+                }
+            }
+
+            Part filePart = request.getPart("image");
+            String imagePath = null;
+            if (filePart != null && filePart.getSize() > 0) {
+                String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
+                String uploadDir = getServletContext().getRealPath("/uploads");
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+                filePart.write(uploadDir + File.separator + fileName);
+                imagePath = "uploads/" + fileName;
+            }
+            court.setImage_url(imagePath);
             court.setStatus(request.getParameter("status"));
             court.setArea_id(Integer.parseInt(request.getParameter("areaId")));
             courtDAO.addCourt(court);
-
+            courtDAO.increaseCourtOfArea(court.getArea_id());
             session.setAttribute("successMessage", "Thêm sân thành công!");
             session.setAttribute("messageType", "success");
         } else if (action.equals("update")) {
@@ -64,7 +108,26 @@ public class CourtServlet extends HttpServlet {
             court.setFloor_material(request.getParameter("floorMaterial"));
             court.setLighting(request.getParameter("lighting"));
             court.setDescription(request.getParameter("description"));
-            court.setImage_url(request.getParameter("imageUrl"));
+            String priceStr = request.getParameter("price");
+            if (priceStr != null && !priceStr.isEmpty()) {
+                try {
+                    court.setPrice(Double.parseDouble(priceStr));
+                } catch (NumberFormatException e) {
+                    court.setPrice(0);
+                }
+            }
+
+            Part filePart = request.getPart("image");
+            String imagePath = request.getParameter("currentImage");
+            if (filePart != null && filePart.getSize() > 0) {
+                String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
+                String uploadDir = getServletContext().getRealPath("/uploads");
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+                filePart.write(uploadDir + File.separator + fileName);
+                imagePath = "uploads/" + fileName;
+            }
+            court.setImage_url(imagePath);
             court.setStatus(request.getParameter("status"));
             int areaId = Integer.parseInt(request.getParameter("areaId"));
             court.setArea_id(areaId);
@@ -74,11 +137,21 @@ public class CourtServlet extends HttpServlet {
             session.setAttribute("successMessage", "Cập nhật sân thành công!");
             session.setAttribute("messageType", "success");
         } else if (action.equals("delete")) {
+            if (user == null || !"admin".equals(user.getRole())) {
+                session.setAttribute("errorMessage", "Bạn không có quyền xóa sân!");
+                response.sendRedirect("courts");
+                return;
+            }
             String courtId = request.getParameter("courtId");
             courtDAO.deleteCourt(courtId);
             session.setAttribute("successMessage", "Xóa sân thành công!");
             session.setAttribute("messageType", "success");
         }
-        response.sendRedirect("courts");
+        String redirectArea = request.getParameter("redirectAreaId");
+        String redirectUrl = "courts";
+        if (redirectArea != null && !redirectArea.isEmpty()) {
+            redirectUrl += "?area_id=" + redirectArea;
+        }
+        response.sendRedirect(redirectUrl);
     }
 }

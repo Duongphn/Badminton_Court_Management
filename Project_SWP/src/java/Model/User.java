@@ -4,22 +4,31 @@
  */
 package Model;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 /**
  *
- * @author admin
+ * @author Hoang Tan Bao
  */
 public class User {
+
     private int user_Id;
     private String username;
     private String password;
     private String email;
-    private String phone_number ;
+    private String phone_number;
     private String role;
-    private  LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
     private String status;
     private String note;
+    private String gender;
+    private String firstname;
+    private String lastname;
+    private String fullname;
+    private Date dateOfBirth;
+    private String fullName = firstname + lastname;
+    private boolean sendMail;
 
     public User() {
     }
@@ -53,7 +62,95 @@ public class User {
         this.status = status;
         this.note = note;
     }
-    
+
+    public User(int user_Id, String username, String password, String email, String phone_number, String role, String status, String note, String gender, String firstname, String lastname, String fullname, Date dateOfBirth) {
+        this.user_Id = user_Id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.phone_number = phone_number;
+        this.role = role;
+        this.status = status;
+        this.note = note;
+        this.gender = gender;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.fullname = fullname;
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public User(int user_Id, String username, String password, String email, String phone_number, String role, String status, String note, String gender, String firstname, String lastname, String fullname, Date dateOfBirth, boolean sendMail) {
+        this.user_Id = user_Id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.phone_number = phone_number;
+        this.role = role;
+        this.status = status;
+        this.note = note;
+        this.gender = gender;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.fullname = fullname;
+        this.dateOfBirth = dateOfBirth;
+        this.sendMail = sendMail;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public boolean isSendMail() {
+        return sendMail;
+    }
+
+    public void setSendMail(boolean sendMail) {
+        this.sendMail = sendMail;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 
     public String getStatus() {
         return status;
@@ -71,9 +168,6 @@ public class User {
         this.note = note;
     }
 
-   
-
- 
     public int getUser_Id() {
         return user_Id;
     }
@@ -132,7 +226,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" + "user_Id=" + user_Id + ", username=" + username + ", password=" + password + ", email=" + email + ", phone_number=" + phone_number + ", role=" + role + ", createdAt=" + createdAt + ", status=" + status + '}';
+        return "User{" + "user_Id=" + user_Id + ", username=" + username + ", password=" + password + ", email=" + email + ", phone_number=" + phone_number + ", role=" + role + ", createdAt=" + createdAt + ", status=" + status + ", note=" + note + ", gender=" + gender + ", firstname=" + firstname + ", lastname=" + lastname + ", fullname=" + fullname + ", dateOfBirth=" + dateOfBirth + '}';
     }
-    
+
 }

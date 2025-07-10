@@ -7,7 +7,11 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 @WebServlet("/notification_list")
 public class AdminNotificationListServlet extends HttpServlet {
@@ -18,6 +22,9 @@ public class AdminNotificationListServlet extends HttpServlet {
         String keyword = request.getParameter("keyword");
         if (keyword == null) keyword = "";
 
+        String status = request.getParameter("status");
+        if (status == null) status = "";  // Nếu không có trạng thái thì không lọc theo trạng thái
+
         int page = 1;
         int size = 5;
         if (request.getParameter("page") != null) {
@@ -27,15 +34,27 @@ public class AdminNotificationListServlet extends HttpServlet {
         int offset = (page - 1) * size;
 
         NotificationDAO dao = new NotificationDAO();
-        List<Notification> list = dao.searchNotifications(keyword, offset, size);
-        int total = dao.countNotifications(keyword);
-        int totalPages = (int) Math.ceil((double) total / size);
+        
+        List<Notification> list = null;
+        try {
+            list = dao.searchNotificationsByStatus(keyword, status, offset, size);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(AdminNotificationListServlet.class.getName()).log(Level.SEVERE, null, ex);
+            request.setAttribute("error", "Lỗi không tìm thấy lớp cơ sở dữ liệu!");
+        }
 
-        request.setAttribute("notifications", list);
-        request.setAttribute("keyword", keyword);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
+        // Đưa kết quả vào request
+        if (list != null && !list.isEmpty()) {
+            request.setAttribute("notifications", list);
+            request.setAttribute("keyword", keyword);
+            request.setAttribute("status", status);
+            request.setAttribute("currentPage", page);
+        } else {
+            request.setAttribute("error", "Không tìm thấy thông báo nào.");
+        }
 
+        // Chuyển tiếp tới JSP
         request.getRequestDispatcher("notification_list.jsp").forward(request, response);
     }
 }
+
