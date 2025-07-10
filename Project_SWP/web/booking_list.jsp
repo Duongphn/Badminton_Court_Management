@@ -157,6 +157,10 @@
                                                 </c:when>
                                                 <c:otherwise>
                                                     ${booking.rating}★
+                                                    <button type="button" class="btn btn-link p-0 ms-2 view-rating-modal"
+                                                            data-bs-toggle="modal" data-bs-target="#viewRatingModal"
+                                                            data-rating="${booking.rating}"
+                                                            data-comment="${booking.reviewComment}">Chi tiết</button>
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:when>
@@ -195,6 +199,22 @@
                     <c:remove var="cancelMessage" scope="session"/>
                 </c:if>
             </div>
+            <!-- View Rating Modal -->
+            <div class="modal fade" id="viewRatingModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Chi tiết đánh giá</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Đánh giá:</strong> <span id="viewRatingStars"></span></p>
+                            <p class="mb-0"><strong>Nhận xét:</strong></p>
+                            <p id="viewRatingComment" class="border rounded p-2 bg-light"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Rating Modal -->
             <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
@@ -231,6 +251,13 @@
                     document.getElementById('courtInfo').textContent = 'Sân: ' + button.getAttribute('data-court');
                     document.getElementById('dateInfo').textContent = 'Ngày: ' + button.getAttribute('data-date') + ' (' + button.getAttribute('data-time') + ')';
                     document.getElementById('bookingIdInput').value = button.getAttribute('data-booking');
+                });
+
+                var viewModal = document.getElementById('viewRatingModal');
+                viewModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget;
+                    document.getElementById('viewRatingStars').textContent = button.getAttribute('data-rating') + '★';
+                    document.getElementById('viewRatingComment').textContent = button.getAttribute('data-comment') || '';
                 });
             </script>
         </main>

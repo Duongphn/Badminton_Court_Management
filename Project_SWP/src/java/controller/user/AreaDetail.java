@@ -6,6 +6,7 @@ package controller.user;
 
 import DAO.AreaDAO;
 import DAO.CourtDAO;
+import DAO.ReviewDAO;
 
 import Model.Branch;
 import Model.Courts;
@@ -82,12 +83,14 @@ public class AreaDetail extends HttpServlet {
 
             CourtDAO courtDAO = new CourtDAO();
             AreaDAO areaDAO = new AreaDAO();
+            ReviewDAO reviewDAO = new ReviewDAO();
             Branch area = areaDAO.getAreaByIdWithManager(areaId);
 
             List<Courts> courts = courtDAO.getCourtsByAreaId(areaId);
 
             request.setAttribute("area", area);
             request.setAttribute("courts", courts);
+            request.setAttribute("reviews", reviewDAO.getReviewsByArea(areaId));
             request.getRequestDispatcher("CourtDetail.jsp").forward(request, response);
         } else {
             response.sendRedirect("ListBranch");
