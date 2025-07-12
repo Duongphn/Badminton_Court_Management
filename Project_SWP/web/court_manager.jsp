@@ -703,7 +703,14 @@
 <div class="container-fluid">
     <div class="row mt-4">
         <div class="col-md-2 mb-4">
-            <jsp:include page="Sidebar.jsp" />
+            <c:choose>
+                <c:when test="${sessionScope.user.role eq 'staff'}">
+                    <jsp:include page="Sidebar_Staff.jsp" />
+                </c:when>
+                <c:otherwise>
+                    <jsp:include page="Sidebar.jsp" />
+                </c:otherwise>
+            </c:choose>
         </div>
         <div class="col-md-10">
             <!-- Thông báo -->

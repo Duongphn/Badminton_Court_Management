@@ -404,7 +404,14 @@
     <div class="row g-0">
         <!-- Sidebar -->
         <div class="col-md-3 d-none d-md-block">
-            <jsp:include page="Sidebar.jsp"/>
+            <c:choose>
+                <c:when test="${sessionScope.user.role eq 'staff'}">
+                    <jsp:include page="Sidebar_Staff.jsp" />
+                </c:when>
+                <c:otherwise>
+                    <jsp:include page="Sidebar.jsp" />
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- Main Content -->

@@ -55,7 +55,14 @@
         </div>
 
         <div class="row g-0">
-            <jsp:include page="Sidebar.jsp"/>
+            <c:choose>
+                <c:when test="${sessionScope.user.role eq 'staff'}">
+                    <jsp:include page="Sidebar_Staff.jsp" />
+                </c:when>
+                <c:otherwise>
+                    <jsp:include page="Sidebar.jsp" />
+                </c:otherwise>
+            </c:choose>
             <div class="col-10 pt-5 px-4">
                 <div class="card card-main px-4 py-3 " style="width:100%; max-width:1200px; margin-left: 270px;">
                     <div class="d-flex align-items-center mb-3">
