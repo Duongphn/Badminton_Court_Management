@@ -21,7 +21,8 @@ public class ConfirmBookingServlet extends HttpServlet {
             return;
         }
         User user = (User) session.getAttribute("user");
-        if (user == null || !"staff".equals(user.getRole())) {
+        // Allow both staff and admin roles to manage bookings
+        if (user == null || (!"staff".equals(user.getRole()) && !"admin".equals(user.getRole()))) {
             response.sendRedirect("login");
             return;
         }
