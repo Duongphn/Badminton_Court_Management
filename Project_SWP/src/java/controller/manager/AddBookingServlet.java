@@ -108,14 +108,14 @@ public class AddBookingServlet extends HttpServlet {
             BookingDAO bookingDAO = new BookingDAO();
             Branch branch = new AreaDAO().getAreaByIdWithManager(court.getArea_id());
 
-            // Calculate total price for this booking
-            double total = court.getPrice();
+            // Calculate total price of selected services once
+            double serviceTotal = 0;
             if (selectedServices != null) {
                 for (String id : selectedServices) {
                     try {
                         Service s = ServiceDAO.getServiceById(Integer.parseInt(id));
                         if (s != null) {
-                            total += s.getPrice();
+                            serviceTotal += s.getPrice();
                         }
                     } catch (NumberFormatException ignored) {
                     }
@@ -160,6 +160,11 @@ public class AddBookingServlet extends HttpServlet {
                     conflicts.add(sh.getShiftName() + "(" + startTime + "-" + endTime + ")");
                     continue;
                 }
+
+                java.math.BigDecimal slotPrice = courtDAO.calculateSlotPrice(
+                        startTime, endTime,
+                        java.math.BigDecimal.valueOf(court.getPrice()));
+                double total = slotPrice.doubleValue() + serviceTotal;
 
                 int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date,
                         startTime, endTime, "pending", java.math.BigDecimal.valueOf(total));
