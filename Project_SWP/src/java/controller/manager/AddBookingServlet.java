@@ -36,6 +36,26 @@ import java.nio.charset.StandardCharsets;
 @WebServlet(name = "AddBookingServlet", urlPatterns = {"/add-booking"})
 public class AddBookingServlet extends HttpServlet {
 
+    /** Helper bean to display shift details on confirmation page */
+    public static class ShiftInfo {
+        private String name;
+        private Time startTime;
+        private Time endTime;
+        private BigDecimal price;
+
+        public ShiftInfo(String name, Time startTime, Time endTime, BigDecimal price) {
+            this.name = name;
+            this.startTime = startTime;
+            this.endTime = endTime;
+            this.price = price;
+        }
+
+        public String getName() { return name; }
+        public Time getStartTime() { return startTime; }
+        public Time getEndTime() { return endTime; }
+        public BigDecimal getPrice() { return price; }
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -59,6 +79,8 @@ public class AddBookingServlet extends HttpServlet {
         }
         User currentUser = (User) session.getAttribute("user");
         request.setCharacterEncoding("UTF-8");
+
+        boolean confirm = "true".equals(request.getParameter("confirm"));
 
         String courtIdStr = request.getParameter("courtId");
         String username = request.getParameter("username");
@@ -111,24 +133,27 @@ public class AddBookingServlet extends HttpServlet {
             BookingDAO bookingDAO = new BookingDAO();
             Branch branch = new AreaDAO().getAreaByIdWithManager(court.getArea_id());
 
-            // Calculate total price of selected services once
+            java.util.List<Service> serviceList = new java.util.ArrayList<>();
             double serviceTotal = 0;
             if (selectedServices != null) {
                 for (String id : selectedServices) {
                     try {
                         Service s = ServiceDAO.getServiceById(Integer.parseInt(id));
                         if (s != null) {
+                            serviceList.add(s);
                             serviceTotal += s.getPrice();
                         }
-                    } catch (NumberFormatException ignored) {
-                    }
+                    } catch (NumberFormatException ignored) { }
                 }
             }
+
             PromotionDAO proDao = new PromotionDAO();
             Promotion promotion = proDao.getCurrentPromotionForArea(court.getArea_id(), date);
             BigDecimal pricePerHour = courtDAO.getCourtPrice(courtId);
 
             java.util.List<String> conflicts = new java.util.ArrayList<>();
+            java.util.List<ShiftInfo> shiftInfos = new java.util.ArrayList<>();
+            BigDecimal totalPrice = BigDecimal.ZERO;
 
             for (String sidStr : shiftIdArr) {
                 int sid;
@@ -167,37 +192,27 @@ public class AddBookingServlet extends HttpServlet {
                     continue;
                 }
 
-                java.math.BigDecimal slotPrice = courtDAO.calculateSlotPrice(
-                        startTime, endTime,
-                        java.math.BigDecimal.valueOf(court.getPrice()));
-                double total = slotPrice.doubleValue() + serviceTotal;
-                BigDecimal shiftTotal = bookingDAO.calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, promotion);
-                if (selectedServices != null) {
-                    for (String id : selectedServices) {
-                        try {
-                            Service s = ServiceDAO.getServiceById(Integer.parseInt(id));
-                            if (s != null) {
-                                shiftTotal = shiftTotal.add(BigDecimal.valueOf(s.getPrice()));
-                            }
-                        } catch (NumberFormatException ignored) {
+                BigDecimal slotPrice = bookingDAO.calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, promotion);
+                BigDecimal finalPrice = slotPrice.add(BigDecimal.valueOf(serviceTotal));
+
+                if (confirm) {
+                    int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date,
+                            startTime, endTime, "pending", finalPrice);
+                    if (bookingId == -1) {
+                        conflicts.add("Lỗi tạo booking " + sh.getShiftName());
+                        continue;
+                    }
+                    if (selectedServices != null) {
+                        BookingServiceDAO bsDao = new BookingServiceDAO();
+                        for (String id : selectedServices) {
+                            try {
+                                bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
+                            } catch (NumberFormatException ignored) { }
                         }
                     }
-                }
-
-                int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date,
-                        startTime, endTime, "pending", shiftTotal);
-                if (bookingId == -1) {
-                    conflicts.add("Lỗi tạo booking " + sh.getShiftName());
-                    continue;
-                }
-
-                if (selectedServices != null) {
-                    BookingServiceDAO bsDao = new BookingServiceDAO();
-                    for (String id : selectedServices) {
-                        try {
-                            bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
-                        } catch (NumberFormatException ignored) { }
-                    }
+                } else {
+                    shiftInfos.add(new ShiftInfo(sh.getShiftName(), startTime, endTime, finalPrice));
+                    totalPrice = totalPrice.add(finalPrice);
                 }
             }
 
@@ -208,8 +223,21 @@ public class AddBookingServlet extends HttpServlet {
                 return;
             }
 
-            String msg = URLEncoder.encode("Đặt sân thành công!", StandardCharsets.UTF_8);
-            response.sendRedirect("manager-booking-schedule?msg=" + msg);
+            if (!confirm) {
+                request.setAttribute("court", court);
+                request.setAttribute("date", date);
+                request.setAttribute("username", username.trim());
+                request.setAttribute("promotion", promotion);
+                request.setAttribute("shiftInfos", shiftInfos);
+                request.setAttribute("servicesSelected", serviceList);
+                request.setAttribute("totalPrice", totalPrice);
+                request.setAttribute("shiftIds", shiftIdArr);
+                request.setAttribute("selectedServiceIds", selectedServices);
+                request.getRequestDispatcher("confirm_booking_manager.jsp").forward(request, response);
+            } else {
+                String msg = URLEncoder.encode("Đặt sân thành công!", StandardCharsets.UTF_8);
+                response.sendRedirect("manager-booking-schedule?msg=" + msg);
+            }
         } catch (Exception e) {
             request.setAttribute("error", "Dữ liệu không hợp lệ hoặc lỗi hệ thống!");
             populateFormData(request, currentUser);
