@@ -198,7 +198,14 @@
         </style>
     </head>
     <body>
-        <jsp:include page="Sidebar.jsp" />
+        <c:choose>
+            <c:when test="${sessionScope.user.role eq 'staff'}">
+                <jsp:include page="Sidebar_Staff.jsp" />
+            </c:when>
+            <c:otherwise>
+                <jsp:include page="Sidebar.jsp" />
+            </c:otherwise>
+        </c:choose>
         <%
             List<Service> service = (List<Service>) request.getAttribute("service");
             if (service == null) service = java.util.Collections.emptyList();

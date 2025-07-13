@@ -503,12 +503,12 @@ public boolean createBooking(Bookings booking) {
 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT b.booking_id, b.user_id, b.court_id, b.date, b.start_time, ")
-                .append("b.end_time, b.status, u.username, c.court_number, c.area_id ")
-                .append("FROM Bookings b ")
-                .append("JOIN Courts c ON b.court_id = c.court_id ")
-                .append("JOIN Areas a ON c.area_id = a.area_id ")
-                .append("JOIN Users u ON b.user_id = u.user_id ")
-                .append("WHERE a.manager_id = ?");
+           .append("b.end_time, b.status, b.total_price, u.username, c.court_number, c.area_id, a.name AS area_name ")
+           .append("FROM Bookings b ")
+           .append("JOIN Courts c ON b.court_id = c.court_id ")
+           .append("JOIN Areas a ON c.area_id = a.area_id ")
+           .append("JOIN Users u ON b.user_id = u.user_id ")
+           .append("WHERE a.manager_id = ?");
         if (areaId != null) {
             sql.append(" AND a.area_id = ?");
         }

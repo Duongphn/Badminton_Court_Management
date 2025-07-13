@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="DAO.CourtDAO,java.util.List,Model.Courts" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%
     if (request.getAttribute("courts") == null) {
         CourtDAO dao = new CourtDAO();
@@ -703,7 +704,14 @@
 <div class="container-fluid">
     <div class="row mt-4">
         <div class="col-md-2 mb-4">
-            <jsp:include page="Sidebar.jsp" />
+            <c:choose>
+                <c:when test="${fn:toLowerCase(fn:trim(sessionScope.user.role)) eq 'staff'}">
+                    <jsp:include page="Sidebar_Staff.jsp" />
+                </c:when>
+                <c:otherwise>
+                    <jsp:include page="Sidebar.jsp" />
+                </c:otherwise>
+            </c:choose>
         </div>
         <div class="col-md-10">
             <!-- Thông báo -->

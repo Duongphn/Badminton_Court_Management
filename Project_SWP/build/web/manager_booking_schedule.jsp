@@ -8,388 +8,97 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --card-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            --hover-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            --border-radius: 20px;
-        }
-
-        * {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background: #f5f6fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin: 2rem;
-            overflow: hidden;
-        }
-
-        .page-header {
-            background: var(--primary-gradient);
-            color: white;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            margin: 2rem 0;
             padding: 2rem;
-            position: relative;
-            overflow: hidden;
         }
-
-        .page-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
-            opacity: 0.3;
+        .page-header {
+            background: #667eea;
+            color: white;
+            padding: 1.5rem 1rem;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 1.5rem;
         }
-
-        .page-header h3 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-header .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-top: 0.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
         .filter-section {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .form-control, .form-select {
-            border: 2px solid rgba(102, 126, 234, 0.1);
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            background: white;
-            transform: translateY(-2px);
-        }
-
-        .btn {
-            border-radius: 12px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
-            overflow: hidden;
-            border: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success {
-            background: var(--success-gradient);
-            color: white;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
-        }
-
-        .btn-warning {
-            background: var(--warning-gradient);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--danger-gradient);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-
-        .add-booking-btn {
-            background: var(--secondary-gradient);
-            color: white;
-            border-radius: 50px;
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .add-booking-btn:hover {
-            color: white;
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 35px rgba(240, 147, 251, 0.4);
-        }
-
-        .table-container {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            margin: 2rem;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .table {
-            margin: 0;
-            background: transparent;
-        }
-
-        .table thead th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 1.25rem 1rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.9rem;
-        }
-
-        .table tbody td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            background: rgba(255, 255, 255, 0.7);
-        }
-
-        .table tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        .table tbody tr:hover {
-            background: rgba(102, 126, 234, 0.1);
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.8s;
-        }
-
-        .badge:hover::before {
-            left: 100%;
-        }
-
-        .bg-warning {
-            background: var(--warning-gradient) !important;
-            color: white !important;
-        }
-
-        .bg-info {
-            background: var(--success-gradient) !important;
-            color: white !important;
-        }
-
-        .bg-danger {
-            background: var(--danger-gradient) !important;
-            color: white !important;
-        }
-
-        .bg-success {
-            background: var(--primary-gradient) !important;
-            color: white !important;
-        }
-
-        .bg-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
-            color: white !important;
-        }
-
-        .btn-group-sm .btn {
+            background: #f8f9fa;
             border-radius: 8px;
-            margin: 0 2px;
-            min-width: 40px;
-            height: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
         }
-
-        .btn-group-sm .btn:hover {
-            transform: translateY(-2px) scale(1.1);
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 1rem;
         }
-
-        .notification-wrapper {
-            z-index: 1050;
+        .table thead th {
+            background: #667eea;
+            color: white;
+            border: none;
         }
-
+        .table tbody tr:hover {
+            background: #eef2fb;
+        }
+        .badge {
+            border-radius: 12px;
+            font-size: 0.9rem;
+            padding: 0.4em 0.8em;
+        }
+        .bg-warning { background: #f0932b !important; color: #fff !important; }
+        .bg-info { background: #00b894 !important; color: #fff !important; }
+        .bg-danger { background: #eb2f06 !important; color: #fff !important; }
+        .bg-success { background: #6ab04c !important; color: #fff !important; }
+        .bg-secondary { background: #636e72 !important; color: #fff !important; }
+        .add-booking-btn {
+            background: #764ba2;
+            color: #fff;
+            border-radius: 20px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .add-booking-btn:hover {
+            background: #5f3796;
+            color: #fff;
+        }
         .floating-stats {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
-            border-radius: 15px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             padding: 1rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            min-width: 180px;
             z-index: 1000;
         }
-
         .stat-item {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             margin-bottom: 0.5rem;
         }
-
-        .stat-item:last-child {
-            margin-bottom: 0;
-        }
-
         .stat-icon {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
-            color: white;
+            font-size: 1rem;
+            color: #fff;
         }
-
-        .filter-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
-            .main-container {
-                margin: 1rem;
-            }
-            
-            .page-header h3 {
-                font-size: 2rem;
-            }
-            
-            .filter-section {
-                margin: 1rem;
-                padding: 1rem;
-            }
-            
-            .table-container {
-                margin: 1rem;
-            }
-            
-            .floating-stats {
-                bottom: 1rem;
-                right: 1rem;
-            }
-        }
-
-        /* Loading Animation */
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Pulse Animation for New Items */
-        .new-item {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+            .main-container, .table-container, .filter-section { padding: 1rem; margin: 1rem 0; }
+            .floating-stats { position: static; margin: 1rem 0; }
         }
     </style>
 </head>
@@ -404,7 +113,14 @@
     <div class="row g-0">
         <!-- Sidebar -->
         <div class="col-md-3 d-none d-md-block">
-            <jsp:include page="Sidebar.jsp"/>
+            <c:choose>
+                <c:when test="${sessionScope.user.role eq 'staff'}">
+                    <jsp:include page="Sidebar_Staff.jsp" />
+                </c:when>
+                <c:otherwise>
+                    <jsp:include page="Sidebar.jsp" />
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- Main Content -->
@@ -420,7 +136,7 @@
                 <div class="filter-section">
                     <form class="row g-3 align-items-end" method="get" action="manager-booking-schedule">
                         <div class="col-lg-2 col-md-4 col-sm-6">
-                            <label class="filter-label">Khu vực</label>
+                            <label class="form-label">Khu vực</label>
                             <select name="areaId" class="form-select">
                                 <option value="">Tất cả khu vực</option>
                                 <c:forEach var="a" items="${areas}">
@@ -429,15 +145,15 @@
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-4 col-sm-6">
-                            <label class="filter-label">Từ ngày</label>
+                            <label class="form-label">Từ ngày</label>
                             <input type="date" name="startDate" value="${startDate}" class="form-control"/>
                         </div>
                         <div class="col-lg-2 col-md-4 col-sm-6">
-                            <label class="filter-label">Đến ngày</label>
+                            <label class="form-label">Đến ngày</label>
                             <input type="date" name="endDate" value="${endDate}" class="form-control"/>
                         </div>
                         <div class="col-lg-2 col-md-4 col-sm-6">
-                            <label class="filter-label">Trạng thái</label>
+                            <label class="form-label">Trạng thái</label>
                             <select name="status" class="form-select">
                                 <option value="">Tất cả trạng thái</option>
                                 <option value="pending" <c:if test="${status eq 'pending'}">selected</c:if>>Chờ xử lý</option>
@@ -563,18 +279,18 @@
                                                         <input type="hidden" name="action" value="complete" />
                                                         <button type="submit" class="btn btn-secondary" title="Hoàn thành">
                                                             <i class="fas fa-check-double"></i>
-                                                        </button>
-                                                    </form>
-                                                </c:if>
-                                                <a href="update-booking?bookingId=${b.booking_id}" class="btn btn-primary" title="Chỉnh sửa">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
+                                                        </form>
+                                                    </c:if>
+                                                    <a href="update-booking?bookingId=${b.booking_id}" class="btn btn-primary" title="Chỉnh sửa">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -638,44 +354,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Add smooth scrolling and animations
-    document.addEventListener('DOMContentLoaded', function() {
-        // Animate table rows on hover
-        const tableRows = document.querySelectorAll('.booking-row');
-        tableRows.forEach(row => {
-            row.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateX(5px)';
-            });
-            row.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateX(0)';
-            });
-        });
-
-        // Add loading animation to buttons
-        const buttons = document.querySelectorAll('button[type="submit"]');
-        buttons.forEach(button => {
-            button.addEventListener('click', function() {
-                if (!this.disabled) {
-                    const originalText = this.innerHTML;
-                    this.innerHTML = '<span class="loading-spinner me-2"></span>Đang xử lý...';
-                    this.disabled = true;
-                    
-                    // Re-enable after 3 seconds (adjust as needed)
-                    setTimeout(() => {
-                        this.innerHTML = originalText;
-                        this.disabled = false;
-                    }, 3000);
-                }
-            });
-        });
-
-        // Add fade-in animation to new items
-        const newItems = document.querySelectorAll('.new-item');
-        newItems.forEach(item => {
-            item.style.animation = 'pulse 2s infinite';
-        });
-    });
-</script>
 </body>
 </html>
