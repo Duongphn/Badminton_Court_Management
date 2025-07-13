@@ -31,14 +31,11 @@
         </div>
     </c:if>
 
-    <h5>Chi tiết ca</h5>
+    <h5>Khung giờ</h5>
     <ul class="list-group mb-3">
-        <c:forEach var="sd" items="${shiftInfos}">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                ${sd.name} (${sd.startTime} - ${sd.endTime})
-                <span>${sd.price} VNĐ</span>
-            </li>
-        </c:forEach>
+        <li class="list-group-item">
+            ${startTime} - ${endTime}
+        </li>
     </ul>
 
     <c:if test="${not empty servicesSelected}">
@@ -60,9 +57,8 @@
         <input type="hidden" name="username" value="${username}">
         <input type="hidden" name="courtId" value="${court.court_id}">
         <input type="hidden" name="date" value="${date}">
-        <c:forEach var="sid" items="${shiftIds}">
-            <input type="hidden" name="shiftIds" value="${sid}">
-        </c:forEach>
+        <input type="hidden" name="startTime" value="${startTime}">
+        <input type="hidden" name="endTime" value="${endTime}">
         <c:forEach var="sid" items="${selectedServiceIds}">
             <input type="hidden" name="selectedServices" value="${sid}">
         </c:forEach>
