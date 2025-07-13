@@ -7,11 +7,13 @@ import DAO.UserDAO;
 import DAO.AreaDAO;
 import DAO.ServiceDAO;
 import DAO.ShiftDAO;
+import DAO.PromotionDAO;
 import Model.Shift;
 import Model.Branch;
 import Model.Courts;
 import Model.Service;
 import Model.User;
+import Model.Promotion;
 import utils.PasswordUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -121,6 +124,9 @@ public class AddBookingServlet extends HttpServlet {
                     }
                 }
             }
+            PromotionDAO proDao = new PromotionDAO();
+            Promotion promotion = proDao.getCurrentPromotionForArea(court.getArea_id(), date);
+            BigDecimal pricePerHour = courtDAO.getCourtPrice(courtId);
 
             java.util.List<String> conflicts = new java.util.ArrayList<>();
 
@@ -165,9 +171,21 @@ public class AddBookingServlet extends HttpServlet {
                         startTime, endTime,
                         java.math.BigDecimal.valueOf(court.getPrice()));
                 double total = slotPrice.doubleValue() + serviceTotal;
+                BigDecimal shiftTotal = bookingDAO.calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, promotion);
+                if (selectedServices != null) {
+                    for (String id : selectedServices) {
+                        try {
+                            Service s = ServiceDAO.getServiceById(Integer.parseInt(id));
+                            if (s != null) {
+                                shiftTotal = shiftTotal.add(BigDecimal.valueOf(s.getPrice()));
+                            }
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
+                }
 
                 int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date,
-                        startTime, endTime, "pending", java.math.BigDecimal.valueOf(total));
+                        startTime, endTime, "pending", shiftTotal);
                 if (bookingId == -1) {
                     conflicts.add("Lỗi tạo booking " + sh.getShiftName());
                     continue;
