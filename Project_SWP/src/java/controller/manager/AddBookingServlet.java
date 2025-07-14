@@ -77,7 +77,6 @@ public class AddBookingServlet extends HttpServlet {
         User currentUser = (User) session.getAttribute("user");
         request.setCharacterEncoding("UTF-8");
 
-        boolean confirm = "true".equals(request.getParameter("confirm"));
 
         String courtIdStr = request.getParameter("courtId");
         String username = request.getParameter("username");
@@ -212,38 +211,25 @@ public class AddBookingServlet extends HttpServlet {
                 return;
             }
 
-            if (!confirm) {
-                request.setAttribute("court", court);
-                request.setAttribute("date", date);
-                request.setAttribute("username", username.trim());
-                request.setAttribute("promotion", promotion);
-                request.setAttribute("servicesSelected", serviceList);
-                request.setAttribute("totalPrice", finalPrice);
-                request.setAttribute("startTime", startTime);
-                request.setAttribute("endTime", endTime);
-                request.setAttribute("selectedServiceIds", selectedServices);
-                request.getRequestDispatcher("confirm_booking_manager.jsp").forward(request, response);
-            } else {
-                int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date,
-                        startTime, endTime, "pending", finalPrice);
-                if (bookingId == -1) {
-                    request.setAttribute("error", "Không thể tạo booking");
-                    populateFormData(request, currentUser);
-                    loadSlotsAndSelection(request, parsedCourtId, parsedDate);
-                    request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-                    return;
-                }
-                if (selectedServices != null) {
-                    BookingServiceDAO bsDao = new BookingServiceDAO();
-                    for (String id : selectedServices) {
-                        try {
-                            bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
-                        } catch (NumberFormatException ignored) { }
-                    }
-                }
-                String msg = URLEncoder.encode("Đặt sân thành công!", StandardCharsets.UTF_8);
-                response.sendRedirect("manager-booking-schedule?msg=" + msg);
+            int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date,
+                    startTime, endTime, "pending", finalPrice);
+            if (bookingId == -1) {
+                request.setAttribute("error", "Không thể tạo booking");
+                populateFormData(request, currentUser);
+                loadSlotsAndSelection(request, parsedCourtId, parsedDate);
+                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
+                return;
             }
+            if (selectedServices != null) {
+                BookingServiceDAO bsDao = new BookingServiceDAO();
+                for (String id : selectedServices) {
+                    try {
+                        bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
+                    } catch (NumberFormatException ignored) { }
+                }
+            }
+            String msg = URLEncoder.encode("Đặt sân thành công!", StandardCharsets.UTF_8);
+            response.sendRedirect("manager-booking-schedule?msg=" + msg);
         } catch (Exception e) {
             request.setAttribute("error", "Dữ liệu không hợp lệ hoặc lỗi hệ thống!");
             populateFormData(request, currentUser);
