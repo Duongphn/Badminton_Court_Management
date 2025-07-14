@@ -8,7 +8,9 @@ import DAO.BookingDAO;
 import DAO.BookingServiceDAO;
 import DAO.CourtDAO;
 import DAO.Service_BranchDAO;
+import DAO.ShiftDAO;
 import Model.Branch_Service;
+import Model.Shift;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -93,36 +95,39 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     try {
         int userId = user.getUser_Id();
         int courtId = Integer.parseInt(request.getParameter("courtId"));
+        int shiftId = Integer.parseInt(request.getParameter("shiftId")); 
         String dateStr = request.getParameter("date");
-        String startTimeStr = request.getParameter("startTime");
-        String endTimeStr = request.getParameter("endTime");
-        String totalPriceStr = request.getParameter( "totalPrice");
-          BigDecimal totalPrice = new BigDecimal(totalPriceStr);
+        String totalPriceStr = request.getParameter("totalPrice");
+        BigDecimal totalPrice = new BigDecimal(totalPriceStr);
+
         LocalDate date = LocalDate.parse(dateStr);
-        Time startTime = Time.valueOf(startTimeStr);
-        Time endTime = Time.valueOf(endTimeStr);
-
-        
-        if (startTime.after(endTime) || startTime.equals(endTime)) {
-            request.setAttribute("message", "Giờ bắt đầu phải trước giờ kết thúc.");
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
-            return;
-        }
-    
-      
-        BookingDAO bookingDAO = new BookingDAO();
-        boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
-
-        if (!isAvailable) {
-            request.setAttribute("message", "Khoảng thời gian đã có người đặt.");
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
-            return;
-        }
-
-        
-        int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date, startTime, endTime, "pending", totalPrice);
 
        
+        ShiftDAO shiftDAO = new ShiftDAO();
+        Shift shift = shiftDAO.getShiftById(shiftId);
+        if (shift == null) {
+            request.setAttribute("message", "Không tìm thấy ca đã chọn.");
+            request.getRequestDispatcher("book_field.jsp").forward(request, response);
+            return;
+        }
+        Time startTime = shift.getStartTime();
+        Time endTime = shift.getEndTime();
+
+        
+        BookingDAO bookingDAO = new BookingDAO();
+        boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
+        if (!isAvailable) {
+            request.setAttribute("message", "Ca này đã có người đặt.");
+            request.getRequestDispatcher("book_field.jsp").forward(request, response);
+            return;
+        }
+
+       
+        int bookingId = bookingDAO.insertBookingWithTotalPrice(
+            userId, courtId, date, startTime, endTime, "pending", totalPrice
+        );
+
+        
         String[] selectedServices = request.getParameterValues("selectedServices");
         if (selectedServices != null && bookingId != -1) {
             BookingServiceDAO bookingServiceDAO = new BookingServiceDAO();
@@ -132,6 +137,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             }
         }
 
+        
         response.sendRedirect("booking-list");
 
     } catch (Exception e) {

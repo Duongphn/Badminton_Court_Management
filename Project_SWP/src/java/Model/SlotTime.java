@@ -16,37 +16,33 @@ import java.util.List;
 public class SlotTime {
     
     public static List<Slot> generateSlots(Shift shift, List<Bookings> bookings, int slotMinutes) {
-        List<Slot> result = new ArrayList<>();
+    List<Slot> result = new ArrayList<>();
+    LocalTime current = shift.getStartTime().toLocalTime();
+    LocalTime end = shift.getEndTime().toLocalTime();
 
-        LocalTime current = shift.getStartTime().toLocalTime();
-        LocalTime end = shift.getEndTime().toLocalTime();
+    // Dừng vòng lặp khi slotEnd (current + slotMinutes) vượt quá end
+    while (!current.isAfter(end.minusMinutes(slotMinutes))) {
+        LocalTime slotStart = current;
+        LocalTime slotEnd = current.plusMinutes(slotMinutes);
 
-        while (current.plusMinutes(slotMinutes).compareTo(end) <= 0) {
-            LocalTime slotStart = current;
-            LocalTime slotEnd = current.plusMinutes(slotMinutes);
-            current = slotEnd;
-
-            boolean isBooked = false;
-
-            for (Bookings b : bookings) {
-                // Chuyển đổi Time → LocalTime
-                LocalTime bookedStart = b.getStart_time().toLocalTime();
-                LocalTime bookedEnd = b.getEnd_time().toLocalTime();
-
-                // Bỏ qua booking đã huỷ
-                String status = b.getStatus().toLowerCase();
-                if (!status.equals("cancelled") && !status.equals("rejected")) {
-                    boolean overlap = !(slotEnd.compareTo(bookedStart) <= 0 || slotStart.compareTo(bookedEnd) >= 0);
-                    if (overlap) {
-                        isBooked = true;
-                        break;
-                    }
+        boolean isBooked = false;
+        for (Bookings b : bookings) {
+            LocalTime bookedStart = b.getStart_time().toLocalTime();
+            LocalTime bookedEnd = b.getEnd_time().toLocalTime();
+            String status = b.getStatus().toLowerCase();
+            if (!status.equals("cancelled") && !status.equals("rejected")) {
+                boolean overlap = !(slotEnd.compareTo(bookedStart) <= 0 || slotStart.compareTo(bookedEnd) >= 0);
+                if (overlap) {
+                    isBooked = true;
+                    break;
                 }
             }
-
-            result.add(new Slot(slotStart, slotEnd, !isBooked));
         }
 
-        return result;
+        result.add(new Slot(slotStart, slotEnd, !isBooked));
+        current = slotEnd;
     }
+    return result;
+}
+
 }

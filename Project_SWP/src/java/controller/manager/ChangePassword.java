@@ -71,6 +71,20 @@ public class ChangePassword extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    private boolean isValidPassword(String password) {
+    if (password.length() < 8) {
+        return false;
+    }
+    if (!Character.isUpperCase(password.charAt(0))) {
+        return false;
+    }
+    
+    String specialChars = ".*[!@#$%^&*(),.?\":{}|<>0-9].*";
+    if (!password.matches(specialChars)) {
+        return false;
+    }
+    return true;
+}
 @Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
@@ -113,7 +127,13 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         return;
     }
 
-    // Nếu tất cả kiểm tra thành công, cập nhật mật khẩu mới
+    if (!isValidPassword(newPass)) {
+    request.setAttribute("error", "Mật khẩu mới phải có ít nhất 8 ký tự, chữ cái đầu viết hoa và ít nhất 1 ký tự đặc biệt hoặc số!");
+    request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
+    return;
+}
+   
+
     user.setPassword(hashedNewPass);
     dao.updatePassword(user);
 

@@ -1,3 +1,5 @@
+
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
@@ -10,457 +12,221 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <style>
-            :root {
-                --primary-color: #377dff;           /* Xanh biển đậm */
-                --secondary-color: #2b4c7e;         /* Xanh navy */
-                --success-color: #48e6a0;           /* Xanh lá nhạt */
-                --danger-color: #ff6b6b;            /* Đỏ dùng cho xóa/cảnh báo */
-                --warning-color: #ffbe76;           /* Cam nhạt */
-                --info-color: #3ec6e0;              /* Xanh cyan */
-                --light-color: #f5faff;             /* Nền xanh nhạt */
-                --dark-color: #23304d;              /* Xanh navy đậm */
-                --gradient-bg: linear-gradient(135deg, #377dff 0%, #3ec6e0 100%);
-                --card-shadow: 0 4px 20px rgba(55,125,255,0.08);
-                --hover-shadow: 0 8px 30px rgba(55,125,255,0.18);
-            }
-           body {
+          :root {
+    --primary-color: #007bff;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --success-color: #28a745;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+}
+
+body {
     background-color: #f4f6f9;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
 }
-          .navbar {
-    background-color: #ffffff !important;
-    padding: 10px 20px;
+
+.navbar {
+    background-color: #ffffff;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    border: none;
+    padding: 10px 20px;
 }
+
 .navbar-brand {
-    color: #007bff !important;
-    font-weight: 700;
+    font-weight: bold;
     font-size: 1.5rem;
+    color: var(--primary-color) !important;
 }
 
+.nav-link {
+    color: var(--primary-color) !important;
+    font-weight: 500;
+}
 
-            .navbar-toggler {
-                border-color: rgba(255,255,255,0.3);
-            }
-
-            .nav-link {
-                color: white !important;
-                background: rgba(255,255,255,0.1) !important;
-                border: 1px solid rgba(255,255,255,0.2) !important;
-                border-radius: 25px !important;
-                padding: 8px 20px !important;
-                transition: all 0.3s ease;
-            }
-
-            .nav-link:hover {
-                background: rgba(255,255,255,0.2) !important;
-                transform: translateY(-2px);
-            }
-
-            .container-fluid {
-                padding: 0;
-            }
-
-           .main-content {
+.main-content {
     padding: 30px;
     background-color: #ffffff;
     border-radius: 15px;
     box-shadow: 0 0 15px rgba(0,0,0,0.05);
 }
 
-            @keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(30px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .page-title {
-                background: var(--gradient-bg);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                font-weight: 700;
-                font-size: 2.5rem;
-                margin-bottom: 30px;
-                text-align: center;
-            }
-
-            .info-card {
-                background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
-                border: none;
-                border-radius: 20px;
-                box-shadow: var(--card-shadow);
-                transition: all 0.3s ease;
-                margin-bottom: 30px;
-                overflow: hidden;
-            }
-
-            .info-card:hover {
-                transform: translateY(-5px);
-                box-shadow: var(--hover-shadow);
-            }
-
-            .card-header-custom {
-                background: var(--gradient-bg);
-                color: white;
-                padding: 20px;
-                border-radius: 20px 20px 0 0 !important;
-                border: none;
-            }
-
-
-            .card-title {
-                font-weight: 600;
-                margin: 0;
-                font-size: 1.3rem;
-            }
-
-            .info-item {
-                display: flex;
-                align-items: center;
-                margin-bottom: 15px;
-                padding: 10px;
-                background: rgba(102, 126, 234, 0.05);
-                border-radius: 10px;
-                transition: all 0.3s ease;
-            }
-
-            .info-item:hover {
-                background: rgba(102, 126, 234, 0.1);
-                transform: translateX(5px);
-            }
-
-            .info-icon {
-                color: var(--primary-color);
-                margin-right: 15px;
-                font-size: 1.2rem;
-                min-width: 25px;
-            }
-
-            .section-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin: 40px 0 20px 0;
-                padding-bottom: 15px;
-                border-bottom: 3px solid var(--primary-color);
-            }
-
-            .section-title {
-                color: var(--dark-color);
-                font-weight: 600;
-                font-size: 1.8rem;
-                margin: 0;
-            }
-
-            .btn-custom {
-                background: var(--gradient-bg);
-                border: none;
-                color: white;
-                padding: 12px 25px;
-                border-radius: 25px;
-                font-weight: 500;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 15px rgba(55,125,255,0.18);
-            }
-            .btn-custom:hover {
-                color: white;
-                transform: translateY(-3px);
-                box-shadow: 0 6px 20px rgba(55,125,255,0.30);
-            }
-
-
-            .btn-custom i {
-                margin-right: 8px;
-            }
-
-            .table-container {
-                background: white;
-                border-radius: 15px;
-                overflow: hidden;
-                box-shadow: var(--card-shadow);
-                margin-bottom: 30px;
-            }
-
-            .table {
-                margin: 0;
-                border-collapse: separate;
-                border-spacing: 0;
-            }
-
-            .table thead th {
-                background: var(--gradient-bg);
-                color: white;
-                border: none;
-                font-weight: 600;
-                padding: 20px 15px;
-                text-align: center;
-                font-size: 0.95rem;
-            }
-
-
-            .table tbody tr {
-                transition: all 0.3s ease;
-            }
-
-            .table tbody tr:hover {
-                background: rgba(102, 126, 234, 0.05);
-                transform: scale(1.01);
-            }
-
-           .table thead th {
-    background-color: #007bff !important;
-    color: #fff;
-    border: none;
+.page-title {
+    color: #343a40;
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
-            .table tbody tr:first-child td {
-                border-top: none;
-            }
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 40px 0 20px 0;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--primary-color);
+}
 
-            .btn-danger-custom {
-                background: linear-gradient(135deg, #ff6b6b, #fd5e53);
-                border: none;
-                color: white;
-                padding: 8px 15px;
-                border-radius: 20px;
-                font-size: 0.85rem;
-                transition: all 0.3s ease;
-            }
-            .btn-danger-custom:hover {
-                color: white;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 15px rgba(238, 90, 82, 0.30);
-            }
+.section-title {
+    color: var(--dark-color);
+    font-weight: 600;
+    font-size: 1.6rem;
+}
 
-           .modal-content {
+.btn-custom {
+    background-color: #28a745;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 500;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-custom:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+.btn-danger-custom {
+    background-color: var(--danger-color);
+    color: white;
+    border-radius: 8px;
+    padding: 6px 15px;
+    font-size: 0.9rem;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-danger-custom:hover {
+    background-color: #c82333;
+    color: white;
+}
+
+.table-container {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.table thead th {
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    font-weight: 600;
+    padding: 15px;
+}
+
+.table tbody td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.stats-card {
+    background-color: #343a40;
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.stats-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Modal Styling */
+.modal-content {
     border-radius: 12px;
 }
+
 .modal-header {
-    background-color: #007bff;
-    color: #fff;
+    background-color: var(--primary-color);
+    color: white;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
 
-            .modal-title {
-                font-weight: 600;
-                font-size: 1.3rem;
-            }
+.modal-title {
+    font-weight: 600;
+}
 
-            .modal-body {
-                padding: 30px;
-            }
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px;
+}
 
-            .form-group label {
-                font-weight: 600;
-                color: var(--dark-color);
-                margin-bottom: 8px;
-            }
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
 
-            .form-control {
-                border: 2px solid #e9ecef;
-                border-radius: 10px;
-                padding: 12px 15px;
-                font-size: 0.95rem;
-                transition: all 0.3s ease;
-            }
+/* Notification Box */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 500;
+    z-index: 10000;
+    display: none;
+}
 
-            .form-control:focus {
-                border-color: var(--primary-color);
-                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            }
+.notification.show {
+    display: block;
+    animation: fadeIn 0.5s ease-in-out;
+}
 
-            .modal-footer {
-                border: none;
-                padding: 20px 30px 30px;
-            }
+.notification.success {
+    background-color: var(--success-color);
+}
 
-            .loading-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
-                z-index: 9999;
-                backdrop-filter: blur(5px);
-            }
+.notification.error {
+    background-color: var(--danger-color);
+}
 
-            .spinner {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                border: 4px solid rgba(255,255,255,0.3);
-                border-top: 4px solid #ffffff;
-                border-radius: 50%;
-                width: 60px;
-                height: 60px;
-                animation: spin 1s linear infinite;
-            }
+.notification.warning {
+    background-color: var(--warning-color);
+    color: #856404;
+}
 
-            .loading-text {
-                position: absolute;
-                top: 60%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                color: white;
-                font-size: 1.1rem;
-                font-weight: 500;
-                margin-top: 20px;
-            }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+}
 
-            @keyframes spin {
-                0% {
-                    transform: translate(-50%, -50%) rotate(0deg);
-                }
-                100% {
-                    transform: translate(-50%, -50%) rotate(360deg);
-                }
-            }
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 20px;
+    }
 
-            .court-image {
-                border-radius: 10px;
-                transition: all 0.3s ease;
-                cursor: pointer;
-            }
+    .page-title {
+        font-size: 2rem;
+    }
 
-            .court-image:hover {
-                transform: scale(1.1);
-                box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            }
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
 
-            .branch-image {
-                border-radius: 15px;
-                transition: all 0.3s ease;
-                cursor: pointer;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            }
-
-            .branch-image:hover {
-                transform: scale(1.05);
-                box-shadow: 0 6px 25px rgba(0,0,0,0.2);
-            }
-
-            .alert-custom {
-                border: none;
-                border-radius: 15px;
-                padding: 20px;
-                margin: 20px 0;
-                font-weight: 500;
-                box-shadow: var(--card-shadow);
-            }
-
-            .alert-success-custom {
-                background: linear-gradient(135deg, #d4edda, #c3e6cb);
-                color: #155724;
-                border-left: 5px solid #28a745;
-            }
-
-            .alert-warning-custom {
-                background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-                color: #856404;
-                border-left: 5px solid #ffc107;
-            }
-
-            .alert-error-custom {
-                background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-                color: #721c24;
-                border-left: 5px solid #dc3545;
-            }
-
-            .notification {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                border-radius: 10px;
-                color: white;
-                font-weight: 500;
-                z-index: 10000;
-                transform: translateX(400px);
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            }
-
-            .notification.show {
-                transform: translateX(0);
-            }
-
-            .notification.success {
-                background: linear-gradient(135deg, #48e6a0, #22b8cf);
-            }
-            .notification.error {
-                background: linear-gradient(135deg, #ff6b6b, #fd7e14);
-            }
-            .notification.warning {
-                background: linear-gradient(135deg, #ffe066, #ffd166);
-                color: #8d6708;
-            }
-
-
-            .close-btn {
-                margin-left: 15px;
-                cursor: pointer;
-                font-weight: bold;
-            }
-
-            .stats-card {
-                background: var(--gradient-bg);
-                color: white;
-                border-radius: 15px;
-                padding: 20px;
-                text-align: center;
-                margin-bottom: 20px;
-                transition: all 0.3s ease;
-            }
-
-            .stats-card:hover {
-                transform: translateY(-5px);
-                box-shadow: var(--hover-shadow);
-            }
-
-            .stats-number {
-                font-size: 2rem;
-                font-weight: 700;
-                margin-bottom: 5px;
-            }
-
-            .stats-label {
-                font-size: 0.9rem;
-                opacity: 0.9;
-            }
-
-            /* Responsive Design */
-            @media (max-width: 768px) {
-                .main-content {
-                    margin: 10px;
-                    padding: 20px;
-                }
-
-                .page-title {
-                    font-size: 2rem;
-                }
-
-                .section-header {
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 15px;
-                }
-
-                .table-responsive {
-                    font-size: 0.8rem;
-                }
-
-            }
         </style>
     </head>
     <body>
@@ -497,7 +263,7 @@
 
                         <!-- Statistics Cards -->
                         <div class="row mb-4">
-                            <div class="col-md-3">
+                           <div class="col-md-3">
                                 <div class="stats-card">
                                     <div class="stats-number">${listShift.size()}</div>
                                     <div class="stats-label">Ca làm việc</div>
@@ -651,20 +417,22 @@
                                 <table id="shiftTable" class="table">
                                     <thead>
                                         <tr>
-                                            <th>STT</th>
+                                           
                                             <th>Tên ca</th>
                                             <th>Thời gian bắt đầu</th>
                                             <th>Thời gian kết thúc</th>
+                                            <th>Giá (VND)</th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <c:forEach var="shift" items="${listShift}" varStatus="loop">
                                             <tr>
-                                                <td>${loop.count}</td>
+                                               
                                                 <td><strong>${shift.shiftName}</strong></td>
                                                 <td><i class="fas fa-play text-success"></i> ${shift.startTime}</td>
                                                 <td><i class="fas fa-stop text-danger"></i> ${shift.endTime}</td>
+                                                <td><i class="fas fa-stop text-primary"></i> ${shift.price}</td>
                                                 <td>
                                                     <a href="delete-shift?shiftId=${shift.shiftId}&area_id=${area_id}" 
                                                        onclick="return confirmDelete('ca làm việc này')" 
@@ -780,8 +548,7 @@
             </div>
         </div>
 
-        <!-- Modals -->
-        <!-- Add Shift Modal -->
+      
         <div class="modal fade" id="addShiftModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form action="add-shift" method="post" class="modal-content" onsubmit="showLoading()">
@@ -807,6 +574,10 @@
                         <div class="form-group">
                             <label><i class="fas fa-stop"></i> Thời gian kết thúc</label>
                             <input type="time" name="endTime" class="form-control" step="1800" required />
+                        </div>
+                         <div class="form-group">
+                            <label><i class="fas fa-stop"></i> Thời gian kết thúc</label>
+                            <input type="number" name="price" class="form-control"  required />
                         </div>
                     </div>
                     <div class="modal-footer">

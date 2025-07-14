@@ -98,12 +98,16 @@ public class Cancel_booking extends HttpServlet {
         LocalDateTime startDateTime = LocalDateTime.of(date, time);
         LocalDateTime now = LocalDateTime.now();
 
-        Duration duration = Duration.between(now, startDateTime);
-        if (duration.toHours() < 4) {
-            session.setAttribute("cancelMessage", "Không thể hủy đặt sân vì còn dưới 4 tiếng trước giờ chơi.");
-            response.sendRedirect("booking-list?error=late-cancel");
-            return;
-        }
+       Duration duration = Duration.between(now, startDateTime);
+if (duration.isNegative() || duration.isZero()) {
+    session.setAttribute("cancelMessage", "Đặt sân đã quá hạn, không thể hủy.");
+    response.sendRedirect("booking-list?error=expired-cancel");
+    return;
+} else if (duration.toHours() < 4) {
+    session.setAttribute("cancelMessage", "Không thể hủy đặt sân vì còn dưới 4 tiếng trước giờ chơi.");
+    response.sendRedirect("booking-list?error=late-cancel");
+    return;
+}
 
         // Cập nhật trạng thái
         boolean success = bookingDAO.cancelBookingById(bookingId);

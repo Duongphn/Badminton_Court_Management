@@ -408,7 +408,19 @@ public int countAllAreas() {
     }
     return 0;
 }
-
+    public String getAreaNameById(int areaId) {
+        String sql = "SELECT name FROM Areas WHERE area_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, areaId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public static void main(String[] args) {
          Branch branch = new Branch();
 //        branch.setName("Sân cầu lông 1A");

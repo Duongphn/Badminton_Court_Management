@@ -62,7 +62,7 @@ public class DeleteShift extends HttpServlet {
          HttpSession session = request.getSession(false);
         if (session != null) {
             User user = (User) session.getAttribute("user");
-            if (user.getRole().equals("staff")) {
+            if (user.getRole().equals("admin")) {
                 int shift_id = Integer.parseInt(request.getParameter("shiftId"));
                 String area_id = request.getParameter("area_id");
                 ShiftDAO dao = new ShiftDAO();

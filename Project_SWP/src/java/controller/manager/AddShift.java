@@ -15,6 +15,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.sql.Time;
 import java.util.List;
 
@@ -70,7 +72,9 @@ public class AddShift extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-  @Override
+
+
+@Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
     try {
@@ -78,56 +82,70 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         String shiftName = request.getParameter("shiftName");
         String start = request.getParameter("startTime");
         String end = request.getParameter("endTime");
+        String priceStr = request.getParameter("price");
 
-        if (start == null || end == null || start.isEmpty() || end.isEmpty()) {
-            
-            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Thiếu thời gian bắt đầu hoặc kết thúc");
+        if (start == null || end == null || start.isEmpty() || end.isEmpty() ||
+            priceStr == null || priceStr.isEmpty()) {
+            String msg = URLEncoder.encode("Thiếu thông tin thời gian hoặc giá ca", "UTF-8");
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=" + msg);
+            return;
+        }
+
+        // Parse giá tiền ca, kiểm tra hợp lệ
+        BigDecimal price;
+        try {
+            price = new BigDecimal(priceStr);
+            if (price.compareTo(BigDecimal.ZERO) < 0) throw new NumberFormatException();
+        } catch (NumberFormatException ex) {
+            String msg = URLEncoder.encode("Giá ca phải là số hợp lệ lớn hơn hoặc bằng 0", "UTF-8");
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=" + msg);
             return;
         }
 
         Time startTime = Time.valueOf(start + ":00");
         Time endTime = Time.valueOf(end + ":00");
 
-       
         ShiftDAO dao = new ShiftDAO();
         AreaDAO aDao = new AreaDAO();
-      
-      
+
         Time[] openClose = aDao.getAreaOpenAndCloseTime(areaId);
         if (openClose == null) {
-            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Không tìm thấy giờ hoạt động của khu vực.");
+            String msg = URLEncoder.encode("Không tìm thấy giờ hoạt động của khu vực.", "UTF-8");
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=" + msg);
             return;
         }
 
         Time openTime = openClose[0];
         Time closeTime = openClose[1];
 
-  
         if (startTime.compareTo(endTime) >= 0) {
-            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Giờ bắt đầu phải trước giờ kết thúc.");
+            String msg = URLEncoder.encode("Giờ bắt đầu phải trước giờ kết thúc.", "UTF-8");
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=" + msg);
             return;
         }
         if (startTime.before(openTime)) {
-            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Giờ bắt đầu không được trước giờ mở cửa (" + openTime + ").");
+            String msg = URLEncoder.encode("Giờ bắt đầu không được trước giờ mở cửa (" + openTime + ").", "UTF-8");
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=" + msg);
             return;
         }
         if (endTime.after(closeTime)) {
-            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Giờ kết thúc không được sau giờ đóng cửa (" + closeTime + ").");
+            String msg = URLEncoder.encode("Giờ kết thúc không được sau giờ đóng cửa (" + closeTime + ").", "UTF-8");
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&message=" + msg);
             return;
         }
 
-     
         List<Shift> existingShifts = dao.getShiftsByArea(areaId);
         for (Shift s : existingShifts) {
             boolean overlap = !(endTime.compareTo(s.getStartTime()) <= 0 || startTime.compareTo(s.getEndTime()) >= 0);
             if (overlap) {
-                response.sendRedirect("detailBranch?area_id=" + areaId + "&message=Ca mới bị trùng với ca đã có: " + s.getShiftName());
+                String msg = URLEncoder.encode("Ca mới bị trùng với ca đã có: " + s.getShiftName(), "UTF-8");
+                response.sendRedirect("detailBranch?area_id=" + areaId + "&message=" + msg);
                 return;
             }
         }
 
- 
-        Shift shift = new Shift(areaId, shiftName, startTime, endTime);
+        // Lưu ca mới với giá
+        Shift shift = new Shift(areaId, shiftName, startTime, endTime, price);
         dao.addShift(shift);
 
         response.sendRedirect("detailBranch?area_id=" + areaId);
@@ -137,6 +155,8 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         response.sendRedirect("error.jsp");
     }
 }
+
+
 
 
     /** 

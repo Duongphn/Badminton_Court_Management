@@ -7,10 +7,10 @@ import java.sql.SQLException;
 public class DBContext {
 
     public Connection getConnection() throws ClassNotFoundException, SQLException {
-        // Gắn toàn bộ thông tin kết nối vào URL
+      
         String url = "jdbc:sqlserver://localhost:1433;"
 
-                   + "databaseName=swp;"
+                   + "databaseName=SWP;"
                    + "user=sa;"
                    + "password=123;"
                    + "encrypt=true;"

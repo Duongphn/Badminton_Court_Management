@@ -161,7 +161,56 @@ public class NotificationDAO extends DBContext {
     return null; // Trả về null nếu không tìm thấy thông báo
 }
 
-    
+        public Notification getNotificationById(int id) {
+        Notification notification = null;
+        String sql = "SELECT n.*, u.user_id, u.username, u.email "
+                + "FROM Notification n "
+                + "JOIN Users u ON n.created_by = u.user_id "
+                + "WHERE n.notification_id = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                notification = new Notification();
+                notification.setNotificationId(rs.getInt("notification_id"));
+                notification.setTitle(rs.getString("title"));
+                notification.setContent(rs.getString("content"));
+                notification.setImageUrl(rs.getString("image_url"));
+
+                Timestamp scheduled = rs.getTimestamp("scheduled_time");
+                if (scheduled != null) {
+                    notification.setScheduledTime(scheduled.toLocalDateTime());
+                }
+
+                Timestamp sent = rs.getTimestamp("sent_time");
+                if (sent != null) {
+                    notification.setSentTime(sent.toLocalDateTime());
+                }
+
+                Timestamp created = rs.getTimestamp("created_at");
+                if (created != null) {
+                    notification.setCreatedAt(created.toLocalDateTime());
+                }
+
+                notification.setStatus(rs.getString("status"));
+
+                // Gán người tạo (created_by)
+                User createdBy = new User();
+                createdBy.setUser_Id(rs.getInt("user_id"));
+                createdBy.setUsername(rs.getString("username"));
+                createdBy.setEmail(rs.getString("email"));
+
+                notification.setCreatedBy(createdBy);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Lỗi khi lấy thông báo theo ID: " + e.getMessage());
+        }
+        return notification;
+    }
 
     public boolean updateNotification(Notification n) {
         String sql = "UPDATE Notification SET title = ?, content = ?, image_url = ?, scheduled_time = ? WHERE notification_id = ?";

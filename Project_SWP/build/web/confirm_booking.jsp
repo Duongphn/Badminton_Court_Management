@@ -166,6 +166,7 @@
                     <!-- Hidden Inputs -->
                     <input type="hidden" name="courtId" value="${court.court_id}">
                     <input type="hidden" name="areaId" value="${court.area_id}">
+                    <input type="hidden" name="shiftId" value="${shift.shiftId}">
                     <input type="hidden" name="date" value="${date}">
                     <input type="hidden" name="startTime" value="${startTime}">
                     <input type="hidden" name="endTime" value="${endTime}">

@@ -55,8 +55,8 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
             }
 
             AreaDAO areaDAO = new AreaDAO();
-            // Đếm tổng số khu vực
-            int numberofRegion = areaDAO.countAllAreas(); // HÀM NÀY PHẢI THÊM TRONG AreaDAO
+           
+            int numberofRegion = areaDAO.countAllAreas(); 
             int numberofPage = (int) Math.ceil((double) numberofRegion / recordsPerpage);
 
             // Lấy danh sách tất cả khu vực có phân trang
@@ -78,7 +78,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
 
             request.getRequestDispatcher("manager-region.jsp").forward(request, response);
         } else {
-            response.sendError(403);
+            response.sendRedirect("login");
         }
     } else {
         response.sendRedirect("login");

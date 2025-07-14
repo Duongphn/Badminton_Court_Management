@@ -4,6 +4,7 @@
  */
 package Model;
 
+import java.math.BigDecimal;
 import java.sql.Time;
 
 /**
@@ -16,8 +17,8 @@ public class Shift {
     private String shiftName;
     private Time startTime;
     private Time endTime;
-
-    // Constructors
+    private BigDecimal price;
+   
     public Shift() {}
 
     public Shift(int areaId, String shiftName, Time startTime, Time endTime) {
@@ -35,7 +36,32 @@ public class Shift {
         this.endTime = endTime;
     }
 
-    // Getter and Setter methods
+    public Shift(int areaId, String shiftName, Time startTime, Time endTime, BigDecimal price) {
+        
+        this.areaId = areaId;
+        this.shiftName = shiftName;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.price = price;
+    }
+
+    public Shift(int shiftId, int areaId, String shiftName, Time startTime, Time endTime, BigDecimal price) {
+        this.shiftId = shiftId;
+        this.areaId = areaId;
+        this.shiftName = shiftName;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.price = price;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+  
     public int getShiftId() {
         return shiftId;
     }

@@ -46,10 +46,16 @@
             .slot-button {
                 margin: 5px 5px;
             }
+
+            .slot-button:disabled {
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+
         </style>
     </head>
     <body>
-          <jsp:include page="homehead.jsp" />
+        <jsp:include page="homehead.jsp" />
         <div class="container booking-container">
             <h2 class="booking-title">Đặt sân: ${court.court_number}</h2>
 
@@ -57,7 +63,6 @@
                 <div class="alert alert-danger">${message}</div>
             </c:if>
 
-            <!-- Form GET: chỉ để chọn lại ngày -->
             <form action="book-field" method="get" id="dateForm">
                 <input type="hidden" name="courtId" value="${court.court_id}" />
                 <div class="mb-3">
@@ -70,33 +75,45 @@
                 </div>
             </form>
 
-            <!-- Form POST: chọn ca để đặt sân -->
+
             <form action="book-field" method="post">
                 <input type="hidden" name="courtId" value="${court.court_id}" />
                 <input type="hidden" name="date" value="${selectedDate}" />
                 <div class="mb-3">
                     <label class="form-label">Chọn ca chơi:</label>
-                    <div class="d-flex flex-wrap gap-2">
-                        <c:forEach var="slot" items="${slots}">
-    <c:if test="${slot.available}">
-        <form action="book-field" method="post" style="display:inline;">
-            <input type="hidden" name="courtId" value="${court.court_id}" />
-            <input type="hidden" name="date" value="${selectedDate}" />
-            <input type="hidden" name="startTime" value="${slot.start}" />
-            <input type="hidden" name="endTime" value="${slot.end}" />
-            <button type="submit" class="btn btn-success btn-sm slot-button">
-                ${slot.start} - ${slot.end}
-            </button>
-        </form>
-    </c:if>
-    <c:if test="${!slot.available}">
-        <button type="button" class="btn btn-secondary btn-sm slot-button" disabled>
-            ${slot.start} - ${slot.end}
-        </button>
-    </c:if>
-</c:forEach>
+                    <c:forEach var="entry" items="${shiftSlots}">
+                        <div class="mb-2">
+                            <b>
+                                Ca: 
+                                <c:out value="${entry.key.shiftName}"/> -   <c:out value="${entry.key.price}(VND)"/>
+                                (<c:out value="${entry.key.startTime}"/> - <c:out value="${entry.key.endTime}"/> )
+                            </b>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <c:forEach var="slot" items="${entry.value}">
+                                <c:choose>
+                                    <c:when test="${slot.available}">
+                                        <form action="book-field" method="post" style="display:inline;">
+                                            <input type="hidden" name="courtId" value="${court.court_id}" />
+                                            <input type="hidden" name="date" value="${selectedDate}" />
+                                            <input type="hidden" name="startTime" value="${slot.start}" />
+                                            <input type="hidden" name="endTime" value="${slot.end}" />
+                                            <input type="hidden" name="shiftId" value="${entry.key.shiftId}" />
+                                            <button type="submit" class="btn btn-success btn-sm slot-button">
+                                                ${slot.start} - ${slot.end}
+                                            </button>
+                                        </form>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button type="button" class="btn btn-secondary btn-sm slot-button" disabled>
+                                            ${slot.start} - ${slot.end}
+                                        </button>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                        </div>
+                    </c:forEach>
 
-                    </div>
                 </div>
             </form>
 

@@ -702,7 +702,8 @@ public class BookingDAO extends DBContext {
             ps.setTime(2, startTime);
             ps.setTime(3, endTime);
             ps.setString(4, status);
-            // Recalculate price based on duration, promotion and services
+
+            // Recalculate price based on court and services
             Bookings current = getBookingById(bookingId);
             Courts court = new CourtDAO().getCourtById(current.getCourt_id());
             PromotionDAO proDao = new PromotionDAO();

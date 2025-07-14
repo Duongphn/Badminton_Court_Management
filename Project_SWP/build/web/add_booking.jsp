@@ -496,12 +496,26 @@
             }
         }
 
+        const selectedSlots = [];
         document.querySelectorAll('.slot-button.available').forEach(btn => {
             btn.addEventListener('click', () => {
-                startInput.value = btn.dataset.start;
-                endInput.value = btn.dataset.end;
-                document.querySelectorAll('.slot-button.available').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+                const s = btn.dataset.start;
+                const e = btn.dataset.end;
+                btn.classList.toggle('active');
+                if (btn.classList.contains('active')) {
+                    selectedSlots.push({start: s, end: e});
+                } else {
+                    const idx = selectedSlots.findIndex(sl => sl.start === s && sl.end === e);
+                    if (idx >= 0) selectedSlots.splice(idx,1);
+                }
+                if (selectedSlots.length > 0) {
+                    selectedSlots.sort((a,b) => a.start.localeCompare(b.start));
+                    startInput.value = selectedSlots[0].start;
+                    endInput.value = selectedSlots[selectedSlots.length-1].end;
+                } else {
+                    startInput.value = '';
+                    endInput.value = '';
+                }
             });
         });
 
