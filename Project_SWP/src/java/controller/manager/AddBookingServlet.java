@@ -196,8 +196,9 @@ public class AddBookingServlet extends HttpServlet {
             }
 
             boolean slotAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
-            if (!slotAvailable) {
-                conflicts.add("Khung giờ đã được đặt");
+            boolean continuous = bookingDAO.checkContinuousSlotsAvailable(courtId, date, startTime, endTime);
+            if (!slotAvailable || !continuous) {
+                conflicts.add("Một hoặc nhiều slot đã chọn không khả dụng");
             }
 
             BigDecimal slotPrice = bookingDAO.calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, promotion);

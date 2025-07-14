@@ -268,6 +268,28 @@ public class BookingDAO extends DBContext {
         }
     }
 
+    // Check all 60-minute slots between startTime and endTime are available
+    public boolean checkContinuousSlotsAvailable(int courtId, LocalDate date, Time startTime, Time endTime) {
+        List<Slot> slots = getAvailableSlots(courtId, date);
+        java.time.LocalTime current = startTime.toLocalTime();
+        java.time.LocalTime end = endTime.toLocalTime();
+        while (current.isBefore(end)) {
+            java.time.LocalTime next = current.plusMinutes(60);
+            boolean found = false;
+            for (Slot s : slots) {
+                if (s.getStart().equals(current) && s.getEnd().equals(next) && s.isAvailable()) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+            current = next;
+        }
+        return true;
+    }
+
     public boolean checkSlotAvailableAdmin(int courtId, LocalDate date, Time startTime, Time endTime) {
         String sql = "SELECT COUNT(*) FROM Bookings "
                 + "WHERE court_id = ? AND date = ? AND status NOT IN ('cancelled', 'rejected') "
@@ -680,23 +702,22 @@ public class BookingDAO extends DBContext {
             ps.setTime(2, startTime);
             ps.setTime(3, endTime);
             ps.setString(4, status);
-
-            // Recalculate price based on court and services
+            // Recalculate price based on duration, promotion and services
             Bookings current = getBookingById(bookingId);
-            double total = 0;
             Courts court = new CourtDAO().getCourtById(current.getCourt_id());
-            if (court != null) {
-                total += court.getPrice();
-            }
+            PromotionDAO proDao = new PromotionDAO();
+            Promotion pro = court != null ? proDao.getCurrentPromotionForArea(court.getArea_id(), date) : null;
+            BigDecimal pricePerHour = new CourtDAO().getCourtPrice(current.getCourt_id());
+            BigDecimal total = calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, pro);
             if (serviceIds != null) {
                 for (int sid : serviceIds) {
                     Service s = ServiceDAO.getServiceById(sid);
                     if (s != null) {
-                        total += s.getPrice();
+                        total = total.add(BigDecimal.valueOf(s.getPrice()));
                     }
                 }
             }
-            ps.setDouble(5, total);
+            ps.setBigDecimal(5, total);
             ps.setInt(6, bookingId);
 
             int rows = ps.executeUpdate();
@@ -741,6 +762,39 @@ public class BookingDAO extends DBContext {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // Similar to checkContinuousSlotsAvailable but ignore current booking
+    public boolean checkContinuousSlotsAvailableForUpdate(int bookingId, int courtId, LocalDate date,
+            Time startTime, Time endTime) {
+        List<Slot> slots = new ArrayList<>();
+        try {
+            ShiftDAO shiftDAO = new ShiftDAO();
+            List<Shift> shifts = shiftDAO.getShiftsByCourt(courtId);
+            List<Bookings> bookings = getBookingsByCourtAndDate(courtId, date);
+            bookings.removeIf(b -> b.getBooking_id() == bookingId);
+            for (Shift sh : shifts) {
+                List<Slot> sl = SlotTime.generateSlots(sh, bookings, 60);
+                for (Slot s : sl) if (s.isAvailable()) slots.add(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        java.time.LocalTime current = startTime.toLocalTime();
+        java.time.LocalTime end = endTime.toLocalTime();
+        while (current.isBefore(end)) {
+            java.time.LocalTime next = current.plusMinutes(60);
+            boolean found = false;
+            for (Slot s : slots) {
+                if (s.getStart().equals(current) && s.getEnd().equals(next) && s.isAvailable()) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
+            current = next;
+        }
+        return true;
     }
 
     public List<Bookings> getBookingsByCourtId(int courtId) {
