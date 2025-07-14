@@ -341,6 +341,12 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .slot-button.active {
+            border: 2px solid #1e7e34;
+            background: #218838 !important;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -415,10 +421,15 @@
                                 <div class="form-floating icon-input">
                                     <input type="hidden" name="startTime" id="startTimeInput">
                                     <input type="hidden" name="endTime" id="endTimeInput">
-                                    <label class="form-label d-block"><i class="fas fa-clock"></i> Chọn khung giờ</label>
                                     <div class="d-flex flex-wrap gap-2">
                                         <c:forEach var="slot" items="${slots}">
-                                            <button type="button" class="btn btn-sm slot-button <c:choose><c:when test='${slot.available}'>btn-success available</c:when><c:otherwise>btn-secondary</c:otherwise></c:choose>' ${!slot.available ? 'disabled' : ''} data-start="${slot.start}" data-end="${slot.end}">
+                                            <button type="button" class="btn btn-sm slot-button 
+                                                <c:choose>
+                                                    <c:when test='${slot.available}'>btn-success available</c:when>
+                                                    <c:otherwise>btn-secondary</c:otherwise>
+                                                </c:choose>"
+                                                ${!slot.available ? 'disabled' : ''} 
+                                                data-start="${slot.start}" data-end="${slot.end}">
                                                 ${slot.start} - ${slot.end}
                                             </button>
                                         </c:forEach>
@@ -489,7 +500,8 @@
             btn.addEventListener('click', () => {
                 startInput.value = btn.dataset.start;
                 endInput.value = btn.dataset.end;
-                form.submit();
+                document.querySelectorAll('.slot-button.available').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
             });
         });
 

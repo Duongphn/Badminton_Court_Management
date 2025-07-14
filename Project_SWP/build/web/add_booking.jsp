@@ -341,6 +341,12 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .slot-button.active {
+            border: 2px solid #1e7e34;
+            background: #218838 !important;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -396,9 +402,9 @@
                                 </div>
                                 <div class="form-floating icon-input">
                                     <i class="fas fa-basketball-ball"></i>
-                                    <select name="courtId" id="courtSelect" class="form-select" required>
+                                    <select name="courtId" id="courtSelect" class="form-select" required onchange="reloadSlots()">
                                         <c:forEach var="co" items="${courts}">
-                                            <option value="${co.court_id}">Sân ${co.court_number}</option>
+                                            <option value="${co.court_id}" <c:if test='${co.court_id == selectedCourtId}'>selected</c:if>>Sân ${co.court_number}</option>
                                         </c:forEach>
                                     </select>
                                     <label for="courtSelect">Sân</label>
@@ -409,23 +415,25 @@
                             <div class="form-row">
                                 <div class="form-floating icon-input">
                                     <i class="fas fa-calendar-day"></i>
-                                    <input type="date" name="date" class="form-control" id="date" min="<%= java.time.LocalDate.now().toString() %>" required>
+                                    <input type="date" name="date" class="form-control" id="date" value="${selectedDate}" min="<%= java.time.LocalDate.now().toString() %>" required onchange="reloadSlots()">
                                     <label for="date">Ngày</label>
                                 </div>
                                 <div class="form-floating icon-input">
-                                    <i class="fas fa-clock"></i>
-                                    <c:set var="defaultCourt" value="${not empty courts ? courts[0].court_id : -1}" />
-                                    <select name="shiftIds" id="shiftSelect" class="form-select" multiple required>
-                                        <c:forEach var="entry" items="${courtShifts}">
-                                            <c:set var="cId" value="${entry.key}" />
-                                            <c:forEach var="sh" items="${entry.value}">
-                                                <option value="${sh.shiftId}" data-court="${cId}" <c:if test='${cId ne defaultCourt}'>style="display:none"</c:if>>
-                                                    ${sh.shiftName} (${sh.startTime} - ${sh.endTime})
-                                                </option>
-                                            </c:forEach>
+                                    <input type="hidden" name="startTime" id="startTimeInput">
+                                    <input type="hidden" name="endTime" id="endTimeInput">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <c:forEach var="slot" items="${slots}">
+                                            <button type="button" class="btn btn-sm slot-button 
+                                                <c:choose>
+                                                    <c:when test='${slot.available}'>btn-success available</c:when>
+                                                    <c:otherwise>btn-secondary</c:otherwise>
+                                                </c:choose>"
+                                                ${!slot.available ? 'disabled' : ''} 
+                                                data-start="${slot.start}" data-end="${slot.end}">
+                                                ${slot.start} - ${slot.end}
+                                            </button>
                                         </c:forEach>
-                                    </select>
-                                    <label for="shiftSelect">Ca chơi</label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -472,24 +480,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const courtSelect = document.getElementById('courtSelect');
-        const shiftSelect = document.getElementById('shiftSelect');
+        const dateInput = document.getElementById('date');
         const form = document.getElementById('bookingForm');
+        const startInput = document.getElementById('startTimeInput');
+        const endInput = document.getElementById('endTimeInput');
 
-        function updateShifts() {
+        function reloadSlots() {
             const cid = courtSelect.value;
-            Array.from(shiftSelect.options).forEach(o => {
-                if (o.dataset.court === cid) {
-                    o.style.display = 'block';
-                } else {
-                    o.style.display = 'none';
-                }
-            });
-            const visibleOptions = Array.from(shiftSelect.options).filter(o => o.style.display !== 'none');
-            shiftSelect.selectedIndex = -1;
-            if (visibleOptions.length > 0) {
-                visibleOptions[0].selected = true;
+            const date = dateInput.value;
+            if (cid && date) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('courtId', cid);
+                url.searchParams.set('date', date);
+                window.location.href = url.toString();
             }
         }
+
+        document.querySelectorAll('.slot-button.available').forEach(btn => {
+            btn.addEventListener('click', () => {
+                startInput.value = btn.dataset.start;
+                endInput.value = btn.dataset.end;
+                document.querySelectorAll('.slot-button.available').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
 
         function toggleService(card, checkboxId) {
             const checkbox = document.getElementById(checkboxId);
@@ -511,8 +525,8 @@
         });
 
         // Initialize
-        courtSelect.addEventListener('change', updateShifts);
-        updateShifts();
+        courtSelect.addEventListener('change', reloadSlots);
+        dateInput.addEventListener('change', reloadSlots);
 
         // Add smooth scroll to errors
         document.addEventListener('DOMContentLoaded', function() {
