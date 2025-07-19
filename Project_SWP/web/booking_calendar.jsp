@@ -133,31 +133,33 @@
                 statusSelect.value = ev.extendedProps.status;
                 bookingModal.show();
             },
-            events: [
-                <c:forEach var="b" items="${bookings}" varStatus="loop">
+            eventSources: [
+                [
+                    <c:forEach var="b" items="${bookings}" varStatus="loop">
+                    {
+                        id: '${b.booking_id}',
+                        title: 'Sân ${b.court_id} - ${b.status}',
+                        start: '${b.date}T${fn:substring(b.start_time,0,5)}',
+                        end: '${b.date}T${fn:substring(b.end_time,0,5)}',
+                        extendedProps: { courtId: ${b.court_id}, status: '${b.status}' }
+                    }<c:if test="${!loop.last}">,</c:if>
+                    </c:forEach>
+                ],
                 {
-                    id: '${b.booking_id}',
-                    title: 'Sân ${b.court_id} - ${b.status}',
-                    start: '${b.date}T${fn:substring(b.start_time,0,5)}',
-                    end: '${b.date}T${fn:substring(b.end_time,0,5)}',
-                    extendedProps: { courtId: ${b.court_id}, status: '${b.status}' }
-                }<c:if test="${!loop.last}">,</c:if>
-                </c:forEach>
-            ]
-            events: {
-                url: '<c:url value="/booking-calendar" />',
-                method: 'GET',
-                extraParams: function() {
-                    var formData = new FormData(filterForm);
-                    var params = { format: 'json' };
-                    formData.forEach(function(value, key) {
-                        if (value) {
-                            params[key] = value;
-                        }
-                    });
-                    return params;
+                    url: '<c:url value="/booking-calendar" />',
+                    method: 'GET',
+                    extraParams: function() {
+                        var formData = new FormData(filterForm);
+                        var params = { format: 'json' };
+                        formData.forEach(function(value, key) {
+                            if (value) {
+                                params[key] = value;
+                            }
+                        });
+                        return params;
+                    }
                 }
-            }
+            ]
         });
         calendar.render();
         filterForm.addEventListener('submit', function(e) {
