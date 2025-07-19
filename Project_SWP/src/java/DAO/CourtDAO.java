@@ -256,6 +256,48 @@ public class CourtDAO extends DBContext {
         }
         return 0;
     }
+
+    public List<String> getDistinctCourtTypes() {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT type FROM Courts WHERE type IS NOT NULL AND type <> ''";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getString("type"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public List<String> getDistinctFloorMaterials() {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT floor_material FROM Courts WHERE floor_material IS NOT NULL AND floor_material <> ''";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getString("floor_material"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public List<String> getDistinctLightingSystems() {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT lighting FROM Courts WHERE lighting IS NOT NULL AND lighting <> ''";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getString("lighting"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
 // Get counts of courts by status for a manager
 
     public Map<String, Integer> getCourtStatusCounts(int managerId) {

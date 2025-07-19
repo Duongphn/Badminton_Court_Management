@@ -593,15 +593,45 @@
                                         </div>
                                         <div class="form-group">
                                             <label><i class="fas fa-layer-group"></i> Loại Sân</label>
-                                            <input type="text" class="form-control" name="type">
+                                            <div class="input-group">
+                                                <select class="form-control" name="type" id="addType">
+                                                    <option value="">-- Chọn --</option>
+                                                    <c:forEach var="t" items="${courtTypes}">
+                                                        <option value="${t}">${t}</option>
+                                                    </c:forEach>
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-outline-secondary" onclick="showAddOptionModal('addType','Loại Sân')"><i class="fas fa-plus"></i></button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <label><i class="fas fa-cube"></i> Chất Liệu Sàn</label>
-                                            <input type="text" class="form-control" name="floorMaterial">
+                                            <div class="input-group">
+                                                <select class="form-control" name="floorMaterial" id="addFloorMaterial">
+                                                    <option value="">-- Chọn --</option>
+                                                    <c:forEach var="m" items="${floorMaterials}">
+                                                        <option value="${m}">${m}</option>
+                                                    </c:forEach>
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-outline-secondary" onclick="showAddOptionModal('addFloorMaterial','Chất Liệu Sàn')"><i class="fas fa-plus"></i></button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <label><i class="fas fa-lightbulb"></i> Hệ Thống Chiếu Sáng</label>
-                                            <input type="text" class="form-control" name="lighting">
+                                            <div class="input-group">
+                                                <select class="form-control" name="lighting" id="addLighting">
+                                                    <option value="">-- Chọn --</option>
+                                                    <c:forEach var="l" items="${lightingSystems}">
+                                                        <option value="${l}">${l}</option>
+                                                    </c:forEach>
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-outline-secondary" onclick="showAddOptionModal('addLighting','Hệ Thống Chiếu Sáng')"><i class="fas fa-plus"></i></button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <label><i class="fas fa-dollar-sign"></i> Giá</label>
@@ -664,15 +694,45 @@
                                     </div>
                                     <div class="form-group">
                                         <label><i class="fas fa-layer-group"></i> Loại Sân</label>
-                                        <input type="text" class="form-control" id="updateType" name="type">
+                                        <div class="input-group">
+                                            <select class="form-control" id="updateType" name="type">
+                                                <option value="">-- Chọn --</option>
+                                                <c:forEach var="t" items="${courtTypes}">
+                                                    <option value="${t}">${t}</option>
+                                                </c:forEach>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="showAddOptionModal('updateType','Loại Sân')"><i class="fas fa-plus"></i></button>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label><i class="fas fa-cube"></i> Chất Liệu Sàn</label>
-                                        <input type="text" class="form-control" id="updateFloorMaterial" name="floorMaterial">
+                                        <div class="input-group">
+                                            <select class="form-control" id="updateFloorMaterial" name="floorMaterial">
+                                                <option value="">-- Chọn --</option>
+                                                <c:forEach var="m" items="${floorMaterials}">
+                                                    <option value="${m}">${m}</option>
+                                                </c:forEach>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="showAddOptionModal('updateFloorMaterial','Chất Liệu Sàn')"><i class="fas fa-plus"></i></button>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label><i class="fas fa-lightbulb"></i> Hệ Thống Chiếu Sáng</label>
-                                        <input type="text" class="form-control" id="updateLighting" name="lighting">
+                                        <div class="input-group">
+                                            <select class="form-control" id="updateLighting" name="lighting">
+                                                <option value="">-- Chọn --</option>
+                                                <c:forEach var="l" items="${lightingSystems}">
+                                                    <option value="${l}">${l}</option>
+                                                </c:forEach>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="showAddOptionModal('updateLighting','Hệ Thống Chiếu Sáng')"><i class="fas fa-plus"></i></button>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label><i class="fas fa-dollar-sign"></i> Giá</label>
@@ -710,6 +770,25 @@
                                         </button>
                                     </div>
                                 </form>
+                            </div>
+                        </div>
+                </div>
+                </div>
+
+                <!-- Modal thêm tùy chọn -->
+                <div class="modal fade" id="addOptionModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="optionModalLabel">Thêm tùy chọn</h5>
+                                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="text" id="newOptionValue" class="form-control" placeholder="Nhập giá trị">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" onclick="addOption()">Lưu</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
                             </div>
                         </div>
                     </div>
@@ -1064,6 +1143,28 @@
             this.style.boxShadow = 'none';
         });
     });
+
+    let currentSelectId = null;
+    function showAddOptionModal(selectId, label) {
+        currentSelectId = selectId;
+        document.getElementById('optionModalLabel').textContent = 'Thêm ' + label;
+        document.getElementById('newOptionValue').value = '';
+        $('#addOptionModal').modal('show');
+    }
+
+    function addOption() {
+        const value = document.getElementById('newOptionValue').value.trim();
+        if (!value) return;
+        const select = document.getElementById(currentSelectId);
+        if (select) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            option.selected = true;
+            select.appendChild(option);
+        }
+        $('#addOptionModal').modal('hide');
+    }
 </script>
 </body>
 </html>

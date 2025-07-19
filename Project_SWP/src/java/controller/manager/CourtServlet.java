@@ -33,6 +33,12 @@ public class CourtServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         String areaParam = request.getParameter("area_id");
+        List<String> types = courtDAO.getDistinctCourtTypes();
+        List<String> materials = courtDAO.getDistinctFloorMaterials();
+        List<String> lightings = courtDAO.getDistinctLightingSystems();
+        request.setAttribute("courtTypes", types);
+        request.setAttribute("floorMaterials", materials);
+        request.setAttribute("lightingSystems", lightings);
         if (action == null) {
             List<Courts> courts;
             if (areaParam != null && !areaParam.isEmpty()) {
