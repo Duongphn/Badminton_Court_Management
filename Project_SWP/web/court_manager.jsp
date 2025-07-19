@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="DAO.CourtDAO,java.util.List,Model.Courts" %>
+<%@ page import="DAO.CourtDAO,DAO.AreaDAO,java.util.List,java.util.Map,java.util.HashMap,Model.Courts" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%
@@ -8,6 +8,20 @@
         List<Courts> courts = dao.getAllCourts();
         request.setAttribute("courts", courts);
     }
+
+    // Map area_id to area name for displaying
+    List<Courts> courtList = (List<Courts>) request.getAttribute("courts");
+    Map<Integer, String> areaNamesMap = new HashMap<>();
+    if (courtList != null) {
+        AreaDAO areaDao = new AreaDAO();
+        for (Courts c : courtList) {
+            int areaId = c.getArea_id();
+            if (!areaNamesMap.containsKey(areaId)) {
+                areaNamesMap.put(areaId, areaDao.getAreaNameById(areaId));
+            }
+        }
+    }
+    request.setAttribute("areaNamesMap", areaNamesMap);
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -604,9 +618,9 @@
                                         <div class="form-group">
                                             <label><i class="fas fa-toggle-on"></i> Trạng Thái</label>
                                             <select class="form-control" name="status" required>
-                                                <option value="available">Available</option>
-                                                <option value="maintenance">Maintenance</option>
-                                                <option value="booked">Booked</option>
+                                                <option value="available">Còn trống</option>
+                                                <option value="maintenance">Bảo trì</option>
+                                                <option value="booked">Đã đặt</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
@@ -676,9 +690,9 @@
                                     <div class="form-group">
                                         <label><i class="fas fa-toggle-on"></i> Trạng Thái</label>
                                         <select class="form-control" id="updateStatus" name="status" required>
-                                            <option value="available">Available</option>
-                                            <option value="maintenance">Maintenance</option>
-                                            <option value="booked">Booked</option>
+                                            <option value="available">Còn trống</option>
+                                            <option value="maintenance">Bảo trì</option>
+                                            <option value="booked">Đã đặt</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -767,7 +781,7 @@
                                 <th><i class="fas fa-dollar-sign"></i> Giá</th>
                                 <th><i class="fas fa-align-left"></i> Mô Tả</th>
                                 <th><i class="fas fa-toggle-on"></i> Trạng Thái</th>
-                                <th><i class="fas fa-map-marker-alt"></i> Khu Vực ID</th>
+                                <th><i class="fas fa-map-marker-alt"></i> Khu Vực</th>
                                 <th><i class="fas fa-cogs"></i> Hành Động</th>
                             </tr>
                             </thead>
@@ -789,22 +803,22 @@
                                         <c:choose>
                                             <c:when test="${court.status eq 'available'}">
                                                 <span class="status-badge status-available">
-                                                    <i class="fas fa-check-circle"></i> Available
+                                                    <i class="fas fa-check-circle"></i> Còn trống
                                                 </span>
                                             </c:when>
                                             <c:when test="${court.status eq 'maintenance'}">
                                                 <span class="status-badge status-maintenance">
-                                                    <i class="fas fa-wrench"></i> Maintenance
+                                                    <i class="fas fa-wrench"></i> Bảo trì
                                                 </span>
                                             </c:when>
                                             <c:when test="${court.status eq 'booked'}">
                                                 <span class="status-badge status-booked">
-                                                    <i class="fas fa-calendar-check"></i> Booked
+                                                    <i class="fas fa-calendar-check"></i> Đã đặt
                                                 </span>
                                             </c:when>
                                         </c:choose>
                                     </td>
-                                    <td><span class="badge badge-info">${court.area_id}</span></td>
+                                    <td><span class="badge badge-info">${areaNamesMap[court.area_id]}</span></td>
                                     <td>
                                         <div class="action-buttons">
                                             <button class="btn btn-sm btn-warning edit-btn"

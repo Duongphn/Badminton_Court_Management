@@ -1,5 +1,15 @@
 <%@page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="DAO.AreaDAO,Model.Courts" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%
+    Courts c = (Courts) request.getAttribute("court");
+    String areaName = null;
+    if (c != null) {
+        AreaDAO areaDAO = new AreaDAO();
+        areaName = areaDAO.getAreaNameById(c.getArea_id());
+    }
+    request.setAttribute("areaName", areaName);
+%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -329,7 +339,12 @@
                             <td>
                                 <span class="status-badge ${court.status.toLowerCase() == 'hoạt động' || court.status.toLowerCase() == 'available' ? 'status-active' : 'status-inactive'}">
                                     <i class="fas ${court.status.toLowerCase() == 'hoạt động' || court.status.toLowerCase() == 'available' ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-                                    ${court.status}
+                                    <c:choose>
+                                        <c:when test="${court.status eq 'available'}">Còn trống</c:when>
+                                        <c:when test="${court.status eq 'maintenance'}">Bảo trì</c:when>
+                                        <c:when test="${court.status eq 'booked'}">Đã đặt</c:when>
+                                        <c:otherwise>${court.status}</c:otherwise>
+                                    </c:choose>
                                 </span>
                             </td>
                         </tr>
@@ -337,10 +352,10 @@
                             <th>
                                 <span class="icon-label">
                                     <i class="fas fa-map"></i>
-                                    Area ID
+                                    Khu Vực
                                 </span>
                             </th>
-                            <td><strong>${court.area_id}</strong></td>
+                            <td><strong>${areaName}</strong></td>
                         </tr>
                     </table>
                 </c:if>
