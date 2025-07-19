@@ -1,7 +1,9 @@
 package controller.user;
 
 import DAO.BookingDAO;
+import DAO.CourtDAO;
 import Model.Bookings;
+import Model.Courts;
 import Model.User;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
@@ -41,6 +43,8 @@ public class UserBookingCalendar extends HttpServlet {
 
         BookingDAO dao = new BookingDAO();
         List<Bookings> bookings = dao.getBookingsForUser(user.getUser_Id(), from, to, status);
+        CourtDAO courtDAO = new CourtDAO();
+        List<Courts> courts = courtDAO.getAllCourts();
 
         if ("json".equalsIgnoreCase(request.getParameter("format"))) {
             response.setContentType("application/json;charset=UTF-8");
@@ -52,6 +56,7 @@ public class UserBookingCalendar extends HttpServlet {
         }
 
         request.setAttribute("bookings", bookings);
+        request.setAttribute("courts", courts);
         request.setAttribute("fromDate", fromStr);
         request.setAttribute("toDate", toStr);
         request.setAttribute("status", status);
