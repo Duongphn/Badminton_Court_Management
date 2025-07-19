@@ -20,7 +20,7 @@
 <jsp:include page="homehead.jsp" />
 <div class="container mt-4">
     <h2 class="mb-3">Lịch đặt sân của bạn</h2>
-    <form class="row g-3" method="get" action="booking-calendar">
+    <form id="filterForm" class="row g-3" method="get" action="booking-calendar">
         <div class="col-md-3">
             <label class="form-label">Từ ngày</label>
             <input type="date" class="form-control" name="fromDate" value="${fromDate}">
@@ -49,20 +49,31 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
+        var filterForm = document.getElementById('filterForm');
+
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
-            events: [
-                <c:forEach var="b" items="${bookings}" varStatus="loop">
-                {
-                    title: 'Sân ${b.court_id} - ${b.status}',
-                    start: '${b.date}T${fn:substring(b.start_time,0,5)}',
-                    end: '${b.date}T${fn:substring(b.end_time,0,5)}'
-                }<c:if test="${!loop.last}">,</c:if>
-                </c:forEach>
-            ]
+            events: {
+                url: '<c:url value="/booking-calendar" />',
+                method: 'GET',
+                extraParams: function() {
+                    var formData = new FormData(filterForm);
+                    var params = { format: 'json' };
+                    formData.forEach(function(value, key) {
+                        if (value) {
+                            params[key] = value;
+                        }
+                    });
+                    return params;
+                }
+            }
         });
         calendar.render();
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calendar.refetchEvents();
+        });
     });
 </script>
 </body>
