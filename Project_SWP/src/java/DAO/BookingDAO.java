@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,6 +24,9 @@ import Dal.DBContext;
 import Model.BookingScheduleDTO;
 import Model.Bookings;
 import Model.Courts;
+import Model.Service;
+import DAO.ServiceDAO;
+import DAO.BookingServiceDAO;
 import Model.Promotion;
 import Model.Service;
 import Model.Shift;
@@ -709,7 +713,8 @@ public class BookingDAO extends DBContext {
             PromotionDAO proDao = new PromotionDAO();
             Promotion pro = court != null ? proDao.getCurrentPromotionForArea(court.getArea_id(), date) : null;
             BigDecimal pricePerHour = new CourtDAO().getCourtPrice(current.getCourt_id());
-            BigDecimal total = calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, pro);
+            BigDecimal total1 = calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, pro);
+            BigDecimal total = calculateSlotPriceWithPromotionByShift(current.getCourt_id(), startTime, endTime, pro);
             if (serviceIds != null) {
                 for (int sid : serviceIds) {
                     Service s = ServiceDAO.getServiceById(sid);
@@ -917,45 +922,108 @@ public class BookingDAO extends DBContext {
         return BigDecimal.ZERO;
     }
 
-    // Doanh thu từng tháng trong 1 năm
-    public Map<String, BigDecimal> getRevenueByMonth(int year) {
-        Map<String, BigDecimal> result = new LinkedHashMap<>();
-        String sql = "SELECT MONTH([date]) AS month, SUM([total_price]) AS total " +
-                "FROM [Bookings] WHERE YEAR([date]) = ? AND [status] != 'cancelled' " +
-                "GROUP BY MONTH([date]) ORDER BY month";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, year);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int month = rs.getInt("month");
-                BigDecimal total = rs.getBigDecimal("total");
-                result.put(String.format("%02d", month), total != null ? total : BigDecimal.ZERO);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
+   // Doanh thu từng tháng trong 1 năm
+public Map<String, BigDecimal> getRevenueByMonth(int year, Integer courtId) {
+    Map<String, BigDecimal> result = new LinkedHashMap<>();
+    StringBuilder sql = new StringBuilder("SELECT MONTH([date]) AS month, SUM([total_price]) AS total " +
+                 "FROM [Bookings] WHERE YEAR([date]) = ? AND [status] != 'cancelled'");
+
+    if (courtId != null) {
+        sql.append(" AND court_id = ?");
     }
 
-    // Doanh thu từng tuần (ISO week) trong 1 năm
-    public Map<String, BigDecimal> getRevenueByWeek(int year) {
-        Map<String, BigDecimal> result = new LinkedHashMap<>();
-        String sql = "SELECT DATEPART(iso_week, [date]) AS week, SUM([total_price]) AS total " +
-                "FROM [Bookings] WHERE YEAR([date]) = ? AND [status] != 'cancelled' " +
-                "GROUP BY DATEPART(iso_week, [date]) ORDER BY week";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, year);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int week = rs.getInt("week");
-                BigDecimal total = rs.getBigDecimal("total");
-                result.put(String.valueOf(week), total != null ? total : BigDecimal.ZERO);
+    sql.append(" GROUP BY MONTH([date]) ORDER BY month");
+
+    try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        ps.setInt(1, year);
+        if (courtId != null) {
+            ps.setInt(2, courtId);
+        }
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int month = rs.getInt("month");
+            BigDecimal total = rs.getBigDecimal("total");
+            result.put(String.format("%02d", month), total != null ? total : BigDecimal.ZERO);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return result;
+}
+
+// Doanh thu từng tuần (ISO week) trong 1 năm
+
+public Map<String, BigDecimal> getRevenueByWeek(int year, Integer courtId) {
+    Map<String, BigDecimal> result = new LinkedHashMap<>();
+    StringBuilder sql = new StringBuilder(
+        "SELECT DATEPART(iso_week, [date]) AS week, SUM([total_price]) AS total " +
+        "FROM [Bookings] WHERE YEAR([date]) = ? AND [status] != 'cancelled'"
+    );
+
+    if (courtId != null) {
+        sql.append(" AND court_id = ?");
+    }
+
+    sql.append(" GROUP BY DATEPART(iso_week, [date]) ORDER BY week");
+
+    try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        ps.setInt(1, year);
+        if (courtId != null) {
+            ps.setInt(2, courtId);
+        }
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int week = rs.getInt("week");
+            BigDecimal total = rs.getBigDecimal("total");
+            result.put(String.valueOf(week), total != null ? total : BigDecimal.ZERO);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return result;
+}
+    public BigDecimal calculateSlotPriceWithPromotionByShift(int courtId,
+            Time startTime, Time endTime, Promotion promotion) {
+        BigDecimal total = BigDecimal.ZERO;
+        try {
+            ShiftDAO shiftDAO = new ShiftDAO();
+            List<Shift> shifts = shiftDAO.getShiftsByCourt(courtId);
+            LocalTime start = startTime.toLocalTime();
+            LocalTime end = endTime.toLocalTime();
+            for (Shift sh : shifts) {
+                LocalTime shStart = sh.getStartTime().toLocalTime();
+                LocalTime shEnd = sh.getEndTime().toLocalTime();
+                if (end.isAfter(shStart) && start.isBefore(shEnd)) {
+                    LocalTime segmentStart = start.isAfter(shStart) ? start : shStart;
+                    LocalTime segmentEnd = end.isBefore(shEnd) ? end : shEnd;
+                    long minutes = java.time.Duration.between(segmentStart, segmentEnd).toMinutes();
+                    long shiftMinutes = java.time.Duration.between(shStart, shEnd).toMinutes();
+                    if (minutes > 0 && shiftMinutes > 0) {
+                        BigDecimal pricePerMinute = sh.getPrice().divide(BigDecimal.valueOf(shiftMinutes), 4, RoundingMode.HALF_UP);
+                        total = total.add(pricePerMinute.multiply(BigDecimal.valueOf(minutes)));
+                    }
+                }
+            }
+
+            if (promotion != null) {
+                if (promotion.getDiscountPercent() > 0) {
+                    BigDecimal percent = BigDecimal.valueOf(promotion.getDiscountPercent()).divide(BigDecimal.valueOf(100));
+                    total = total.subtract(total.multiply(percent));
+                }
+                if (promotion.getDiscountAmount() > 0) {
+                    total = total.subtract(BigDecimal.valueOf(promotion.getDiscountAmount()));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        if (total.compareTo(BigDecimal.ZERO) < 0) total = BigDecimal.ZERO;
+        return total.setScale(0, RoundingMode.HALF_UP);
     }
+
 
     public BigDecimal calculateSlotPriceWithPromotion(
             Time startTime,
@@ -994,30 +1062,71 @@ public class BookingDAO extends DBContext {
         return slotPrice.setScale(0, RoundingMode.HALF_UP);
     }
 
-    public int getTotalBookings() {
-        String sql = "SELECT COUNT(*) FROM Bookings WHERE status != 'cancelled'";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
+    // Lấy tổng số lượt đặt sân
+    public int getTotalBookings(String filter) {
+        String sql = "SELECT COUNT(*) FROM Bookings " + getDateCondition(filter);
+        try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
     }
 
-    public double getTotalRevenue() {
-        String sql = "SELECT SUM(total_price) FROM Bookings WHERE status != 'cancelled'";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
+    // Lấy tổng doanh thu
+    public double getTotalRevenue(String filter) {
+        String sql = "SELECT SUM(total_price) FROM Bookings " + getDateCondition(filter);
+        try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getDouble(1);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    // Lấy đánh giá trung bình
+    public double getAvgRating(String filter) {
+        String sql = "SELECT AVG(CAST(rating AS float)) FROM Bookings WHERE rating IS NOT NULL " + getExtraDateCondition(filter);
+        try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Điều kiện lọc ngày
+    private String getDateCondition(String filter) {
+        switch (filter) {
+            case "today":
+                return "WHERE CAST(date AS DATE) = CAST(GETDATE() AS DATE)";
+            case "week":
+                return "WHERE DATEPART(week, date) = DATEPART(week, GETDATE()) AND YEAR(date) = YEAR(GETDATE())";
+            case "month":
+                return "WHERE MONTH(date) = MONTH(GETDATE()) AND YEAR(date) = YEAR(GETDATE())";
+            default:
+                return "";
+        }
+    }
+
+    // Cho AVG (phía sau WHERE rating IS NOT NULL)
+    private String getExtraDateCondition(String filter) {
+        switch (filter) {
+            case "today":
+                return " AND CAST(date AS DATE) = CAST(GETDATE() AS DATE)";
+            case "week":
+                return " AND DATEPART(week, date) = DATEPART(week, GETDATE()) AND YEAR(date) = YEAR(GETDATE())";
+            case "month":
+                return " AND MONTH(date) = MONTH(GETDATE()) AND YEAR(date) = YEAR(GETDATE())";
+            default:
+                return "";
+        }
     }
 
 }

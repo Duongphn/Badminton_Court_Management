@@ -98,13 +98,17 @@
     </head>
     <body>
          <jsp:include page="homehead.jsp" />
-
-        <!-- Main -->
         <main class="main">
             <div class="title">
                 <h2>Đơn đặt sân của bạn</h2>
             </div>
-
+  <c:if test="${not empty sessionScope.cancelMessage}">
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        ${sessionScope.cancelMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <c:remove var="cancelMessage" scope="session"/>
+                </c:if>
             <div class="table-responsive mt-4">
                 <table class="table table-bordered">
                     <thead>
@@ -157,10 +161,6 @@
                                                 </c:when>
                                                 <c:otherwise>
                                                     ${booking.rating}★
-                                                    <button type="button" class="btn btn-link p-0 ms-2 view-rating-modal"
-                                                            data-bs-toggle="modal" data-bs-target="#viewRatingModal"
-                                                            data-rating="${booking.rating}"
-                                                            data-comment="${booking.reviewComment}">Chi tiết</button>
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:when>
@@ -179,41 +179,19 @@
                             </td>
                                <td>${booking.total_price}</td>
                                 <td>
-                                    <c:if test="${booking.status eq 'confirmed'}">
+                                   
                                         <form action="cancel_booking" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy?');">
                                             <input type="hidden" name="bookingId" value="${booking.booking_id}">
                                             <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
                                         </form>
-                                    </c:if>
+                                   
                                 </td>
                                  
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
-                <c:if test="${not empty sessionScope.cancelMessage}">
-                    <div class="alert alert-info alert-dismissible fade show" role="alert">
-                        ${sessionScope.cancelMessage}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <c:remove var="cancelMessage" scope="session"/>
-                </c:if>
-            </div>
-            <!-- View Rating Modal -->
-            <div class="modal fade" id="viewRatingModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Chi tiết đánh giá</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p><strong>Đánh giá:</strong> <span id="viewRatingStars"></span></p>
-                            <p class="mb-0"><strong>Nhận xét:</strong></p>
-                            <p id="viewRatingComment" class="border rounded p-2 bg-light"></p>
-                        </div>
-                    </div>
-                </div>
+              
             </div>
             <!-- Rating Modal -->
             <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true">
@@ -251,13 +229,6 @@
                     document.getElementById('courtInfo').textContent = 'Sân: ' + button.getAttribute('data-court');
                     document.getElementById('dateInfo').textContent = 'Ngày: ' + button.getAttribute('data-date') + ' (' + button.getAttribute('data-time') + ')';
                     document.getElementById('bookingIdInput').value = button.getAttribute('data-booking');
-                });
-
-                var viewModal = document.getElementById('viewRatingModal');
-                viewModal.addEventListener('show.bs.modal', function (event) {
-                    var button = event.relatedTarget;
-                    document.getElementById('viewRatingStars').textContent = button.getAttribute('data-rating') + '★';
-                    document.getElementById('viewRatingComment').textContent = button.getAttribute('data-comment') || '';
                 });
             </script>
         </main>

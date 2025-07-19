@@ -118,5 +118,31 @@ public class ReviewDAO extends DBContext {
     public int countByArea(int areaId) {
         return dao.countBookingsByArea(areaId);
     }
+    
+    public double getAvgRating(String filter) {
+        String sql = "SELECT AVG(CAST(rating AS float)) FROM Reviews " + getDateCondition(filter);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private String getDateCondition(String filter) {
+        switch (filter) {
+            case "today":
+                return "WHERE CAST(created_at AS DATE) = CAST(GETDATE() AS DATE)";
+            case "week":
+                return "WHERE DATEPART(week, created_at) = DATEPART(week, GETDATE()) AND YEAR(created_at) = YEAR(GETDATE())";
+            case "month":
+                return "WHERE MONTH(created_at) = MONTH(GETDATE()) AND YEAR(created_at) = YEAR(GETDATE())";
+            default:
+                return "";
+        }
+    }
 
 }

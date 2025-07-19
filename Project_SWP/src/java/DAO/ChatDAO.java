@@ -8,8 +8,11 @@ import Dal.DBContext;
 import Model.ChatMessage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -41,4 +44,34 @@ public class ChatDAO  extends DBContext{
             System.out.println(e.getMessage());
         }
     }
+    public List<ChatMessage> getMessagesByUser(int userId) {
+    List<ChatMessage> messages = new ArrayList<>();
+    String sql = "SELECT message_id, user_id, message_content, created_at, sender_type "
+               + "FROM ChatbotMessages WHERE user_id = ? ORDER BY created_at ASC";
+    try (
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, userId);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            messages.add(new ChatMessage(
+    rs.getInt("message_id"),
+    rs.getInt("user_id"),
+    rs.getString("message_content"),
+    rs.getTimestamp("created_at"),
+    rs.getString("sender_type")
+));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return messages;
+}
+    public static void main(String[] args) {
+        ChatDAO dao = new ChatDAO();
+        List<ChatMessage> list = dao.getMessagesByUser(1);
+        for(ChatMessage l : list){
+            System.out.println(l);
+        }
+    }
+
 }

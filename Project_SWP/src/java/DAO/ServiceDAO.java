@@ -5,10 +5,22 @@ import Model.Service;
 import java.sql.*;
 import java.util.*;
 import Model.Branch_Service;
+import java.math.BigDecimal;
 
 
 public class ServiceDAO extends DBContext {
 
+    
+    
+    Connection conn;
+
+    public ServiceDAO() {
+        try {
+            conn = getConnection();
+        } catch (Exception e) {
+            System.out.println("Connect failed");
+        }
+    }
     // Lấy tất cả dịch vụ
     public static List<Service> getAllService() {
         List<Service> list = new ArrayList<>();
@@ -190,7 +202,20 @@ public class ServiceDAO extends DBContext {
         }
         return list;
     }
-
+public BigDecimal getPriceById(int serviceId) {
+    BigDecimal price = null;
+    String sql = "SELECT price FROM BadmintonService WHERE service_id = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, serviceId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            price = rs.getBigDecimal("price");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return price;
+}
     // Lấy thông tin dịch vụ theo id
     public static Service getServiceById(int serviceId) {
         String sql = "SELECT * FROM BadmintonService WHERE service_id = ?";

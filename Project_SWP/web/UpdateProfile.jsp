@@ -439,6 +439,9 @@
             </div>
             <div class="main-content">
                 <h1>Thông tin cá nhân</h1>
+                <c:if test="${not empty error}">
+        <div style="color:red;">${error}</div>
+</c:if>
                 <div class="info-box">
                     <div>
                         <form id="form-1" action="updateprofile" method="post">

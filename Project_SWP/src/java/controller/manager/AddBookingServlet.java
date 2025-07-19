@@ -164,7 +164,6 @@ public class AddBookingServlet extends HttpServlet {
 
             PromotionDAO proDao = new PromotionDAO();
             Promotion promotion = proDao.getCurrentPromotionForArea(court.getArea_id(), date);
-            BigDecimal pricePerHour = courtDAO.getCourtPrice(courtId);
 
             if (startTimeStr.length() == 5) {
                 startTimeStr += ":00";
@@ -200,7 +199,7 @@ public class AddBookingServlet extends HttpServlet {
                 conflicts.add("Một hoặc nhiều slot đã chọn không khả dụng");
             }
 
-            BigDecimal slotPrice = bookingDAO.calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, promotion);
+            BigDecimal slotPrice = bookingDAO.calculateSlotPriceWithPromotionByShift(courtId, startTime, endTime, promotion);
             BigDecimal finalPrice = slotPrice.add(BigDecimal.valueOf(serviceTotal));
 
             if (!conflicts.isEmpty()) {

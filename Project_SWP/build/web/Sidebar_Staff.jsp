@@ -240,11 +240,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="ViewPostManager">QUẢN LÝ BÀI VIẾT</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="CoachList">QUẢN LÝ HUẤN LUYỆN VIÊN</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="notification_list">QUẢN LÝ THÔNG BÁO</a>
+                    
+                     <li class="nav-item">
+                        <a class="nav-link" href="Notification1"> THÔNG BÁO</a>
                     </li>
                 </ul>
             </div>

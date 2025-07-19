@@ -108,7 +108,7 @@ public class AddImage extends HttpServlet {
         response.sendRedirect("detailBranch?area_id=" + areaId);
     }
 
-    // Tách tên file từ đường dẫn (tránh lỗi một số trình duyệt gửi kèm cả đường dẫn)
+   
     private String extractFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
         for (String s : contentDisp.split(";")) {

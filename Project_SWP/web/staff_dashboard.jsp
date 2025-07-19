@@ -11,8 +11,8 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Staff</a>
-        <a class="nav-link text-light" href="login">Logout</a>
+        <a class="navbar-brand" href="#">Nhân viên</a>
+        <a class="nav-link text-light" href="login">Đăng xuất</a>
     </div>
 </nav>
 <div class="container-fluid mt-4">
@@ -21,12 +21,12 @@
             <jsp:include page="Sidebar_Staff.jsp" />
         </div>
         <div class="col-md-9">
-            <h2 class="mb-4">Dashboard Overview</h2>
+            <h2 class="mb-4">Tổng quan</h2>
             <div class="row text-center mb-4">
                 <div class="col-md-3 mb-3">
                     <div class="card text-white bg-primary">
                         <div class="card-body">
-                            <h5 class="card-title">Today Bookings</h5>
+                            <h5 class="card-title">Lượt đặt hôm nay</h5>
                             <p class="card-text fs-3">${todayBookings}</p>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                 <div class="col-md-3 mb-3">
                     <div class="card text-white bg-success">
                         <div class="card-body">
-                            <h5 class="card-title">Revenue (7 days)</h5>
+                            <h5 class="card-title">Doanh thu (7 ngày)</h5>
                             <p class="card-text fs-3"><fmt:formatNumber value="${weeklyRevenue}" type="number"/></p>
                         </div>
                     </div>
@@ -43,15 +43,15 @@
                     <div class="card text-white bg-warning">
                         <div class="card-body">
                             <h5 class="card-title">Courts</h5>
-                            <p class="card-text">Available: ${statusCounts.available}</p>
-                            <p class="card-text">Occupied: ${statusCounts.occupied}</p>
+                            <p class="card-text">Còn trống: ${statusCounts.available}</p>
+                            <p class="card-text">Đang sử dụng: ${statusCounts.occupied}</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
                     <div class="card text-white bg-danger">
                         <div class="card-body">
-                            <h5 class="card-title">Reviews</h5>
+                            <h5 class="card-title">Đánh giá</h5>
                             <p class="card-text fs-3">${reviewCount}</p>
                         </div>
                     </div>
@@ -60,15 +60,15 @@
             <div class="row">
                 <div class="col-md-6 mb-4">
                     <div class="card">
-                        <div class="card-header"><strong>Peak Booking Hours</strong></div>
+                        <div class="card-header"><strong>Khung giờ đặt nhiều</strong></div>
                         <div class="card-body">
                             <canvas id="hourChart" height="200"></canvas>
-                        </div>
+</div>
                     </div>
                 </div>
                 <div class="col-md-6 mb-4">
                     <div class="card">
-                        <div class="card-header"><strong>Top Booked Courts</strong></div>
+                        <div class="card-header"><strong>Sân được đặt nhiều nhất</strong></div>
                         <div class="card-body">
                             <canvas id="courtChart" height="200"></canvas>
                         </div>

@@ -71,44 +71,52 @@ public class AddPromotion extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse response)
-    throws ServletException, IOException {
-       try {
-            String title = req.getParameter("title");
-            String description = req.getParameter("description");
-            double discountPercent = Double.parseDouble(req.getParameter("discountPercent"));
-            double discountAmount = Double.parseDouble(req.getParameter("discountAmount"));
-           LocalDate startDate = LocalDate.parse(req.getParameter("startDate"));
-LocalDate endDate = LocalDate.parse(req.getParameter("endDate"));
-            String status = req.getParameter("status");
+  @Override
+protected void doPost(HttpServletRequest req, HttpServletResponse response)
+throws ServletException, IOException {
+   try {
+        String title = req.getParameter("title");
+        String description = req.getParameter("description");
+        double discountPercent = Double.parseDouble(req.getParameter("discountPercent"));
+        double discountAmount = Double.parseDouble(req.getParameter("discountAmount"));
+        LocalDate startDate = LocalDate.parse(req.getParameter("startDate"));
+        LocalDate endDate = LocalDate.parse(req.getParameter("endDate"));
+        String status = req.getParameter("status");
 
-            String[] areaIdArr = req.getParameterValues("areaIds");
-            List<Integer> areaIds = new ArrayList<>();
-            if(areaIdArr != null){
-                for(String s : areaIdArr) areaIds.add(Integer.parseInt(s));
-            }
-
-            Promotion promotion = new Promotion(0, title, description, discountPercent, discountAmount,
-                    startDate, endDate, status, LocalDateTime.now(), null);
-
-            PromotionDAO dao = new PromotionDAO();
-            int newPromotionId = dao.insertPromotion(promotion);
-
-            // Thêm vào bảng Promotion_Area
-            for(Integer areaId : areaIds){
-                dao.insertPromotionArea(newPromotionId, areaId);
-                System.out.println("areaIds: " + areaIds);
-            }
-
-            req.getSession().setAttribute("success", "Thêm khuyến mãi thành công!");
-            response.sendRedirect("promotion-admin");
-        } catch (Exception e) {
-            e.printStackTrace();
-            req.getSession().setAttribute("error", "Thêm khuyến mãi thất bại!");
-            response.sendRedirect("promotion-admin");
+        String[] areaIdArr = req.getParameterValues("areaIds");
+        List<Integer> areaIds = new ArrayList<>();
+        if(areaIdArr != null){
+            for(String s : areaIdArr) areaIds.add(Integer.parseInt(s));
         }
+
+        Promotion promotion = new Promotion(0, title, description, discountPercent, discountAmount,
+                startDate, endDate, status, LocalDateTime.now(), null);
+
+        PromotionDAO dao = new PromotionDAO();
+
+       
+        for(Integer areaId : areaIds){
+    if (dao.isDuplicatePromotionForArea(title, startDate, endDate, areaId)) {
+        req.getSession().setAttribute("success", "Đã tồn tại khuyến mãi với tên này và ngày giao nhau cho khu vực!");
+        response.sendRedirect("promotion-admin");
+        return;
     }
+}
+        int newPromotionId = dao.insertPromotion(promotion);
+
+        for(Integer areaId : areaIds){
+            dao.insertPromotionArea(newPromotionId, areaId);
+        }
+
+        req.getSession().setAttribute("success", "Thêm khuyến mãi thành công!");
+        response.sendRedirect("promotion-admin");
+    } catch (Exception e) {
+        e.printStackTrace();
+        req.getSession().setAttribute("error", "Thêm khuyến mãi thất bại!");
+        response.sendRedirect("promotion-admin");
+    }
+}
+
     
 
     /** 

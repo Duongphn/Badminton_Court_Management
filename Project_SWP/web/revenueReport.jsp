@@ -188,15 +188,7 @@
                                     <input type="number" class="form-control" id="courtId" name="courtId" value="${courtId != null ? courtId : ''}" min="1">
                                 </div>
 
-                                <div class="col-md-3">
-                                    <label for="status" class="form-label">Trạng thái</label>
-                                    <select class="form-control" id="status" name="status">
-                                        <option value="">Tất cả</option>
-                                        <option value="confirmed" ${status == 'confirmed' ? 'selected' : ''}>Xác nhận</option>
-                                        <option value="pending" ${status == 'pending' ? 'selected' : ''}>Đang chờ</option>
-                                        <option value="cancelled" ${status == 'cancelled' ? 'selected' : ''}>Đã huỷ</option>
-                                    </select>
-                                </div>
+                           
 
                                 <div class="col-12 text-end">
                                     <button type="submit" class="btn btn-filter text-white"><i class="bi bi-funnel"></i> Lọc</button>

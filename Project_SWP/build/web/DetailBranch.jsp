@@ -241,10 +241,10 @@ body {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <button class="nav-link" onclick="history.back()">
+                        <a class="nav-link" href="view-region">
                             <i class="fas fa-arrow-left"></i>
                             Quay lại
-                        </button>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -348,7 +348,7 @@ body {
                                 </div>
                             </div>
                         </div>
-                         <!-- Courts Section -->
+                        
                         <div class="section-header">
                             <h4 class="section-title">
                                 <i class="fas fa-tennis-ball"></i>
@@ -400,7 +400,7 @@ body {
                                 </table>
                             </div>
                         </div>
-                        <!-- Shifts Section -->
+                       
                         <div class="section-header">
                             <h4 class="section-title">
                                 <i class="fas fa-calendar-alt"></i>
@@ -448,6 +448,53 @@ body {
                             </div>
                         </div>
 
+                                            
+                          <!-- Services Section -->
+                        <div class="section-header">
+                            <h4 class="section-title">
+                                <i class="fas fa-concierge-bell"></i>
+                                Danh sách dịch vụ
+                            </h4>
+                            <button type="button" class="btn btn-custom" data-toggle="modal" data-target="#addServiceModal">
+                                <i class="fas fa-plus"></i>
+                                Thêm dịch vụ
+                            </button>
+                        </div>
+
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table id="serviceTable" class="table">
+                                    <thead>
+                                        <tr>
+
+                                            <th>Tên dịch vụ</th>
+                                            <th>Giá</th>
+                                            <th>Mô tả</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="s" items="${areaAllServices}" varStatus="loop">
+                                            <tr>
+
+                                                <td><strong>${s.service.name}</strong></td>
+                                                <td><span class="badge badge-success">${s.service.price} VNĐ</span></td>
+                                                <td>${s.service.description}</td>
+                                                <td>
+                                                    <a href="remove-service?areaServiceID=${s.areaService_id}&area_id=${area_id}" 
+                                                       onclick="return confirmDelete('dịch vụ này')" 
+                                                       class="btn btn-danger-custom">
+                                                        <i class="fas fa-trash"></i>
+                                                        Xóa
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                     
                         <!-- Images Section -->
                         <div class="section-header">
                             <h4 class="section-title">
@@ -496,52 +543,7 @@ body {
                             </div>
                         </div>
 
-                        <!-- Services Section -->
-                        <div class="section-header">
-                            <h4 class="section-title">
-                                <i class="fas fa-concierge-bell"></i>
-                                Danh sách dịch vụ
-                            </h4>
-                            <button type="button" class="btn btn-custom" data-toggle="modal" data-target="#addServiceModal">
-                                <i class="fas fa-plus"></i>
-                                Thêm dịch vụ
-                            </button>
-                        </div>
-
-                        <div class="table-container">
-                            <div class="table-responsive">
-                                <table id="serviceTable" class="table">
-                                    <thead>
-                                        <tr>
-
-                                            <th>Tên dịch vụ</th>
-                                            <th>Giá</th>
-                                            <th>Mô tả</th>
-                                            <th>Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach var="s" items="${areaAllServices}" varStatus="loop">
-                                            <tr>
-
-                                                <td><strong>${s.service.name}</strong></td>
-                                                <td><span class="badge badge-success">${s.service.price} VNĐ</span></td>
-                                                <td>${s.service.description}</td>
-                                                <td>
-                                                    <a href="remove-service?areaServiceID=${s.areaService_id}&area_id=${area_id}" 
-                                                       onclick="return confirmDelete('dịch vụ này')" 
-                                                       class="btn btn-danger-custom">
-                                                        <i class="fas fa-trash"></i>
-                                                        Xóa
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
+                     
                        
                     </div>
                 </div>
@@ -673,7 +675,7 @@ body {
             </div>
         </div>
 
-        <!-- Image View Modal -->
+        
         <div class="modal fade" id="imageViewModal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -740,10 +742,10 @@ body {
         <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
 
         <script>
-                    $(document).ready(function () {
+         $(document).ready(function () {
                         // Initialize DataTables
                         $('#shiftTable, #imageTable, #serviceTable, #courtsTable').DataTable({
-                            pageLength: 5,
+                            pageLength: 3,
                             lengthChange: false,
                             language: {
                                 "sProcessing": "Đang xử lý...",
@@ -763,13 +765,13 @@ body {
                                 }
                             }
                         });
+                      
 
-                        // Auto hide notifications after 5 seconds
                         setTimeout(function () {
                             $('.notification.show').removeClass('show');
                         }, 5000);
 
-                        // Image preview functionality
+                        
                         $('#image').change(function () {
                             const file = this.files[0];
                             if (file) {
@@ -833,7 +835,7 @@ body {
                         setTimeout(() => notification.removeClass('show'), 5000);
                     }
 
-                    // Check URL parameters for success messages
+                   
                     $(document).ready(function () {
                         const urlParams = new URLSearchParams(window.location.search);
 
@@ -854,7 +856,7 @@ body {
                         }
                     });
 
-                    // Add loading animation for delete operations
+                    
                     $('a[href*="delete"]').click(function (e) {
                         if (confirm($(this).data('confirm') || 'Bạn có chắc chắn muốn xóa không?')) {
                             showLoading();
@@ -863,7 +865,7 @@ body {
                         }
                     });
 
-                    // Smooth scrolling for anchor links
+                   
                     $('a[href^="#"]').on('click', function (event) {
                         var target = $(this.getAttribute('href'));
                         if (target.length) {
@@ -873,6 +875,40 @@ body {
                             }, 1000);
                         }
                     });
+                    $(document).ready(function () {
+    var courtsTable = $('#courtsTable').DataTable();
+    var shiftTable = $('#shiftTable').DataTable();
+    var serviceTable = $('#serviceTable').DataTable();
+
+   
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            if (settings.nTable.id !== 'courtsTable') return true;
+            var searchTerm = courtsTable.search().toLowerCase().trim();
+            var name = data[0].toLowerCase(); 
+            return !searchTerm || name.indexOf(searchTerm) > -1;
+        }
+    );
+ 
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            if (settings.nTable.id !== 'shiftTable') return true;
+            var searchTerm = shiftTable.search().toLowerCase().trim();
+            var name = data[0].toLowerCase(); 
+            return !searchTerm || name.indexOf(searchTerm) > -1;
+        }
+    );
+   
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            if (settings.nTable.id !== 'serviceTable') return true;
+            var searchTerm = serviceTable.search().toLowerCase().trim();
+            var name = data[0].toLowerCase(); 
+            return !searchTerm || name.indexOf(searchTerm) > -1;
+        }
+    );
+});
+
         </script>
     </body>
 </html>

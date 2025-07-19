@@ -8,6 +8,7 @@ import Dal.DBContext;
 
 import Model.Branch_Service;
 import Model.Service;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,7 +31,61 @@ public class Service_BranchDAO extends DBContext {
             System.out.println("Connect failed");
         }
     }
+    public BigDecimal getServicePriceByName(String serviceName, int areaId) {
+    BigDecimal price = null;
+    String sql = "SELECT s.price " +
+                 "FROM BadmintonService s " +
+                 "JOIN Areas_Services sb ON s.service_id = sb.service_id " +
+                 "WHERE s.name = ? AND sb.area_id = ?";
+    try (
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, serviceName);
+        ps.setInt(2, areaId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                price = rs.getBigDecimal("price");
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return price;
+}
 
+  public void deleteServiceFromArea(int areaId, int serviceId) throws Exception {
+    String sql = "DELETE FROM Areas_Services WHERE area_id = ? AND service_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, areaId);
+        ps.setInt(2, serviceId);
+        ps.executeUpdate();
+    }
+}  
+public boolean isServiceAlreadyAdded(int areaId, int serviceId) {
+    String sql = "SELECT COUNT(*) FROM Areas_Services WHERE area_id = ? AND service_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, areaId);
+        ps.setInt(2, serviceId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+   public BigDecimal getServicePriceById(int serviceId) throws SQLException {
+    String sql = "SELECT price FROM BadmintonService WHERE service_id = ?";
+    try (
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, serviceId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getBigDecimal("price");
+        }
+    }
+    return BigDecimal.ZERO;
+}
     public void addServiceToArea(int areaId, int serviceId) {
         String sql = "INSERT INTO Areas_Services (area_id, service_id) VALUES (?, ?)";
         try (

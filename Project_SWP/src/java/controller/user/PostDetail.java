@@ -4,9 +4,11 @@
  */
 package controller.user;
 
+import DAO.CommentDAO;
 import DAO.PostDAO;
 import DAO.ReactionDAO;
 import Dal.DBContext;
+import Model.Comment;
 import Model.Post;
 import Model.User;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -83,20 +86,26 @@ public class PostDetail extends HttpServlet {
                 return;
             }
 
+            CommentDAO commentDAO = new CommentDAO();
+            List<Comment> commentList = commentDAO.getCommentsByPostId(post.getPostId());
+
             HttpSession session = request.getSession(false);
             User user = (session != null) ? (User) session.getAttribute("user") : null;
 
-            
             ReactionDAO reactionDAO = new ReactionDAO(conn);
 
-            
             String userReaction = null;
             if (user != null) {
                 userReaction = reactionDAO.getUserReaction(user.getUser_Id(), postId);
             }
+            Map<String, Integer> reactionCounts = reactionDAO.countReactionsByType(postId);
 
+            request.setAttribute("commentList", commentList);
+            request.setAttribute("postId", post.getPostId());
             request.setAttribute("post", post);
             request.setAttribute("userReaction", userReaction);
+            request.setAttribute("reactionCounts", reactionCounts);
+
             request.getRequestDispatcher("PostDetail.jsp").forward(request, response);
 
         } catch (Exception e) {

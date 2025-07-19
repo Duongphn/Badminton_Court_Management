@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLEncoder;
 
 /**
  *
@@ -67,11 +68,11 @@ public class DeleteShift extends HttpServlet {
                 String area_id = request.getParameter("area_id");
                 ShiftDAO dao = new ShiftDAO();
                 dao.removeShift(shift_id);
-
-                response.sendRedirect("detailBranch?area_id=" + area_id + "&message=Xóa ca thành công");
+                String msg = URLEncoder.encode("Xóa ca thành công.", "UTF-8");
+                response.sendRedirect("detailBranch?area_id=" + area_id + "&message" + msg);
 
             } else {
-                response.sendError(403);
+                 response.sendRedirect("login");
             }
         } else {
             response.sendRedirect("login");

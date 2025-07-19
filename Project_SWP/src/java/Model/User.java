@@ -6,6 +6,7 @@ package Model;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -223,6 +224,12 @@ public class User {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+public String getCreatedAtDateOnly() {
+    if (createdAt == null) return "";
+    java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    return createdAt.format(formatter);
+}
 
     @Override
     public String toString() {

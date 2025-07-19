@@ -194,7 +194,7 @@ public class FaqDAO extends DBContext {
                     q.setQuestionId(rs.getInt("question_id"));
                     q.setTitle(rs.getString("title"));
                     answer.setQuestion(q);
-
+                    System.out.println(answer);
                     list.add(answer);
                 }
             }
@@ -254,5 +254,8 @@ public void updateAnswer(int answerId, String content) {
 }
 
 
-
+    public static void main(String[] args) {
+        FaqDAO dao = new FaqDAO();
+        dao.getAnswersByQuestionId(1);
+    }
 }

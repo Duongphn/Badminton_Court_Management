@@ -83,7 +83,7 @@ public class JoinEventController extends HttpServlet {
             }
             request.setAttribute("areaName", areaName);
             request.setAttribute("event", event);
-            request.setAttribute("user", user);
+request.setAttribute("user", user);
             request.setAttribute("token", token); // Truyền token để sử dụng ở form confirm
             request.getRequestDispatcher("join-event-confirm.jsp").forward(request, response);
             
@@ -156,8 +156,7 @@ public class JoinEventController extends HttpServlet {
             
             int eventId = Integer.parseInt(eventIdStr);
             int userId = currentUser.getUser_Id();
-            
-            EventDAO eventDAO = new EventDAO();
+EventDAO eventDAO = new EventDAO();
             
             // Kiểm tra event có tồn tại không
             Event event = eventDAO.getEventById(eventId);
@@ -207,4 +206,4 @@ public class JoinEventController extends HttpServlet {
     public String getServletInfo() {
         return "Join Event Controller";
     }
-} 
+}

@@ -61,7 +61,7 @@
     </head>
     <body class="bg-light">
 
-        <!-- Navbar -->
+<!--         Navbar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">Thông báo</a>
@@ -71,10 +71,11 @@
             </div>
         </nav>
 
-        <!-- Layout -->
+<!--         Layout -->
         <div class="container-fluid mt-4">
+  
             <div class="row">
-                <!-- Sidebar -->
+<!--                 Sidebar -->
                 <div class="col-md-3">
                     <jsp:include page="Sidebar.jsp"/>
                 </div>
@@ -85,7 +86,7 @@
                         <div class="notification-container">
                             <div class="notification-header">
                                 <h4><i class="fas fa-bell"></i> Thông báo của bạn</h4>
-                                <a href="notifications" class="btn btn-outline-secondary btn-sm"><i class="fas fa-rotate-right"></i> Tải lại</a>
+                                <a href="Notification1" class="btn btn-outline-secondary btn-sm"><i class="fas fa-rotate-right"></i> Tải lại</a>
                             </div>
 
                             <c:choose>
@@ -96,21 +97,21 @@
                                     </div>
                                 </c:when>
                                 <c:otherwise>
-                                    <c:forEach var="item" items="${allNotifications}">
-                                        <div class="notification-item ${item.isRead ? '' : 'unread'}">
-                                            <img src="${item.notificationId.imageUrl != null ? item.notificationId.imageUrl : 'default.png'}" alt="Ảnh thông báo">
-                                            <div class="notification-content">
-                                                <strong>${item.notificationId.title}</strong>
-                                                <span>${item.notificationId.content}</span>
-                                                <span class="notification-time">
-                                                    ${item.notificationId.scheduledTime}
-                                                </span>
-                                            </div>
-                                            <c:if test="${!item.isRead}">
-                                                <div class="dot-unread" title="Chưa đọc"></div>
-                                            </c:if>
-                                        </div>
-                                    </c:forEach>
+                                     <c:forEach var="item" items="${allNotifications}">
+                            <div class="notification-item ${item.isRead ? '' : 'unread'}">
+                                <img class="notification-img" src="${item.notificationId.imageUrl != null ? item.notificationId.imageUrl : 'images/notification-default.png'}" alt="Ảnh thông báo">
+                                <div class="notification-content">
+                                   <a href="NotificationStaff?notificationId=${item.notificationId.notificationId}" class="notification-title-link">
+    <strong>${item.notificationId.title}</strong>
+</a>
+
+                                    <div class="notification-time">
+                                        ${item.notificationId.scheduledTime}
+                                    </div>
+                                </div>
+                               
+                            </div>
+                        </c:forEach>
                                 </c:otherwise>
                             </c:choose>
                         </div>
@@ -120,6 +121,7 @@
                 </div>
             </div>
         </div>
+             
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>

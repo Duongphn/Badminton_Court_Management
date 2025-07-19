@@ -109,17 +109,17 @@ public class UpdateProfileController extends HttpServlet {
             return;
         }
 
-        // Kiểm tra số điện thoại đã tồn tại
-//        UserDAO userDAO = new UserDAO();
-//        if (userDAO.isPhoneExists(phoneNumber)) {
-//            request.setAttribute("error", "Số điện thoại đã tồn tại");
-//            request.getRequestDispatcher("UpdateProfile.jsp").forward(request, response);
-//            return;
-//        }
+        
+        UserDAO userDAO = new UserDAO();
+        if (userDAO.isPhoneExists(phoneNumber)) {
+            request.setAttribute("error", "Số điện thoại đã tồn tại");
+            request.getRequestDispatcher("UpdateProfile.jsp").forward(request, response);
+            return;
+        }
 
 
         User newUser = new User();
-        newUser.setUser_Id(user.getUser_Id()); // Lấy user_id từ user trong session
+        newUser.setUser_Id(user.getUser_Id()); 
         newUser.setUsername(username);
         newUser.setEmail(email);
         newUser.setPhone_number(phoneNumber);

@@ -93,34 +93,33 @@ public class UserDAO extends DBContext {
 
     // Cập nhật user
     public boolean updateUser(User u) {
-    String sql = "UPDATE Users SET username = ?, email = ?, phone_number = ?, gender = ?, firstname = ?, lastname = ?, date_of_birth = ? WHERE user_id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, u.getUsername());
-        ps.setString(2, u.getEmail());
-        ps.setString(3, u.getPhone_number()); // hoặc getPhoneNumber()
-        ps.setString(4, u.getGender());
-        ps.setString(5, u.getFirstname());
-        ps.setString(6, u.getLastname());
-        if (u.getDateOfBirth() != null) {
-            ps.setDate(7, u.getDateOfBirth());
-        } else {
-            ps.setNull(7, java.sql.Types.DATE);
+        String sql = "UPDATE Users SET username = ?, email = ?, phone_number = ?, gender = ?, firstname = ?, lastname = ?, date_of_birth = ? WHERE user_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, u.getUsername());
+            ps.setString(2, u.getEmail());
+            ps.setString(3, u.getPhone_number()); // hoặc getPhoneNumber()
+            ps.setString(4, u.getGender());
+            ps.setString(5, u.getFirstname());
+            ps.setString(6, u.getLastname());
+            if (u.getDateOfBirth() != null) {
+                ps.setDate(7, u.getDateOfBirth());
+            } else {
+                ps.setNull(7, java.sql.Types.DATE);
+            }
+            ps.setInt(8, u.getUser_Id()); // hoặc getUserId()
+            int row = ps.executeUpdate();
+            System.out.println("Update user, rows affected: " + row);
+            return row > 0;
+        } catch (SQLException e) {
+            System.err.println("Lỗi cập nhật user: " + e.getMessage());
+            e.printStackTrace();
         }
-        ps.setInt(8, u.getUser_Id()); // hoặc getUserId()
-        int row = ps.executeUpdate();
-        System.out.println("Update user, rows affected: " + row);
-        return row > 0;
-    } catch (SQLException e) {
-        System.err.println("Lỗi cập nhật user: " + e.getMessage());
-        e.printStackTrace();
+        return false;
     }
-    return false;
-}
-
 
     // Xóa user
     public void deleteUser(int userId) {
-        String sql = "DELETE FROM Users WHERE user_id = ?";
+        String sql = "UPDATE Users SET status = 'deletePermantly' where user_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ps.executeUpdate();
@@ -160,6 +159,17 @@ public class UserDAO extends DBContext {
         return null;
     }
 
+    public void updateUserRole(int userId, String newRole) {
+        String sql = "UPDATE Users SET role = ? WHERE user_Id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newRole);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Object[] checkUserByUsernameOrEmail(String username, String email) {
         User userByUsername = null;
         User userByEmail = null;
@@ -174,7 +184,7 @@ public class UserDAO extends DBContext {
                     userByUsername = extractUserFromResultSet(rs);
                 }
             }
-
+            System.out.println(userByUsername);
             // Check email
             String sqlEmail = "SELECT * FROM Users WHERE email = ?";
             try (PreparedStatement ps = conn.prepareStatement(sqlEmail)) {
@@ -186,10 +196,11 @@ public class UserDAO extends DBContext {
             }
             int te = userByUsername.getUser_Id();
             int ss = userByEmail.getUser_Id();
-
+            
             // Logic xác định kết quả
             if (userByUsername != null && userByEmail != null) {
                 if (userByUsername.getUser_Id()== userByEmail.getUser_Id()) {
+                  
                     return new Object[]{0, userByUsername}; // cả hai đều đúng và là cùng user
                 } else {
                     return new Object[]{4, null}; // đúng cả 2 nhưng là 2 người khác nhau (trường hợp bất thường)
@@ -208,6 +219,9 @@ public class UserDAO extends DBContext {
         }
     }
 
+    // Lưu token quên mật khẩu
+    // Lưu token quên mật khẩu
+    // Lưu token quên mật khẩu
     // Lưu token quên mật khẩu
     public void saveResetToken(int userId, String token) {
         String sql = "INSERT INTO password_reset_tokens (user_id, token) VALUES (?, ?)";
@@ -592,27 +606,26 @@ public class UserDAO extends DBContext {
         return false;
     }
 
-  public List<User> getAllStaff() {
-    List<User> staffList = new ArrayList<>();
-    String sql = "SELECT * FROM Users WHERE role = 'staff'";
-    try (
-         PreparedStatement ps = conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            User user = new User();
-            user.setUser_Id(rs.getInt("user_id"));
-            user.setFirstname(rs.getString("firstname"));
-            user.setLastname(rs.getString("lastname"));
-            // Thêm các trường cần thiết khác nếu cần
-            staffList.add(user);
+    public List<User> getAllStaff() {
+        List<User> staffList = new ArrayList<>();
+        String sql = "SELECT * FROM Users WHERE role = 'staff'";
+        try (
+                PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                User user = new User();
+                user.setUser_Id(rs.getInt("user_id"));
+                user.setFirstname(rs.getString("firstname"));
+                user.setLastname(rs.getString("lastname"));
+                // Thêm các trường cần thiết khác nếu cần
+                staffList.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return staffList;
     }
-    return staffList;
-}
 
-       public boolean getSendMail(int user_Id) {
+    public boolean getSendMail(int user_Id) {
         String sql = "SELECT send_mail FROM Users WHERE user_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, user_Id);
@@ -625,7 +638,8 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
-           public void updateSendMail(int user_Id, boolean sendMail) {
+
+    public void updateSendMail(int user_Id, boolean sendMail) {
         String sql = "UPDATE Users SET send_mail = ? WHERE user_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setBoolean(1, sendMail);
@@ -636,17 +650,36 @@ public class UserDAO extends DBContext {
         }
     }
 
-            public int getReturningUserCount() {
-        String sql = "SELECT COUNT(*) FROM (SELECT user_id FROM Bookings GROUP BY user_id HAVING COUNT(*) >= 2) AS sub";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
+    public int getReturningUserCount(String filter) {
+        String sql = "SELECT COUNT(*) FROM (SELECT user_id FROM Bookings "
+                + getDateCondition(filter)
+                + " GROUP BY user_id HAVING COUNT(*) > 1) AS returning_users";
+        try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public static void main(String[] args) {
+        UserDAO dao = new UserDAO();
+        dao.deleteUser(1);
+    }
+
+    private String getDateCondition(String filter) {
+        switch (filter) {
+            case "today":
+                return "WHERE CAST(date AS DATE) = CAST(GETDATE() AS DATE)";
+            case "week":
+                return "WHERE DATEPART(week, date) = DATEPART(week, GETDATE()) AND YEAR(date) = YEAR(GETDATE())";
+            case "month":
+                return "WHERE MONTH(date) = MONTH(GETDATE()) AND YEAR(date) = YEAR(GETDATE())";
+            default:
+                return "";
+        }
     }
 
 }

@@ -36,12 +36,11 @@ public class NotificationServlet extends HttpServlet {
 
         // Lấy tất cả thông báo của user
         List<NotificationReceiver> allNotifications = notificationDAO.getNotificationsForUser(currentUser.getUser_Id(), false);
-        List<NotificationReceiver> unreadNotifications = notificationDAO.getNotificationsForUser(currentUser.getUser_Id(), true);
-
+        
         request.setAttribute("allNotifications", allNotifications);
-        request.setAttribute("unreadNotifications", unreadNotifications);
+       
 
-        request.getRequestDispatcher("notification1.jsp").forward(request, response);
+        request.getRequestDispatcher("notification-user.jsp").forward(request, response);
     }
 
     @Override

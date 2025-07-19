@@ -2,36 +2,25 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.manager;
+package controller.user;
 
-import DAO.BookingDAO;
-import DAO.CourtDAO;
-import DAO.ReviewDAO;
-import DAO.UserDAO;
-import jakarta.servlet.RequestDispatcher;
-import java.io.IOException;
 import java.io.PrintWriter;
+import DAO.CommentDAO;
+import Model.User;
+import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import Model.AdminDashBoard;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name = "AdminDashBoard", urlPatterns = {"/AdminDashBoard"})
-public class AdminDashBoardController extends HttpServlet {
-
-    private BookingDAO bookingDAO = new BookingDAO();
-    private UserDAO userDAO = new UserDAO();
-    private ReviewDAO reviewDAO = new ReviewDAO();
-    private CourtDAO courtDAO = new CourtDAO();
+@WebServlet(name = "ReportComment", urlPatterns = {"/ReportComment"})
+public class ReportComment extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,10 +39,10 @@ public class AdminDashBoardController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminDashBoard</title>");
+            out.println("<title>Servlet ReportComment</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdminDashBoard at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ReportComment at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -71,24 +60,6 @@ public class AdminDashBoardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String filter = request.getParameter("filter");
-        if (filter == null) {
-            filter = "all";
-        }
-        request.setAttribute("filter", filter); 
-
-        Map<String, Object> summary = new HashMap<>();
-        summary.put("totalBookings", bookingDAO.getTotalBookings(filter));
-        summary.put("totalRevenue", bookingDAO.getTotalRevenue(filter));
-        summary.put("returningUsers", userDAO.getReturningUserCount(filter));
-        summary.put("avgRating", bookingDAO.getAvgRating(filter));
-
-        request.setAttribute("summary", summary);
-
-        List<AdminDashBoard> courts = courtDAO.getAllCourtReports(filter);
-        request.setAttribute("courtReports", courts);
-
-        request.getRequestDispatcher("Admin_DashBoard.jsp").forward(request, response);
     }
 
     /**
@@ -102,7 +73,27 @@ public class AdminDashBoardController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        String commentIdStr = request.getParameter("commentId");
+        String reason = request.getParameter("reason");
+
+        if (user == null || commentIdStr == null || reason == null || reason.trim().isEmpty()) {
+            response.setStatus(400);
+            response.getWriter().write("Thiếu thông tin báo cáo hoặc chưa đăng nhập!");
+            return;
+        }
+
+        try {
+            int commentId = Integer.parseInt(commentIdStr);
+            new CommentDAO().addCommentReport(commentId, user.getUser_Id(), reason);
+            response.setStatus(200);
+            response.getWriter().write("success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(500);
+            response.getWriter().write("Có lỗi khi báo cáo.");
+        }
     }
 
     /**

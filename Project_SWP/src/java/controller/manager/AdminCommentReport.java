@@ -4,11 +4,8 @@
  */
 package controller.manager;
 
-import DAO.BookingDAO;
-import DAO.CourtDAO;
-import DAO.ReviewDAO;
-import DAO.UserDAO;
-import jakarta.servlet.RequestDispatcher;
+import DAO.CommentReportDAO;
+import Model.CommentReport;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,22 +13,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import Model.AdminDashBoard;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name = "AdminDashBoard", urlPatterns = {"/AdminDashBoard"})
-public class AdminDashBoardController extends HttpServlet {
-
-    private BookingDAO bookingDAO = new BookingDAO();
-    private UserDAO userDAO = new UserDAO();
-    private ReviewDAO reviewDAO = new ReviewDAO();
-    private CourtDAO courtDAO = new CourtDAO();
+@WebServlet(name = "AdminCommentReport", urlPatterns = {"/AdminCommentReport"})
+public class AdminCommentReport extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,10 +39,10 @@ public class AdminDashBoardController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminDashBoard</title>");
+            out.println("<title>Servlet AdminCommentReport</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdminDashBoard at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AdminCommentReport at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -71,24 +60,16 @@ public class AdminDashBoardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String filter = request.getParameter("filter");
-        if (filter == null) {
-            filter = "all";
-        }
-        request.setAttribute("filter", filter); 
+        CommentReportDAO dao = new CommentReportDAO();
+    List<CommentReport> reportList = dao.getAllCommentReports();
 
-        Map<String, Object> summary = new HashMap<>();
-        summary.put("totalBookings", bookingDAO.getTotalBookings(filter));
-        summary.put("totalRevenue", bookingDAO.getTotalRevenue(filter));
-        summary.put("returningUsers", userDAO.getReturningUserCount(filter));
-        summary.put("avgRating", bookingDAO.getAvgRating(filter));
+    System.out.println("Tổng số report lấy được: " + reportList.size());
+    for (CommentReport r : reportList) {
+        System.out.println("ReportId: " + r.getReportId() + " - Content: " + r.getCommentContent());
+    }
 
-        request.setAttribute("summary", summary);
-
-        List<AdminDashBoard> courts = courtDAO.getAllCourtReports(filter);
-        request.setAttribute("courtReports", courts);
-
-        request.getRequestDispatcher("Admin_DashBoard.jsp").forward(request, response);
+    request.setAttribute("reportList", reportList);
+    request.getRequestDispatcher("/AdminCommentRPView").forward(request, response);
     }
 
     /**

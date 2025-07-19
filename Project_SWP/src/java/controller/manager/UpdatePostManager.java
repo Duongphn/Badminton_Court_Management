@@ -77,7 +77,7 @@ public class UpdatePostManager extends HttpServlet {
             Post post = postDAO.getPostById(postId);
             if (post == null) {
                 response.sendRedirect("ViewPostManager");
-                return;
+return;
             }
 
             request.setAttribute("post", post);
@@ -125,6 +125,7 @@ public class UpdatePostManager extends HttpServlet {
                 String title = request.getParameter("title");
                 String content = request.getParameter("content");
                 String type = request.getParameter("type");
+                String image = request.getParameter("image"); // lấy tham số image (link ảnh)
 
                 if (title == null || content == null || type == null) {
                     response.sendRedirect("ViewPostManager");
@@ -141,6 +142,11 @@ public class UpdatePostManager extends HttpServlet {
                 post.setContent(content);
                 post.setType(type);
 
+                // Nếu người dùng nhập ảnh mới thì cập nhật, không thì giữ nguyên
+                if (image != null && !image.trim().isEmpty()) {
+                    post.setImage(image);
+                }
+
                 postDAO.updatePost(post);
             }
 
@@ -149,18 +155,21 @@ public class UpdatePostManager extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(500, "Lỗi khi cập nhật bài viết");
-        }catch (Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(500, "Lỗi hệ thống");
         }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
+/**
+         * Returns a short description of the servlet.
+         *
+         * @return a String containing servlet description
+         */
+        @Override
+        public String getServletInfo
+        
+            () {
         return "Short description";
-    }// </editor-fold>
+        }// </editor-fold>
 
-}
+    }

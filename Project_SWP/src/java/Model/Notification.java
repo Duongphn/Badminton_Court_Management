@@ -125,6 +125,7 @@ public class Notification {
         isEditable = editable;
     }
 
+
     @Override
     public String toString() {
         return "Notification{" + "notificationId=" + notificationId + ", title=" + title + ", content=" + content + ", imageUrl=" + imageUrl + ", createdBy=" + createdBy + ", scheduledTime=" + scheduledTime + ", sentTime=" + sentTime + ", status=" + status + ", createdAt=" + createdAt + '}';

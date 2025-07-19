@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="Model.Post, Model.User, DAO.PostDAO, java.text.SimpleDateFormat" %>
+<%@ page import="Model.Post, Model.User, java.text.SimpleDateFormat" %>
+<%@page import="java.util.Map, java.util.HashMap" %>
 <jsp:include page="homehead.jsp" />
 
 <%
@@ -18,15 +19,16 @@
 
 <div style="max-width: 800px; margin: auto; padding: 20px;">
     <% if (post != null) { %>
+
     <h2 style="color: #e63946;"><%= post.getTitle() %></h2>
     <div style="color: #666; font-size: 14px;">
         📅 <%= df.format(post.getCreatedAt()) %> | 🏷️ <%= post.getType() %>
     </div>
+
     <%
-    // Lấy link ảnh (nếu có) hoặc trả về ảnh mặc định
-    String imgSrc = (post.getImage() != null && !post.getImage().isEmpty()) 
-        ? request.getContextPath() + "/uploads/" + post.getImage() 
-        : request.getContextPath() + "/images/no-image.png";
+        String imgSrc = (post.getImage() != null && !post.getImage().isEmpty()) 
+            ? request.getContextPath() + "/uploads/" + post.getImage() 
+            : request.getContextPath() + "/images/no-image.png";
     %>
     <div style="margin: 20px 0 10px 0;">
         <img 
@@ -40,7 +42,7 @@
     <div style="margin-top: 20px; font-size: 16px;">
         <%= post.getContent() %>
     </div>
-
+    
     <% String userReaction = (String) request.getAttribute("userReaction"); %>
     <% if (userReaction != null) { %>
     <div class="alert alert-info mt-3">
@@ -51,18 +53,17 @@
     <div class="mt-4">
         <form action="ReactionUser" method="post" style="display: inline;">
             <input type="hidden" name="postId" value="<%= post.getPostId() %>"/>
-            <% String userReaction = (String) request.getAttribute("userReaction"); %>
+            <% String userReaction2 = (String) request.getAttribute("userReaction"); %>
             <button type="submit" name="reaction" value="like"
-                    class="btn btn-sm <%= "like".equals(userReaction) ? "btn-primary" : "btn-outline-primary" %>">👍 Like</button>
+                    class="btn btn-sm <%= "like".equals(userReaction2) ? "btn-primary" : "btn-outline-primary" %>">👍 Like</button>
             <button type="submit" name="reaction" value="love"
-                    class="btn btn-sm <%= "love".equals(userReaction) ? "btn-danger" : "btn-outline-danger" %>">❤️ Love</button>
+                    class="btn btn-sm <%= "love".equals(userReaction2) ? "btn-danger" : "btn-outline-danger" %>">❤️ Love</button>
             <button type="submit" name="reaction" value="haha"
-                    class="btn btn-sm <%= "haha".equals(userReaction) ? "btn-warning" : "btn-outline-warning" %>">😂 Haha</button>
+                    class="btn btn-sm <%= "haha".equals(userReaction2) ? "btn-warning" : "btn-outline-warning" %>">😂 Haha</button>
             <button type="submit" name="reaction" value="sad"
-                    class="btn btn-sm <%= "sad".equals(userReaction) ? "btn-secondary" : "btn-outline-secondary" %>">😢 Buồn</button>
+                    class="btn btn-sm <%= "sad".equals(userReaction2) ? "btn-secondary" : "btn-outline-secondary" %>">😢 Buồn</button>
         </form>
 
-        <%-- HIỂN THỊ TỔNG SỐ TỪNG LOẠI REACTION --%>
         <%
             Map<String, Integer> reactionCounts = (Map<String, Integer>) request.getAttribute("reactionCounts");
             if (reactionCounts == null) reactionCounts = new java.util.HashMap<>();
@@ -75,10 +76,8 @@
         </div>
     </div>
 
-
     <hr/>
     <% if (isOwner) { %>
-
     <div class="d-flex gap-2 mt-3">
         <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editPostModal">
             ✏️ Sửa bài viết
@@ -89,7 +88,6 @@
         </button>
     </div>
     <hr/>
-
     <!-- Modal cập nhật bài viết -->
     <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -117,7 +115,7 @@
                             <select class="form-select" id="type" name="type">
                                 <option value="common" <%= "common".equals(post.getType()) ? "selected" : "" %>>Phổ thông</option>
                                 <option value="partner" <%= "partner".equals(post.getType()) ? "selected" : "" %>>Tìm đối</option>
-                                <option value="admin" <%= "admin".equals(post.getType()) ? "selected" : "" %>>Tin tức</option>
+                                <option value="news" <%= "news".equals(post.getType()) ? "selected" : "" %>>Tin tức</option>
                             </select>
                         </div>
                     </div>
@@ -130,6 +128,7 @@
         </div>
     </div>
 
+    <!-- Modal xác nhận xoá -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -148,12 +147,14 @@
         </div>
     </div>
     <% } %>
+    
+    <jsp:include page="Comment.jsp">
+        <jsp:param name="postId" value="<%= post.getPostId() %>" />
+    </jsp:include>
+
     <% } else { %>
-    <div class="alert alert-danger">Không tìm thấy bài viết!</div>
+    <div class="alert alert-danger">Không tìm thấy bài viết.</div>
     <% } %>
 </div>
-<jsp:include page="Comment.jsp">
-    <jsp:param name="postId" value="<%= post.getPostId() %>" />
-</jsp:include>
 
 <jsp:include page="homefooter.jsp" />

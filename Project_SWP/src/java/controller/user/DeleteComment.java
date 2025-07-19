@@ -2,36 +2,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.manager;
+package controller.user;
 
-import DAO.BookingDAO;
-import DAO.CourtDAO;
-import DAO.ReviewDAO;
-import DAO.UserDAO;
-import jakarta.servlet.RequestDispatcher;
-import java.io.IOException;
 import java.io.PrintWriter;
+import DAO.CommentDAO;
+import Model.Comment;
+import Model.User;
+import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import Model.AdminDashBoard;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name = "AdminDashBoard", urlPatterns = {"/AdminDashBoard"})
-public class AdminDashBoardController extends HttpServlet {
-
-    private BookingDAO bookingDAO = new BookingDAO();
-    private UserDAO userDAO = new UserDAO();
-    private ReviewDAO reviewDAO = new ReviewDAO();
-    private CourtDAO courtDAO = new CourtDAO();
+@WebServlet(name = "DeleteComment", urlPatterns = {"/DeleteComment"})
+public class DeleteComment extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,10 +40,10 @@ public class AdminDashBoardController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminDashBoard</title>");
+            out.println("<title>Servlet DeleteComment</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdminDashBoard at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteComment at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -71,24 +61,40 @@ public class AdminDashBoardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String filter = request.getParameter("filter");
-        if (filter == null) {
-            filter = "all";
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+
+        String commentIdStr = request.getParameter("commentId");
+        if (user == null || commentIdStr == null) {
+            response.sendRedirect("login.jsp");
+            return;
         }
-        request.setAttribute("filter", filter); 
 
-        Map<String, Object> summary = new HashMap<>();
-        summary.put("totalBookings", bookingDAO.getTotalBookings(filter));
-        summary.put("totalRevenue", bookingDAO.getTotalRevenue(filter));
-        summary.put("returningUsers", userDAO.getReturningUserCount(filter));
-        summary.put("avgRating", bookingDAO.getAvgRating(filter));
+        try {
+            int commentId = Integer.parseInt(commentIdStr);
 
-        request.setAttribute("summary", summary);
+            CommentDAO commentDAO = new CommentDAO();
+            Comment comment = commentDAO.getCommentById(commentId);
 
-        List<AdminDashBoard> courts = courtDAO.getAllCourtReports(filter);
-        request.setAttribute("courtReports", courts);
+            // Kiểm tra quyền xóa (chỉ chủ comment được xóa)
+            if (comment == null || comment.getUserId() != user.getUser_Id()) {
+                response.sendError(403, "Bạn không có quyền xóa bình luận này!");
+                return;
+            }
 
-        request.getRequestDispatcher("Admin_DashBoard.jsp").forward(request, response);
+            // Lưu lại postId để redirect
+            int postId = comment.getPostId();
+
+            // Thực hiện xóa
+            commentDAO.deleteComment(commentId);
+
+            // Redirect về trang chi tiết bài viết
+            response.sendRedirect("PostDetail?id=" + postId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(500, "Có lỗi xảy ra khi xóa bình luận.");
+        }
     }
 
     /**

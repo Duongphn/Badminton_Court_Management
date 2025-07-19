@@ -56,8 +56,8 @@ public class RevenueReportServlet extends HttpServlet {
         BigDecimal totalRevenue = bookingDAO.getTotalRevenue(from, to, courtId);
 
         // Thống kê doanh thu theo tháng và theo tuần
-        Map<String, BigDecimal> revenueByMonth = bookingDAO.getRevenueByMonth(from.getYear());
-        Map<String, BigDecimal> revenueByWeek = bookingDAO.getRevenueByWeek(from.getYear());
+        Map<String, BigDecimal> revenueByMonth = bookingDAO.getRevenueByMonth(from.getYear(), courtId);
+        Map<String, BigDecimal> revenueByWeek = bookingDAO.getRevenueByWeek(from.getYear(), courtId);
 
         // Convert dữ liệu doanh thu theo tháng và tuần sang JSON để JS vẽ biểu đồ
         Gson gson = new Gson();

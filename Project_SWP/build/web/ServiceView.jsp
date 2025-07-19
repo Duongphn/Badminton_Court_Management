@@ -198,14 +198,7 @@
         </style>
     </head>
     <body>
-        <c:choose>
-            <c:when test="${sessionScope.user.role eq 'staff'}">
-                <jsp:include page="Sidebar_Staff.jsp" />
-            </c:when>
-            <c:otherwise>
-                <jsp:include page="Sidebar.jsp" />
-            </c:otherwise>
-        </c:choose>
+        <jsp:include page="Sidebar.jsp" />
         <%
             List<Service> service = (List<Service>) request.getAttribute("service");
             if (service == null) service = java.util.Collections.emptyList();
@@ -243,6 +236,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Ảnh</th>
                                 <th>Tên dịch vụ</th>
                                 <th>Giá</th>
                                 <th style="width: 180px;">Hành động</th>
@@ -252,6 +246,13 @@
                             <% for (Service eq : service) { %>
                             <tr>
                                 <td><%= eq.getService_id() %></td>
+                                <td>
+                                    <% if (eq.getImage_url() != null && !eq.getImage_url().isEmpty()) { %>
+                                    <img src="<%= request.getContextPath() + "/" + eq.getImage_url() %>" width="60" style="object-fit:cover; border-radius:8px;" />
+                                    <% } else { %>
+                                    <span style="color: #888;">Không có ảnh</span>
+                                    <% } %>
+                                </td>
                                 <td><%= eq.getName() %></td>
                                 <td><%= eq.getPrice() %> VNĐ</td>
                                 <td class="action-buttons">
@@ -259,6 +260,7 @@
                                     <a href="DeleteService?id=<%= eq.getService_id() %>" class="btn btn-danger"
                                        onclick="return confirm('Bạn có chắc chắn muốn xóa thiết bị này?');">Xóa</a>
                                 </td>
+
                             </tr>
                             <% } %>
                         </tbody>
@@ -291,8 +293,7 @@
     <div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form action="AddService" method="post">
-
+                <form action="AddService" method="post" enctype="multipart/form-data">
                     <div class="modal-header" style="background-color: #007bff; color: white;">
                         <h5 class="modal-title" id="addServiceLabel">Add Service</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
@@ -310,9 +311,10 @@
                         </div>
 
                         <div style="margin-bottom: 12px;">
-                            <label style="display: block; margin-bottom: 6px;">Link ảnh (URL)</label>
-                            <input type="text" name="image_url" class="form-control" />
+                            <label style="display: block; margin-bottom: 6px;">Ảnh dịch vụ</label>
+                            <input type="file" name="image_file" class="form-control" accept="image/*" required />
                         </div>
+
 
                         <div style="margin-bottom: 12px;">
                             <label style="display: block; margin-bottom: 6px;">Mô tả</label>

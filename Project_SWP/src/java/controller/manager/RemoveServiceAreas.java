@@ -62,7 +62,7 @@ public class RemoveServiceAreas extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null) {
             User user = (User) session.getAttribute("user");
-            if (user.getRole().equals("staff")) {
+            if (user.getRole().equals("admin")) {
                 int areaServiceID = Integer.parseInt(request.getParameter("areaServiceID"));
                 String area_id = request.getParameter("area_id");
                 Service_BranchDAO areasServiceDAO = new Service_BranchDAO();

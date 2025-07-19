@@ -237,6 +237,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="ViewPostManager">QUẢN LÝ BÀI VIẾT</a>
                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="AdminCommentRPView">QUẢN LÝ BÁO CÁO</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="users">QUẢN LÝ NGƯỜI DÙNG</a>
                     </li>
@@ -249,6 +252,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="promotion-admin">QUẢN LÝ KHUYẾN MÃI</a>
                     </li>
+                     <li class="nav-item">
+                    <a class="nav-link" href="manage-event">QUẢN LÝ SỰ KIỆN</a>
+                </li>
                     <li class="nav-item">
                         <a class="nav-link" href="faq-list">QUẢN LÝ CÂU HỎI THƯỜNG GẶP</a>
                     </li>

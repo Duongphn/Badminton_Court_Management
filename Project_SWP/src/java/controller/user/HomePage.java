@@ -7,10 +7,12 @@ package controller.user;
 import DAO.AreaDAO;
 import DAO.BannerDAO;
 import DAO.Branch_ImageDAO;
+import DAO.EventDAO;
 import Model.Banner;
 import Model.Branch;
 import Model.Branch_pictures;
 import Model.User;
+import Model.Event;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -71,18 +73,17 @@ public class HomePage extends HttpServlet {
         try {
             AreaDAO areaDAO = new AreaDAO();
             Branch_ImageDAO imageDAO = new Branch_ImageDAO();
+            EventDAO eventDAO = new EventDAO();
             BannerDAO bannerDAO = new BannerDAO();
 
-            // Lấy danh sách top 3 khu vực (nếu dùng)
             List<Branch> listTop3 = areaDAO.getTop3();
             Map<Integer, List<Branch_pictures>> areaImagesMap = new HashMap<>();
+            List<Banner> bannerList = bannerDAO.getActiveBanners();
+
             for (Branch area : listTop3) {
                 List<Branch_pictures> images = imageDAO.getRoomImagesByDormID(area.getArea_id());
                 areaImagesMap.put(area.getArea_id(), images);
             }
-
-          
-            List<Banner> bannerList = bannerDAO.getActiveBanners(); // hoặc getAllBanners() để test
 
             // === DEBUG BANNER ===
             System.out.println("=== [DEBUG] BannerList for homepage ===");
@@ -99,43 +100,101 @@ public class HomePage extends HttpServlet {
             }
             // === END DEBUG ===
 
-            // Set attributes cho JSP
+            // Lấy event mới nhất để hiển thị popup
+            Event latestEvent = eventDAO.getLatestActiveEvent();
+            request.setAttribute("latestEvent", latestEvent);
+
+            // Kiểm tra thông báo join event thành công từ session
+            HttpSession session = request.getSession();
+            String joinEventSuccess = (String) session.getAttribute("joinEventSuccess");
+            if (joinEventSuccess != null) {
+                request.setAttribute("joinEventSuccess", joinEventSuccess);
+                session.removeAttribute("joinEventSuccess"); // Xóa thông báo sau khi hiển thị
+            }
+
+            String joinEventInfo = (String) session.getAttribute("joinEventInfo");
+            if (joinEventInfo != null) {
+                request.setAttribute("infoMessage", joinEventInfo);
+                session.removeAttribute("joinEventInfo"); // Xóa thông báo sau khi hiển thị
+            }
+
+            // Kiểm tra các thông báo lỗi từ URL parameters
+            String error = request.getParameter("error");
+            String info = request.getParameter("info");
+            if (error != null) {
+                switch (error) {
+                    case "invalid_link":
+                        request.setAttribute("errorMessage", "Liên kết không hợp lệ!");
+                        break;
+                    case "invalid_token":
+                        request.setAttribute("errorMessage", "Token không hợp lệ hoặc đã hết hạn!");
+                        break;
+                    case "invalid_data":
+                        request.setAttribute("errorMessage", "Dữ liệu không hợp lệ!");
+                        break;
+                    case "invalid_event":
+                        request.setAttribute("errorMessage", "Sự kiện không hợp lệ!");
+                        break;
+                    case "invalid_event_id":
+                        request.setAttribute("errorMessage", "ID sự kiện không hợp lệ!");
+                        break;
+                    case "event_not_found":
+                        request.setAttribute("errorMessage", "Không tìm thấy sự kiện!");
+                        break;
+                    case "login_required":
+                        request.setAttribute("errorMessage", "Vui lòng đăng nhập để tham gia sự kiện!");
+                        break;
+                    case "already_joined":
+                        request.setAttribute("infoMessage", "Bạn đã tham gia sự kiện này rồi!");
+                        break;
+                    case "join_failed":
+                        request.setAttribute("errorMessage", "Tham gia sự kiện thất bại!");
+                        break;
+                    case "system_error":
+                        request.setAttribute("errorMessage", "Lỗi hệ thống!");
+                        break;
+                }
+            }
+            if (info != null) {
+                switch (info) {
+                    case "already_joined":
+                        request.setAttribute("infoMessage", "Bạn đã tham gia sự kiện này rồi!");
+                        break;
+                }
+            }
+
             request.setAttribute("listTop3", listTop3);
             request.setAttribute("areaImagesMap", areaImagesMap);
             request.setAttribute("bannerList", bannerList);
-
-            // Forward tới homepage.jsp
             request.getRequestDispatcher("homepage.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi server trang chủ");
         }
     }
-        /**
-         * Handles the HTTP <code>POST</code> method.
-         *
-         * @param request servlet request
-         * @param response servlet response
-         * @throws ServletException if a servlet-specific error occurs
-         * @throws IOException if an I/O error occurs
-         */
-        @Override
-        protected void doPost
-        (HttpServletRequest request, HttpServletResponse response)
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            processRequest(request, response);
-        }
-
-        /**
-         * Returns a short description of the servlet.
-         *
-         * @return a String containing servlet description
-         */
-        @Override
-        public String getServletInfo
-        
-            () {
-        return "Short description";
-        }// </editor-fold>
-
+        processRequest(request, response);
     }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}

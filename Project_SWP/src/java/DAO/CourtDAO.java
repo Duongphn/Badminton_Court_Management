@@ -25,7 +25,8 @@ import Model.Courts;
  *
  * @author admin
  */
-public class CourtDAO extends DBContext{
+public class CourtDAO extends DBContext {
+
     Connection connection;
 
     public CourtDAO() {
@@ -36,7 +37,7 @@ public class CourtDAO extends DBContext{
         }
     }
     AreaDAO dao = new AreaDAO();
-    
+
     public List<Courts> getCourtsByAreaId(int areaId) {
 
         List<Courts> listCourt = new ArrayList<>();
@@ -69,7 +70,7 @@ public class CourtDAO extends DBContext{
 
         return listCourt;
     }
-    
+
     public void addCourt(Courts court) {
         String sql = "INSERT INTO Courts (court_number, type, floor_material, lighting, description, image_url, status, area_id, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -88,31 +89,33 @@ public class CourtDAO extends DBContext{
             e.printStackTrace();
         }
     }
-    public void increaseCourtOfArea(int area_id){
+
+    public void increaseCourtOfArea(int area_id) {
         String sql = "UPDATE Areas SET court = court+1 WHERE area_id = ?";
-        try{
-             PreparedStatement ps = connection.prepareStatement(sql);
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, area_id);
-             ps.executeUpdate();
-        }catch (SQLException e) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-  public void decreaseCourtOfArea(int area_id){
+
+    public void decreaseCourtOfArea(int area_id) {
         String sql = "UPDATE Areas SET court = court - 1 WHERE area_id = ?";
-        try{
-             PreparedStatement ps = connection.prepareStatement(sql);
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, area_id);
-             ps.executeUpdate();
-        }catch (SQLException e) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     public List<Courts> getAllCourts() {
         List<Courts> courts = new ArrayList<>();
         String sql = "SELECT court_id, court_number, type, floor_material, lighting, description, image_url, status, area_id, price FROM Courts";
-        try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Courts court = new Courts();
@@ -221,120 +224,156 @@ public class CourtDAO extends DBContext{
         }
         return courts;
     }
+
     public int countCourtsByArea(int areaId) {
-    String sql = "SELECT COUNT(*) FROM Courts WHERE area_id = ?";
-    
-    try (
-         PreparedStatement stmt = connection.prepareStatement(sql)) {
-        stmt.setInt(1, areaId);
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) return rs.getInt(1);
-    }catch(SQLException e){
-        System.out.println(e.getMessage());
+        String sql = "SELECT COUNT(*) FROM Courts WHERE area_id = ?";
+
+        try (
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, areaId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
     }
-    return 0;
-}
-public int countCourtsByManager(int managerId) {
-    String sql = "SELECT COUNT(*) FROM Courts c JOIN Areas a ON c.area_id = a.area_id WHERE a.manager_id = ?";
-    
-    try (
-         PreparedStatement stmt = connection.prepareStatement(sql)) {
-        stmt.setInt(1, managerId);
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) return rs.getInt(1);
-    }catch(SQLException e){
-        System.out.println(e.getMessage());
+
+    public int countCourtsByManager(int managerId) {
+        String sql = "SELECT COUNT(*) FROM Courts c JOIN Areas a ON c.area_id = a.area_id WHERE a.manager_id = ?";
+
+        try (
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, managerId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
     }
-    return 0;
-}
 // Get counts of courts by status for a manager
-public Map<String, Integer> getCourtStatusCounts(int managerId) {
-    Map<String, Integer> result = new LinkedHashMap<>();
-    String sql = "SELECT c.status, COUNT(*) AS cnt FROM Courts c JOIN Areas a ON c.area_id = a.area_id "
-            + "WHERE a.manager_id = ? GROUP BY c.status";
-    try (PreparedStatement ps = connection.prepareStatement(sql)) {
-        ps.setInt(1, managerId);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            result.put(rs.getString("status"), rs.getInt("cnt"));
-        }
-    } catch (SQLException e) {
-        System.out.println(e.getMessage());
-    }
-    return result;
-}
-public BigDecimal getCourtPrice(int courtId) {
-    String sql = "SELECT price FROM Courts WHERE court_id = ?";
-    try (PreparedStatement ps = connection.prepareStatement(sql)) {
-        ps.setInt(1, courtId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getBigDecimal("price");
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return BigDecimal.ZERO;
-}
-public BigDecimal calculateSlotPrice(Time startTime, Time endTime, BigDecimal pricePerHour) {
-    // Sử dụng getTime() để lấy milliseconds
-    long millisStart = startTime.getTime();
-    long millisEnd = endTime.getTime();
-    long durationMillis = millisEnd - millisStart;
 
-    long minutes = durationMillis / (1000 * 60); 
-
-    if (minutes == 60) {
-        return pricePerHour;
-    } else {
-        // Nếu không phải 60 phút, tính giá theo giờ (hoặc throw exception nếu muốn)
-        BigDecimal hours = new BigDecimal(minutes).divide(new BigDecimal(60), 2, BigDecimal.ROUND_HALF_UP);
-        return hours.multiply(pricePerHour);
-    }
-}
-    public static void main(String[] args) {
-        CourtDAO dao = new CourtDAO();
-        int a = dao .countCourtsByArea(5);
-        System.out.println(a);
-    }
-    
-    public List<AdminDashBoard> getAllCourtReports() {
-        List<AdminDashBoard> list = new ArrayList<>();
-        String sql
-                = "SELECT c.court_id, c.court_name, u.username AS manager_name, "
-                + "       COUNT(DISTINCT b.booking_id) AS total_bookings, "
-                + "       ISNULL(SUM(b.total_price),0) AS total_revenue, "
-                + "       ISNULL(AVG(CAST(b.rating AS FLOAT)), 0) AS avg_rating, "
-                + "       COUNT(DISTINCT CASE WHEN ucount.booking_count > 1 THEN b.user_id END) AS returning_users "
-                + "FROM Courts c "
-                + "LEFT JOIN Areas a ON c.area_id = a.area_id "
-                + "LEFT JOIN Users u ON a.manager_id = u.user_id "
-                + "LEFT JOIN Bookings b ON c.court_id = b.court_id AND b.status != 'cancelled' "
-                + "LEFT JOIN ( "
-                + "    SELECT user_id, court_id, COUNT(*) AS booking_count "
-                + "    FROM Bookings "
-                + "    WHERE status != 'cancelled' "
-                + "    GROUP BY user_id, court_id "
-                + ") ucount ON ucount.user_id = b.user_id AND ucount.court_id = b.court_id "
-                + "GROUP BY c.court_id, c.court_name, u.username";
-
+    public Map<String, Integer> getCourtStatusCounts(int managerId) {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        String sql = "SELECT c.status, COUNT(*) AS cnt FROM Courts c JOIN Areas a ON c.area_id = a.area_id "
+                + "WHERE a.manager_id = ? GROUP BY c.status";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                String courtName = rs.getString("court_name");
-                String managerName = rs.getString("manager_name");
-                double revenue = rs.getDouble("total_revenue");
-                int bookings = rs.getInt("total_bookings");
-                int returningUsers = rs.getInt("returning_users");
-                double avgRating = rs.getDouble("avg_rating");
+                result.put(rs.getString("status"), rs.getInt("cnt"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
+    }
 
-                AdminDashBoard report = new AdminDashBoard(courtName, managerName, revenue, bookings, returningUsers, avgRating);
-                list.add(report);
+    public BigDecimal getCourtPrice(int courtId) {
+        String sql = "SELECT price FROM Courts WHERE court_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, courtId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getBigDecimal("price");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return BigDecimal.ZERO;
+    }
+
+    public BigDecimal calculateSlotPrice(Time startTime, Time endTime, BigDecimal pricePerHour) {
+        // Sử dụng getTime() để lấy milliseconds
+        long millisStart = startTime.getTime();
+        long millisEnd = endTime.getTime();
+        long durationMillis = millisEnd - millisStart;
+
+        long minutes = durationMillis / (1000 * 60);
+
+        if (minutes == 60) {
+            return pricePerHour;
+        } else {
+            // Nếu không phải 60 phút, tính giá theo giờ (hoặc throw exception nếu muốn)
+            BigDecimal hours = new BigDecimal(minutes).divide(new BigDecimal(60), 2, BigDecimal.ROUND_HALF_UP);
+            return hours.multiply(pricePerHour);
+        }
+    }
+
+    public static void main(String[] args) {
+        CourtDAO dao = new CourtDAO();
+        int a = dao.countCourtsByArea(5);
+        System.out.println(a);
+    }
+
+   public List<AdminDashBoard> getAllCourtReports(String filter) {
+        List<AdminDashBoard> list = new ArrayList<>();
+        String dateCondition = getDateConditionForJoin(filter); // phần ON b.date...
+        String dateConditionWhere = getDateConditionForWhere(filter); // phần WHERE
+
+        String sql = "SELECT c.name, u.fullname, " +
+                "ISNULL(SUM(CASE WHEN b.booking_id IS NOT NULL THEN b.total_price END), 0) AS revenue, " +
+                "COUNT(b.booking_id) AS bookings, " +
+                "(SELECT COUNT(DISTINCT b2.user_id) FROM Bookings b2 " +
+                "WHERE b2.court_id = c.court_id " + dateConditionWhere +
+                " AND b2.user_id IN (SELECT user_id FROM Bookings WHERE court_id = c.court_id " + dateConditionWhere +
+                " GROUP BY user_id HAVING COUNT(*) > 1)) AS returningUsers, " +
+                "AVG(CAST(b.rating AS float)) AS avgRating " +
+                "FROM Courts c " +
+                "LEFT JOIN Bookings b ON b.court_id = c.court_id " + dateCondition +
+                "LEFT JOIN Areas a ON c.area_id = a.area_id " +
+                "LEFT JOIN Users u ON a.manager_id = u.user_id " +
+                "GROUP BY c.name, u.fullname";
+
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                AdminDashBoard a = new AdminDashBoard(
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getDouble(3),
+                    rs.getInt(4),
+                    rs.getInt(5),
+                    rs.getDouble(6)
+                );
+                list.add(a);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
         return list;
     }
-    
+
+    // Dùng cho JOIN Bookings b ON b.court_id = c.court_id ... (lọc từng booking theo filter)
+    private String getDateConditionForJoin(String filter) {
+        switch (filter) {
+            case "today":
+                return "AND CAST(b.date AS DATE) = CAST(GETDATE() AS DATE) ";
+            case "week":
+                return "AND DATEPART(week, b.date) = DATEPART(week, GETDATE()) AND YEAR(b.date) = YEAR(GETDATE()) ";
+            case "month":
+                return "AND MONTH(b.date) = MONTH(GETDATE()) AND YEAR(b.date) = YEAR(GETDATE()) ";
+            default:
+                return "";
+        }
+    }
+
+    // Dùng cho WHERE điều kiện trong subquery returning user (b2), phải bắt đầu bằng AND/hoặc chuỗi rỗng
+    private String getDateConditionForWhere(String filter) {
+        switch (filter) {
+            case "today":
+                return "AND CAST(b2.date AS DATE) = CAST(GETDATE() AS DATE) ";
+            case "week":
+                return "AND DATEPART(week, b2.date) = DATEPART(week, GETDATE()) AND YEAR(b2.date) = YEAR(GETDATE()) ";
+            case "month":
+                return "AND MONTH(b2.date) = MONTH(GETDATE()) AND YEAR(b2.date) = YEAR(GETDATE()) ";
+            default:
+                return "";
+        }
+    }
+
 }

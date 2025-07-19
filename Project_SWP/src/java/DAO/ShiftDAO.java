@@ -28,6 +28,21 @@ public class ShiftDAO extends DBContext{
             System.out.println("Connect failed");
         }
     }
+   public Shift findShiftContainSlot(int courtId, Time slotStart, Time slotEnd) throws Exception {
+    
+    List<Shift> shifts = getShiftsByCourt(courtId); 
+
+    for (Shift shift : shifts) {
+        Time shiftStart = shift.getStartTime();
+        Time shiftEnd = shift.getEndTime();
+       
+        if (!slotStart.before(shiftStart) && !slotEnd.after(shiftEnd)) {
+            return shift;
+        }
+    }
+    return null; 
+}
+
   public List<Shift> getShiftsByCourt(int courtId) {
     List<Shift> list = new ArrayList<>();
     String sql = "SELECT s.shift_id, s.area_id, s.shift_name, s.start_time, s.end_time, s.price " +

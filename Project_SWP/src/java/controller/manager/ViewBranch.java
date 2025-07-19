@@ -47,7 +47,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
         if (user != null && "admin".equals(user.getRole())) {
 
             int page = 1;
-            int recordsPerpage = 5;
+            int recordsPerpage = 3;
             if (request.getParameter("page") != null) {
                 try {
                     page = Integer.parseInt(request.getParameter("page"));
@@ -59,8 +59,8 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
             int numberofRegion = areaDAO.countAllAreas(); 
             int numberofPage = (int) Math.ceil((double) numberofRegion / recordsPerpage);
 
-            // Lấy danh sách tất cả khu vực có phân trang
-            List<Branch> area = areaDAO.getAllAreas((page - 1) * recordsPerpage, recordsPerpage); // HÀM NÀY PHẢI THÊM TRONG AreaDAO
+         
+            List<Branch> area = areaDAO.getAllAreas((page - 1) * recordsPerpage, recordsPerpage); 
 
             request.setAttribute("area", area);
             request.setAttribute("numberOfPages", numberofPage);

@@ -4,11 +4,8 @@
  */
 package controller.manager;
 
-import DAO.BookingDAO;
-import DAO.CourtDAO;
-import DAO.ReviewDAO;
-import DAO.UserDAO;
-import jakarta.servlet.RequestDispatcher;
+import DAO.CommentDAO;
+import DAO.CommentReportDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,22 +13,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import Model.AdminDashBoard;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name = "AdminDashBoard", urlPatterns = {"/AdminDashBoard"})
-public class AdminDashBoardController extends HttpServlet {
-
-    private BookingDAO bookingDAO = new BookingDAO();
-    private UserDAO userDAO = new UserDAO();
-    private ReviewDAO reviewDAO = new ReviewDAO();
-    private CourtDAO courtDAO = new CourtDAO();
+@WebServlet(name = "HidenComment", urlPatterns = {"/HidenComment"})
+public class HidenComment extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,10 +39,10 @@ public class AdminDashBoardController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminDashBoard</title>");
+            out.println("<title>Servlet HidenComment</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdminDashBoard at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet HidenComment at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -71,24 +60,24 @@ public class AdminDashBoardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String filter = request.getParameter("filter");
-        if (filter == null) {
-            filter = "all";
+        String commentIdStr = request.getParameter("commentId");
+        HttpSession session = request.getSession(false);
+        Model.User user = (session != null) ? (Model.User) session.getAttribute("user") : null;
+        if (user == null || !("admin".equals(user.getRole()) || "staff".equals(user.getRole()))) {
+            response.sendError(403, "Không đủ quyền");
+            return;
         }
-        request.setAttribute("filter", filter); 
-
-        Map<String, Object> summary = new HashMap<>();
-        summary.put("totalBookings", bookingDAO.getTotalBookings(filter));
-        summary.put("totalRevenue", bookingDAO.getTotalRevenue(filter));
-        summary.put("returningUsers", userDAO.getReturningUserCount(filter));
-        summary.put("avgRating", bookingDAO.getAvgRating(filter));
-
-        request.setAttribute("summary", summary);
-
-        List<AdminDashBoard> courts = courtDAO.getAllCourtReports(filter);
-        request.setAttribute("courtReports", courts);
-
-        request.getRequestDispatcher("Admin_DashBoard.jsp").forward(request, response);
+        if (commentIdStr == null) {
+            response.sendError(400, "Thiếu commentId");
+            return;
+        }
+        int commentId = Integer.parseInt(commentIdStr);
+        boolean success = new CommentReportDAO().hideCommentByReport(commentId, user.getUser_Id());
+        if (success) {
+            response.sendRedirect("AdminCommentRPView");
+        } else {
+            response.sendError(500, "Ẩn bình luận thất bại");
+        }
     }
 
     /**

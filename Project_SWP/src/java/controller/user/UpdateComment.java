@@ -2,36 +2,28 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.manager;
+package controller.user;
 
-import DAO.BookingDAO;
-import DAO.CourtDAO;
-import DAO.ReviewDAO;
-import DAO.UserDAO;
-import jakarta.servlet.RequestDispatcher;
+import DAO.CommentDAO;
+import Dal.DBContext;
+import Model.Comment;
+import Model.User;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.Connection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import Model.AdminDashBoard;
+import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 
 /**
  *
  * @author admin
  */
-@WebServlet(name = "AdminDashBoard", urlPatterns = {"/AdminDashBoard"})
-public class AdminDashBoardController extends HttpServlet {
-
-    private BookingDAO bookingDAO = new BookingDAO();
-    private UserDAO userDAO = new UserDAO();
-    private ReviewDAO reviewDAO = new ReviewDAO();
-    private CourtDAO courtDAO = new CourtDAO();
+@WebServlet(name = "UpdateComment", urlPatterns = {"/UpdateComment"})
+public class UpdateComment extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,10 +42,10 @@ public class AdminDashBoardController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminDashBoard</title>");
+            out.println("<title>Servlet UpdateComment</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdminDashBoard at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet UpdateComment at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -71,24 +63,7 @@ public class AdminDashBoardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String filter = request.getParameter("filter");
-        if (filter == null) {
-            filter = "all";
-        }
-        request.setAttribute("filter", filter); 
-
-        Map<String, Object> summary = new HashMap<>();
-        summary.put("totalBookings", bookingDAO.getTotalBookings(filter));
-        summary.put("totalRevenue", bookingDAO.getTotalRevenue(filter));
-        summary.put("returningUsers", userDAO.getReturningUserCount(filter));
-        summary.put("avgRating", bookingDAO.getAvgRating(filter));
-
-        request.setAttribute("summary", summary);
-
-        List<AdminDashBoard> courts = courtDAO.getAllCourtReports(filter);
-        request.setAttribute("courtReports", courts);
-
-        request.getRequestDispatcher("Admin_DashBoard.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -102,7 +77,40 @@ public class AdminDashBoardController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        String commentIdStr = request.getParameter("commentId");
+        String content = request.getParameter("content");
+
+        try {
+            if (user == null || commentIdStr == null || content == null || content.trim().isEmpty()) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+            int commentId = Integer.parseInt(commentIdStr);
+
+            // Lấy thông tin comment từ DB
+            DBContext db = new DBContext();
+            Connection conn = db.getConnection();
+            CommentDAO commentDAO = new CommentDAO();
+            Comment comment = commentDAO.getCommentById(commentId);
+
+            // Kiểm tra quyền sở hữu
+            if (comment == null || comment.getUserId() != user.getUser_Id()) {
+                response.sendError(403, "Bạn không có quyền sửa bình luận này!");
+                return;
+            }
+
+            // Thực hiện cập nhật
+            commentDAO.updateCommentContent(commentId, content);
+
+            // Redirect lại bài viết chi tiết (tìm postId từ comment)
+            response.sendRedirect("PostDetail?id=" + comment.getPostId());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(500, "Có lỗi xảy ra khi cập nhật bình luận.");
+        }
     }
 
     /**

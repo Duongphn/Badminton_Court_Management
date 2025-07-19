@@ -4,12 +4,20 @@ import Model.Service;
 import DAO.ServiceDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import jakarta.servlet.http.Part;
+import java.io.File;
+import java.nio.file.Paths;
 
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024 * 2,
+        maxFileSize = 1024 * 1024 * 10,
+        maxRequestSize = 1024 * 1024 * 50
+)
 @WebServlet(name = "AddService", urlPatterns = {"/AddService"})
 public class AddService extends HttpServlet {
 
@@ -22,21 +30,29 @@ public class AddService extends HttpServlet {
         String name = request.getParameter("name");
         double price = Double.parseDouble(request.getParameter("price"));
         String description = request.getParameter("description");
-        String image_url = request.getParameter("image_url");
         String status = request.getParameter("status");
-
         if (status == null || status.isEmpty()) {
             status = "Active";
         }
 
-        // Kiểm tra trùng tên
+        // Xử lý file ảnh (upload thẳng vào /web/uploads/service_images)
+        Part filePart = request.getPart("image_file");
+        String fileName = null;
+        if (filePart != null && filePart.getSize() > 0) {
+            fileName = System.currentTimeMillis() + "_" + Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+            String uploadPath = getServletContext().getRealPath("/uploads");
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+            filePart.write(uploadPath + File.separator + fileName);
+        }
+
         if (ServiceDAO.isDuplicateService(name)) {
-            response.sendRedirect("ViewService?status=duplicate");
+            response.sendRedirect("ViewEquipments?status=duplicate");
             return;
         }
 
-        // Tạo mới
-        Service s = new Service(0, name, price, description, image_url, status);
+        String imagePath = (fileName != null) ? "uploads" + fileName : null;
+        Service s = new Service(0, name, price, description, imagePath, status);
 
         try {
             ServiceDAO.addService(s);
@@ -46,6 +62,7 @@ public class AddService extends HttpServlet {
             response.sendRedirect("ViewEquipments?status=fail");
         }
     }
+
     @Override
     public String getServletInfo() {
         return "Add new equipment service";

@@ -7,10 +7,11 @@ package controller.user;
 import DAO.BookingDAO;
 import DAO.BookingServiceDAO;
 import DAO.CourtDAO;
+import DAO.PromotionDAO;
 import DAO.Service_BranchDAO;
-import DAO.ShiftDAO;
 import Model.Branch_Service;
-import Model.Shift;
+import Model.Courts;
+import Model.Promotion;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,6 +24,7 @@ import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -95,40 +97,44 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     try {
         int userId = user.getUser_Id();
         int courtId = Integer.parseInt(request.getParameter("courtId"));
-        int shiftId = Integer.parseInt(request.getParameter("shiftId")); 
         String dateStr = request.getParameter("date");
+        String startTimeStr = request.getParameter("startTime");
+        String endTimeStr = request.getParameter("endTime");
+        LocalDate date = LocalDate.parse(dateStr);
+        Time startTime = Time.valueOf(startTimeStr);
+        Time endTime = Time.valueOf(endTimeStr);
+
+        // LẤY totalPrice từ request (giá thuê sân đã tính, đã KM, chưa dịch vụ)
         String totalPriceStr = request.getParameter("totalPrice");
         BigDecimal totalPrice = new BigDecimal(totalPriceStr);
 
-        LocalDate date = LocalDate.parse(dateStr);
-
-       
-        ShiftDAO shiftDAO = new ShiftDAO();
-        Shift shift = shiftDAO.getShiftById(shiftId);
-        if (shift == null) {
-            request.setAttribute("message", "Không tìm thấy ca đã chọn.");
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
-            return;
-        }
-        Time startTime = shift.getStartTime();
-        Time endTime = shift.getEndTime();
-
-        
-        BookingDAO bookingDAO = new BookingDAO();
-        boolean isAvailable = bookingDAO.checkSlotAvailable(courtId, date, startTime, endTime);
-        if (!isAvailable) {
-            request.setAttribute("message", "Ca này đã có người đặt.");
-            request.getRequestDispatcher("book_field.jsp").forward(request, response);
-            return;
-        }
-
-       
-        int bookingId = bookingDAO.insertBookingWithTotalPrice(
-            userId, courtId, date, startTime, endTime, "pending", totalPrice
-        );
-
-        
+        // CỘNG GIÁ DỊCH VỤ (nếu có)
+        BigDecimal extraServicePrice = BigDecimal.ZERO;
         String[] selectedServices = request.getParameterValues("selectedServices");
+        if (selectedServices != null) {
+            Service_BranchDAO serviceDAO = new Service_BranchDAO();
+            for (String serviceIdStr : selectedServices) {
+                int serviceId = Integer.parseInt(serviceIdStr);
+                BigDecimal servicePrice = serviceDAO.getServicePriceById(serviceId);
+                if (servicePrice != null) {
+                    extraServicePrice = extraServicePrice.add(servicePrice);
+                }
+            }
+        }
+
+        // Tổng cuối cùng
+        totalPrice = totalPrice.add(extraServicePrice);
+
+        // Đảm bảo không âm và làm tròn (nếu muốn)
+        if (totalPrice.compareTo(BigDecimal.ZERO) < 0) {
+            totalPrice = BigDecimal.ZERO;
+        }
+        totalPrice = totalPrice.setScale(0, BigDecimal.ROUND_HALF_UP);
+
+        // Tiếp tục lưu booking, lưu dịch vụ...
+        BookingDAO bookingDAO = new BookingDAO();
+        int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending", totalPrice);
+
         if (selectedServices != null && bookingId != -1) {
             BookingServiceDAO bookingServiceDAO = new BookingServiceDAO();
             for (String serviceIdStr : selectedServices) {
@@ -137,7 +143,6 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             }
         }
 
-        
         response.sendRedirect("booking-list");
 
     } catch (Exception e) {
@@ -146,6 +151,8 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         request.getRequestDispatcher("error.jsp").forward(request, response);
     }
 }
+
+
 
 
 

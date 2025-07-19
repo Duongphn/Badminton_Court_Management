@@ -127,7 +127,7 @@
                 </div>
 
                 <c:choose>
-                    <c:when test="${empty faqList}">
+                    <c:when test="${empty answerList}">
                         <div class="no-faq">
                             <i class="fas fa-inbox fa-2x mb-2"></i>
                             <p>Không có câu hỏi phù hợp.</p>
@@ -137,7 +137,7 @@
 
 
                         <div class="container mt-4 mb-5">
-                            <a href="faq-list" class="btn btn-link mb-3"><i class="fas fa-arrow-left"></i> Quay lại danh sách câu hỏi</a>
+                            <a href="faq-list?for=user" class="btn btn-link mb-3"><i class="fas fa-arrow-left"></i> Quay lại danh sách câu hỏi</a>
                             <div class="card shadow">
                                 <div class="card-header bg-danger text-white">
                                     <i class="fas fa-question-circle"></i> <b>${question.title}</b>

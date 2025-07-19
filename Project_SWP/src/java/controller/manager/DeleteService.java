@@ -81,7 +81,7 @@ public class DeleteService extends HttpServlet {
         try {
             boolean result = ServiceDAO.deleteService(service_id);
             // Có thể set thuộc tính để thông báo xóa thành công/thất bại nếu muốn
-            response.sendRedirect("ServiceView.jsp"); // Chuyển về trang danh sách dịch vụ
+            response.sendRedirect("ViewEquipments"); // Chuyển về trang danh sách dịch vụ
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi khi xóa dịch vụ.");

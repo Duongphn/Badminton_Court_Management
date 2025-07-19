@@ -57,8 +57,8 @@
                 cursor: pointer;
             }
             .pagination {
-    display: flex !important;
-}
+                display: flex !important;
+            }
         </style>
     </head>
     <body>
@@ -75,14 +75,34 @@
                 </div>
                 <div class="col-md-10 " style="margin-left: 280px">
                     <div class="main-content">
-                        <h3 class="mb-4 text-primary">🎫 Quản lý khuyến mãi</h3>
-                        <!-- Search Bar -->
+                        <h3 class="mb-4 text-primary">🎫 Quản lý khuyến mại</h3>
+                       
                         <form action="search-promotion" method="POST" class="form-inline mb-4">
-                            <input type="text" name="searchInput" value="${searchKeyword}" class="form-control mr-2 w-50" placeholder="🔍 Tìm kiếm khuyến mãi">
+                            <input type="text" name="searchInput" value="${searchKeyword}" class="form-control mr-2 w-50" placeholder="🔍 Tìm kiếm khuyến mại">
                             <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                         </form>
+                        <form action="promotion-admin" method="GET" class="form-inline mb-4">
+                            <label class="mr-2 font-weight-bold">Lọc theo:</label>
 
-                        <!-- Notification -->
+
+                            <select name="status" class="form-control mr-3">
+                                <option value="">-- Tất cả trạng thái --</option>
+                                <option value="active" ${param.status == 'active' ? 'selected' : ''}>Đang áp dụng</option>
+                                <option value="inactive" ${param.status == 'inactive' ? 'selected' : ''}>Ngừng</option>
+                            </select>
+
+
+                            
+                            <select name="areaId" class="form-control mr-3">
+                                <option value="">-- Tất cả khu vực --</option>
+                                <c:forEach var="area" items="${areaList}">
+                                    <option value="${area.area_id}" ${param.areaId == area.area_id ? 'selected' : ''}>${area.name}</option>
+                                </c:forEach>
+                            </select>
+
+                            <button type="submit" class="btn btn-secondary">Lọc</button>
+                        </form>
+                       
                         <c:if test="${not empty sessionScope.success}">
                             <div id="notification" class="notification success">
                                 <i class="fas fa-check-circle"></i> ${sessionScope.success}
@@ -90,7 +110,7 @@
                             </div>
                         </c:if>
 
-                        <!-- Promotions Table -->
+                      
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered">
                                 <thead class="thead-dark">
@@ -126,11 +146,11 @@
                                                     <span class="badge badge-info">${areaName}</span>
                                                 </c:forEach>
                                             </td>
-                                            
+
                                             <td>
                                                 <button  class="btn btn-warning btn-sm" data-toggle="modal" data-target="#updateModal${loop.index}">Sửa</button>
-                                            <a href="delele-promotion?promotionId=${promo.promotionId}" class="btn btn-danger btn-sm" onclick="confirmDelete()">Xóa</a>
-                                                
+                                                <a href="delele-promotion?promotionId=${promo.promotionId}" class="btn btn-danger btn-sm" onclick="confirmDelete()">Xóa</a>
+
                                                 <div class="modal fade" id="updateModal${loop.index}" tabindex="-1" role="dialog">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
@@ -212,7 +232,7 @@
                             </li>
                         </ul>
 
-                        <button class="btn btn-success mt-4" data-toggle="modal" data-target="#addModal">+ Thêm khuyến mãi</button>
+                        <button class="btn btn-success mt-4" data-toggle="modal" data-target="#addModal">+ Thêm khuyến mại</button>
 
                         <!-- Modal Thêm khuyến mãi -->
                         <div class="modal fade" id="addModal" tabindex="-1" role="dialog">
@@ -278,7 +298,7 @@
         </div>
 
         <script>
-             function confirmDelete() {
+            function confirmDelete() {
                 return confirm("Do you want to delete this?");
             }
             function closeNotification() {
@@ -291,9 +311,9 @@
                 }
             }
         </script>
-    
-       <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     </body>
 </html>

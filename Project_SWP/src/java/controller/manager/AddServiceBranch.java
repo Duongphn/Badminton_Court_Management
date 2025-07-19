@@ -67,20 +67,27 @@ public class AddServiceBranch extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-         int areaId = Integer.parseInt(request.getParameter("area_id"));
-        int serviceId = Integer.parseInt(request.getParameter("service_id"));
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    int areaId = Integer.parseInt(request.getParameter("area_id"));
+    int serviceId = Integer.parseInt(request.getParameter("service_id"));
 
-        try {
-            Service_BranchDAO dao = new Service_BranchDAO();
+    try {
+        Service_BranchDAO dao = new Service_BranchDAO();
+        if (!dao.isServiceAlreadyAdded(areaId, serviceId)) {
             dao.addServiceToArea(areaId, serviceId);
-        } catch (Exception e) {
-            e.printStackTrace();
+            
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&msg=added");
+        } else {
+           
+            response.sendRedirect("detailBranch?area_id=" + areaId + "&error=exists");
         }
-
-        response.sendRedirect("detailBranch?area_id=" + areaId);
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("detailBranch?area_id=" + areaId + "&error=exception");
     }
+}
+
     
 
     /** 

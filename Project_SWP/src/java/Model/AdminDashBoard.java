@@ -1,14 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
 
 /**
- *
- * @author admin
+ * Model cho báo cáo quản lý sân trên dashboard Admin
  */
 public class AdminDashBoard {
+
     private String courtName;
     private String managerName;
     private double revenue;
@@ -75,11 +71,4 @@ public class AdminDashBoard {
     public void setAvgRating(double avgRating) {
         this.avgRating = avgRating;
     }
-
-    @Override
-    public String toString() {
-        return String.format("%-15s | %-12s | %10.0f | %7d | %7d | %5.2f",
-                courtName, managerName, revenue, bookings, returningUsers, avgRating);
-    }
-    
 }

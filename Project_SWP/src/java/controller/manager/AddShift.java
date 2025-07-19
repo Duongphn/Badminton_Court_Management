@@ -91,7 +91,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             return;
         }
 
-        // Parse giá tiền ca, kiểm tra hợp lệ
+        
         BigDecimal price;
         try {
             price = new BigDecimal(priceStr);
@@ -144,10 +144,10 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             }
         }
 
-        // Lưu ca mới với giá
         Shift shift = new Shift(areaId, shiftName, startTime, endTime, price);
         dao.addShift(shift);
-
+         String msg = URLEncoder.encode("Thêm ca thành công.", "UTF-8");
+                response.sendRedirect("detailBranch?area_id=" + areaId + "&message" + msg);
         response.sendRedirect("detailBranch?area_id=" + areaId);
 
     } catch (Exception e) {

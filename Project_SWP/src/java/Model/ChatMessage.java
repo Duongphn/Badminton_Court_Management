@@ -28,6 +28,14 @@ public class ChatMessage {
         this.senderType = senderType;
     }
 
+    public ChatMessage(int messageId, Integer userId, String content, Timestamp createdAt, String senderType) {
+        this.messageId = messageId;
+        this.userId = userId;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.senderType = senderType;
+    }
+
     public int getMessageId() {
         return messageId;
     }
@@ -66,6 +74,11 @@ public class ChatMessage {
 
     public void setSenderType(String senderType) {
         this.senderType = senderType;
+    }
+
+    @Override
+    public String toString() {
+        return "ChatMessage{" + "messageId=" + messageId + ", userId=" + userId + ", content=" + content + ", createdAt=" + createdAt + ", senderType=" + senderType + '}';
     }
 
     

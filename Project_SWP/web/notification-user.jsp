@@ -213,16 +213,15 @@
                             <div class="notification-item ${item.isRead ? '' : 'unread'}">
                                 <img class="notification-img" src="${item.notificationId.imageUrl != null ? item.notificationId.imageUrl : 'images/notification-default.png'}" alt="Ảnh thông báo">
                                 <div class="notification-content">
-                                    <strong>${item.notificationId.title}</strong>
-                                    <p>${item.notificationId.content}</p>
+                                   <a href="notificationDetail?notificationId=${item.notificationId.notificationId}" class="notification-title-link">
+    <strong>${item.notificationId.title}</strong>
+</a>
+
                                     <div class="notification-time">
                                         ${item.notificationId.scheduledTime}
                                     </div>
                                 </div>
-                                <c:if test="${!item.isRead}">
-                                    <div class="dot-unread" title="Chưa đọc"></div>
-                                </c:if>
-                            </div>
+             </div>
                         </c:forEach>
                     </c:otherwise>
                 </c:choose>
@@ -231,4 +230,6 @@
 
         <jsp:include page="homefooter.jsp" />
     </body>
+
+
 </html>

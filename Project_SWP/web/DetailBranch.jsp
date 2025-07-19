@@ -12,220 +12,226 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <style>
-          :root {
-    --primary-color: #007bff;
-    --danger-color: #dc3545;
-    --warning-color: #ffc107;
-    --success-color: #28a745;
-    --info-color: #17a2b8;
-    --light-color: #f8f9fa;
-    --dark-color: #343a40;
-}
+            :root {
+                --primary-color: #007bff;
+                --danger-color: #dc3545;
+                --warning-color: #ffc107;
+                --success-color: #28a745;
+                --info-color: #17a2b8;
+                --light-color: #f8f9fa;
+                --dark-color: #343a40;
+            }
 
-body {
-    background-color: #f4f6f9;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
-}
+            body {
+                background-color: #f4f6f9;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                min-height: 100vh;
+            }
 
-.navbar {
-    background-color: #ffffff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    padding: 10px 20px;
-}
+            .navbar {
+                background-color: #ffffff;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+                padding: 10px 20px;
+            }
 
-.navbar-brand {
-    font-weight: bold;
-    font-size: 1.5rem;
-    color: var(--primary-color) !important;
-}
+            .navbar-brand {
+                font-weight: bold;
+                font-size: 1.5rem;
+                color: var(--primary-color) !important;
+            }
 
-.nav-link {
-    color: var(--primary-color) !important;
-    font-weight: 500;
-}
+            .nav-link {
+                color: var(--primary-color) !important;
+                font-weight: 500;
+            }
 
-.main-content {
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.05);
-}
+            .main-content {
+                padding: 30px;
+                background-color: #ffffff;
+                border-radius: 15px;
+                box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            }
 
-.page-title {
-    color: #343a40;
-    font-weight: 700;
-    font-size: 2.5rem;
-    margin-bottom: 30px;
-    text-align: center;
-}
+            .page-title {
+                color: #343a40;
+                font-weight: 700;
+                font-size: 2.5rem;
+                margin-bottom: 30px;
+                text-align: center;
+            }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 40px 0 20px 0;
-    padding-bottom: 15px;
-    border-bottom: 2px solid var(--primary-color);
-}
+            .section-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin: 40px 0 20px 0;
+                padding-bottom: 15px;
+                border-bottom: 2px solid var(--primary-color);
+            }
 
-.section-title {
-    color: var(--dark-color);
-    font-weight: 600;
-    font-size: 1.6rem;
-}
+            .section-title {
+                color: var(--dark-color);
+                font-weight: 600;
+                font-size: 1.6rem;
+            }
 
-.btn-custom {
-    background-color: #28a745;
-    color: white;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-weight: 500;
-    border: none;
-    transition: 0.3s;
-}
+            .btn-custom {
+                background-color: #28a745;
+                color: white;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-weight: 500;
+                border: none;
+                transition: 0.3s;
+            }
 
-.btn-custom:hover {
-    background-color: #0056b3;
-    color: white;
-}
+            .btn-custom:hover {
+                background-color: #0056b3;
+                color: white;
+            }
 
-.btn-danger-custom {
-    background-color: var(--danger-color);
-    color: white;
-    border-radius: 8px;
-    padding: 6px 15px;
-    font-size: 0.9rem;
-    border: none;
-    transition: 0.3s;
-}
+            .btn-danger-custom {
+                background-color: var(--danger-color);
+                color: white;
+                border-radius: 8px;
+                padding: 6px 15px;
+                font-size: 0.9rem;
+                border: none;
+                transition: 0.3s;
+            }
 
-.btn-danger-custom:hover {
-    background-color: #c82333;
-    color: white;
-}
+            .btn-danger-custom:hover {
+                background-color: #c82333;
+                color: white;
+            }
 
-.table-container {
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-}
+            .table-container {
+                background: white;
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 0 10px rgba(0,0,0,0.05);
+                margin-bottom: 30px;
+            }
 
-.table thead th {
-    background-color: #343a40;
-    color: white;
-    text-align: center;
-    font-weight: 600;
-    padding: 15px;
-}
+            .table thead th {
+                background-color: #343a40;
+                color: white;
+                text-align: center;
+                font-weight: 600;
+                padding: 15px;
+            }
 
-.table tbody td {
-    text-align: center;
-    vertical-align: middle;
-}
+            .table tbody td {
+                text-align: center;
+                vertical-align: middle;
+            }
 
-.table tbody tr:hover {
-    background-color: #f1f1f1;
-}
+            .table tbody tr:hover {
+                background-color: #f1f1f1;
+            }
 
-.stats-card {
-    background-color: #343a40;
-    color: white;
-    border-radius: 15px;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 20px;
-}
+            .stats-card {
+                background-color: #343a40;
+                color: white;
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                margin-bottom: 20px;
+            }
 
-.stats-number {
-    font-size: 2rem;
-    font-weight: 700;
-}
+            .stats-number {
+                font-size: 2rem;
+                font-weight: 700;
+            }
 
-.stats-label {
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
+            .stats-label {
+                font-size: 0.9rem;
+                opacity: 0.9;
+            }
 
-/* Modal Styling */
-.modal-content {
-    border-radius: 12px;
-}
+            /* Modal Styling */
+            .modal-content {
+                border-radius: 12px;
+            }
 
-.modal-header {
-    background-color: var(--primary-color);
-    color: white;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-}
+            .modal-header {
+                background-color: var(--primary-color);
+                color: white;
+                border-top-left-radius: 12px;
+                border-top-right-radius: 12px;
+            }
 
-.modal-title {
-    font-weight: 600;
-}
+            .modal-title {
+                font-weight: 600;
+            }
 
-.form-control {
-    border-radius: 8px;
-    border: 1px solid #ced4da;
-    padding: 10px;
-}
+            .form-control {
+                border-radius: 8px;
+                border: 1px solid #ced4da;
+                padding: 10px;
+            }
 
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-}
+            .form-control:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+            }
 
-/* Notification Box */
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 20px;
-    border-radius: 10px;
-    color: white;
-    font-weight: 500;
-    z-index: 10000;
-    display: none;
-}
+            /* Notification Box */
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 10px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                display: none;
+            }
 
-.notification.show {
-    display: block;
-    animation: fadeIn 0.5s ease-in-out;
-}
+            .notification.show {
+                display: block;
+                animation: fadeIn 0.5s ease-in-out;
+            }
 
-.notification.success {
-    background-color: var(--success-color);
-}
+            .notification.success {
+                background-color: var(--success-color);
+            }
 
-.notification.error {
-    background-color: var(--danger-color);
-}
+            .notification.error {
+                background-color: var(--danger-color);
+            }
 
-.notification.warning {
-    background-color: var(--warning-color);
-    color: #856404;
-}
+            .notification.warning {
+                background-color: var(--warning-color);
+                color: #856404;
+            }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateX(100px); }
-    to { opacity: 1; transform: translateX(0); }
-}
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .main-content {
-        padding: 20px;
-    }
+            /* Responsive */
+            @media (max-width: 768px) {
+                .main-content {
+                    padding: 20px;
+                }
 
-    .page-title {
-        font-size: 2rem;
-    }
+                .page-title {
+                    font-size: 2rem;
+                }
 
-    .table-responsive {
-        font-size: 0.9rem;
-    }
-}
+                .table-responsive {
+                    font-size: 0.9rem;
+                }
+            }
 
         </style>
     </head>
@@ -241,10 +247,10 @@ body {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <button class="nav-link" onclick="history.back()">
+                        <a class="nav-link" href="view-region">
                             <i class="fas fa-arrow-left"></i>
                             Quay lại
-                        </button>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -263,7 +269,7 @@ body {
 
                         <!-- Statistics Cards -->
                         <div class="row mb-4">
-                           <div class="col-md-3">
+                            <div class="col-md-3">
                                 <div class="stats-card">
                                     <div class="stats-number">${listShift.size()}</div>
                                     <div class="stats-label">Ca làm việc</div>
@@ -348,7 +354,7 @@ body {
                                 </div>
                             </div>
                         </div>
-                         <!-- Courts Section -->
+
                         <div class="section-header">
                             <h4 class="section-title">
                                 <i class="fas fa-tennis-ball"></i>
@@ -400,7 +406,7 @@ body {
                                 </table>
                             </div>
                         </div>
-                        <!-- Shifts Section -->
+
                         <div class="section-header">
                             <h4 class="section-title">
                                 <i class="fas fa-calendar-alt"></i>
@@ -417,7 +423,7 @@ body {
                                 <table id="shiftTable" class="table">
                                     <thead>
                                         <tr>
-                                           
+
                                             <th>Tên ca</th>
                                             <th>Thời gian bắt đầu</th>
                                             <th>Thời gian kết thúc</th>
@@ -428,7 +434,7 @@ body {
                                     <tbody>
                                         <c:forEach var="shift" items="${listShift}" varStatus="loop">
                                             <tr>
-                                               
+
                                                 <td><strong>${shift.shiftName}</strong></td>
                                                 <td><i class="fas fa-play text-success"></i> ${shift.startTime}</td>
                                                 <td><i class="fas fa-stop text-danger"></i> ${shift.endTime}</td>
@@ -436,6 +442,62 @@ body {
                                                 <td>
                                                     <a href="delete-shift?shiftId=${shift.shiftId}&area_id=${area_id}" 
                                                        onclick="return confirmDelete('ca làm việc này')" 
+                                                       class="btn btn-danger-custom">
+                                                        <i class="fas fa-trash"></i>
+                                                        Xóa
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                        <!-- Services Section -->
+                        <div class="section-header">
+                            <h4 class="section-title">
+                                <i class="fas fa-concierge-bell"></i>
+                                Danh sách dịch vụ
+                            </h4>
+                            <button type="button" class="btn btn-custom" data-toggle="modal" data-target="#addServiceModal">
+                                <i class="fas fa-plus"></i>
+                                Thêm dịch vụ
+                            </button>
+                        </div>
+
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <c:if test="${param.error == 'exists'}">
+                                    <div class="alert alert-danger">Dịch vụ này đã tồn tại trong khu vực!</div>
+                                </c:if>
+                                <c:if test="${param.msg == 'added'}">
+                                    <div class="alert alert-success">Thêm dịch vụ thành công!</div>
+                                </c:if>
+                                <c:if test="${param.error == 'exception'}">
+                                    <div class="alert alert-danger">Có lỗi xảy ra, vui lòng thử lại.</div>
+                                </c:if>
+                                <table id="serviceTable" class="table">
+                                    <thead>
+                                        <tr>
+
+                                            <th>Tên dịch vụ</th>
+                                            <th>Giá</th>
+                                            <th>Mô tả</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="s" items="${areaAllServices}" varStatus="loop">
+                                            <tr>
+
+                                                <td><strong>${s.service.name}</strong></td>
+                                                <td><span class="badge badge-success">${s.service.price} VNĐ</span></td>
+                                                <td>${s.service.description}</td>
+                                                <td>
+                                                    <a href="remove-service?areaServiceID=${s.areaService_id}&area_id=${area_id}" 
+                                                       onclick="return confirmDelete('dịch vụ này')" 
                                                        class="btn btn-danger-custom">
                                                         <i class="fas fa-trash"></i>
                                                         Xóa
@@ -496,59 +558,14 @@ body {
                             </div>
                         </div>
 
-                        <!-- Services Section -->
-                        <div class="section-header">
-                            <h4 class="section-title">
-                                <i class="fas fa-concierge-bell"></i>
-                                Danh sách dịch vụ
-                            </h4>
-                            <button type="button" class="btn btn-custom" data-toggle="modal" data-target="#addServiceModal">
-                                <i class="fas fa-plus"></i>
-                                Thêm dịch vụ
-                            </button>
-                        </div>
 
-                        <div class="table-container">
-                            <div class="table-responsive">
-                                <table id="serviceTable" class="table">
-                                    <thead>
-                                        <tr>
 
-                                            <th>Tên dịch vụ</th>
-                                            <th>Giá</th>
-                                            <th>Mô tả</th>
-                                            <th>Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach var="s" items="${areaAllServices}" varStatus="loop">
-                                            <tr>
-
-                                                <td><strong>${s.service.name}</strong></td>
-                                                <td><span class="badge badge-success">${s.service.price} VNĐ</span></td>
-                                                <td>${s.service.description}</td>
-                                                <td>
-                                                    <a href="remove-service?areaServiceID=${s.areaService_id}&area_id=${area_id}" 
-                                                       onclick="return confirmDelete('dịch vụ này')" 
-                                                       class="btn btn-danger-custom">
-                                                        <i class="fas fa-trash"></i>
-                                                        Xóa
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                       
                     </div>
                 </div>
             </div>
         </div>
 
-      
+
         <div class="modal fade" id="addShiftModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <form action="add-shift" method="post" class="modal-content" onsubmit="showLoading()">
@@ -575,7 +592,7 @@ body {
                             <label><i class="fas fa-stop"></i> Thời gian kết thúc</label>
                             <input type="time" name="endTime" class="form-control" step="1800" required />
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label><i class="fas fa-stop"></i> Thời gian kết thúc</label>
                             <input type="number" name="price" class="form-control"  required />
                         </div>
@@ -673,7 +690,7 @@ body {
             </div>
         </div>
 
-        <!-- Image View Modal -->
+
         <div class="modal fade" id="imageViewModal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -743,7 +760,7 @@ body {
                     $(document).ready(function () {
                         // Initialize DataTables
                         $('#shiftTable, #imageTable, #serviceTable, #courtsTable').DataTable({
-                            pageLength: 5,
+                            pageLength: 3,
                             lengthChange: false,
                             language: {
                                 "sProcessing": "Đang xử lý...",
@@ -764,12 +781,12 @@ body {
                             }
                         });
 
-                        // Auto hide notifications after 5 seconds
+
                         setTimeout(function () {
                             $('.notification.show').removeClass('show');
                         }, 5000);
 
-                        // Image preview functionality
+
                         $('#image').change(function () {
                             const file = this.files[0];
                             if (file) {
@@ -782,7 +799,7 @@ body {
                             }
                         });
 
-                        // Form validation
+                       
                         $('form').submit(function () {
                             let isValid = true;
                             $(this).find('input[required], select[required]').each(function () {
@@ -833,7 +850,7 @@ body {
                         setTimeout(() => notification.removeClass('show'), 5000);
                     }
 
-                    // Check URL parameters for success messages
+
                     $(document).ready(function () {
                         const urlParams = new URLSearchParams(window.location.search);
 
@@ -854,7 +871,7 @@ body {
                         }
                     });
 
-                    // Add loading animation for delete operations
+
                     $('a[href*="delete"]').click(function (e) {
                         if (confirm($(this).data('confirm') || 'Bạn có chắc chắn muốn xóa không?')) {
                             showLoading();
@@ -863,7 +880,7 @@ body {
                         }
                     });
 
-                    // Smooth scrolling for anchor links
+
                     $('a[href^="#"]').on('click', function (event) {
                         var target = $(this.getAttribute('href'));
                         if (target.length) {
@@ -873,6 +890,43 @@ body {
                             }, 1000);
                         }
                     });
+                    $(document).ready(function () {
+                        var courtsTable = $('#courtsTable').DataTable();
+                        var shiftTable = $('#shiftTable').DataTable();
+                        var serviceTable = $('#serviceTable').DataTable();
+
+
+                        $.fn.dataTable.ext.search.push(
+                                function (settings, data, dataIndex) {
+                                    if (settings.nTable.id !== 'courtsTable')
+                                        return true;
+                                    var searchTerm = courtsTable.search().toLowerCase().trim();
+                                    var name = data[0].toLowerCase();
+                                    return !searchTerm || name.indexOf(searchTerm) > -1;
+                                }
+                        );
+
+                        $.fn.dataTable.ext.search.push(
+                                function (settings, data, dataIndex) {
+                                    if (settings.nTable.id !== 'shiftTable')
+                                        return true;
+                                    var searchTerm = shiftTable.search().toLowerCase().trim();
+                                    var name = data[0].toLowerCase();
+                                    return !searchTerm || name.indexOf(searchTerm) > -1;
+                                }
+                        );
+
+                        $.fn.dataTable.ext.search.push(
+                                function (settings, data, dataIndex) {
+                                    if (settings.nTable.id !== 'serviceTable')
+                                        return true;
+                                    var searchTerm = serviceTable.search().toLowerCase().trim();
+                                    var name = data[0].toLowerCase();
+                                    return !searchTerm || name.indexOf(searchTerm) > -1;
+                                }
+                        );
+                    });
+
         </script>
     </body>
 </html>
