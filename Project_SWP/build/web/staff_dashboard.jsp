@@ -63,7 +63,7 @@
                         <div class="card-header"><strong>Khung giờ đặt nhiều</strong></div>
                         <div class="card-body">
                             <canvas id="hourChart" height="200"></canvas>
-                        </div>
+</div>
                     </div>
                 </div>
                 <div class="col-md-6 mb-4">

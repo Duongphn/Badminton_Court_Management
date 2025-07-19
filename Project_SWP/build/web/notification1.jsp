@@ -76,10 +76,16 @@
   
             <div class="row">
 <!--                 Sidebar -->
-                <div class="col-md-3">
-                    <jsp:include page="Sidebar.jsp"/>
-                </div>
-
+                <div class="col-md-3 d-none d-md-block">
+            <c:choose>
+                <c:when test="${sessionScope.user.role eq 'staff'}">
+                    <jsp:include page="Sidebar_Staff.jsp" />
+                </c:when>
+                <c:otherwise>
+                    <jsp:include page="Sidebar.jsp" />
+                </c:otherwise>
+            </c:choose>
+        </div>
                 <!-- Nội dung -->
                 <div class="col-md-8">
                     <div class="container">

@@ -526,10 +526,141 @@
                     flex-direction: column;
                 }
             }
+            #chatbot-toggle {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                background: #2980b9;
+                border-radius: 50%;
+                color: white;
+                font-size: 30px;
+                text-align: center;
+                line-height: 60px;
+                cursor: pointer;
+                z-index: 1001;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                transition: background 0.3s;
+            }
+
+            #chatbot-toggle:hover {
+                background: #1f6390;
+            }
+
+            #chatbot-container {
+                display: none; /* Ẩn mặc định */
+                position: fixed;
+                bottom: 90px;
+                right: 20px;
+                width: 300px;
+                z-index: 1000;
+                font-family: sans-serif;
+            }
+
+            #chatbox {
+                height: 350px;
+                background: #fff;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                overflow-y: auto;
+                padding: 10px;
+                font-size: 14px;
+                line-height: 1.5;
+                word-wrap: break-word;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+
+            .msg-user, .msg-bot {
+                margin: 5px 0;
+                display: flex;
+                width: 100%;
+            }
+
+            .msg-user span {
+                background: #dfe6e9;
+                padding: 8px 12px;
+                border-radius: 10px 0 10px 10px;
+                margin-left: auto;
+                max-width: 80%;
+                word-break: break-word;
+            }
+
+            .msg-bot span {
+                background: #74b9ff;
+                color: white;
+                padding: 8px 12px;
+                border-radius: 0 10px 10px 10px;
+                margin-right: auto;
+                max-width: 80%;
+                word-break: break-word;
+
         </style>
     </head>
     <body>
-        <!-- Header -->
+        <div id="chatbot-toggle" onclick="toggleChatbot()">💬</div>
+
+
+            <!-- Chatbot Panel -->
+            <div id="chatbot-container">
+                <div id="chatbox"></div>
+                <div style="display: flex;
+                     margin-top: 5px;">
+                    <input type="text" id="userMessage" placeholder="Nhập tin nhắn..."
+                           style="flex: 1;
+                           padding: 8px;
+                           border-radius: 6px 0 0 6px;
+                           border: 1px solid #ccc;
+                           outline: none;">
+                    <button onclick="sendMessage()"
+                            style="padding: 8px 12px;
+                            border: none;
+                            background-color: #2980b9;
+                            color: white;
+                            border-radius: 0 6px 6px 0;
+                            cursor: pointer;">
+                        Gửi
+                    </button>
+                </div>
+            </div>
+
+            <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+            <script>
+                        function toggleChatbot() {
+                            const panel = document.getElementById("chatbot-container");
+                            panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
+                        }
+
+                        function sendMessage() {
+                            var msg = $("#userMessage").val().trim();
+                            if (msg === "")
+                                return;
+
+                            $("#chatbox").append('<div class="msg-user"><span>' + escapeHTML(msg) + '</span></div>');
+                            $("#userMessage").val("");
+
+                            $.ajax({
+                                type: "POST",
+                                url: "${pageContext.request.contextPath}/chatbot",
+                                data: {message: msg},
+                                dataType: "text",
+                                contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+                                success: function (response) {
+                                    $("#chatbox").append('<div class="msg-bot"><span>' + escapeHTML(response) + '</span></div>');
+                                    $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
+                                },
+                                error: function () {
+                                    $("#chatbox").append('<div class="msg-bot"><span style="color:red;">Lỗi phản hồi từ chatbot</span></div>');
+                                }
+                            });
+                        }
+
+                        function escapeHTML(str) {
+                            return str.replace(/&/g, "&amp;")
+                                    .replace(/</g, "&lt;")
+                                    .replace(/>/g, "&gt;");
+                        }
+            </script>
         <header class="header">
             <div class="header-container">
                 <div class="logo">BadmintonCourt</div>

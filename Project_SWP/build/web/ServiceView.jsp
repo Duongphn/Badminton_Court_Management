@@ -110,7 +110,7 @@
 
             .btn {
                 padding: 6px 12px;
-                border-radius: 6px;
+border-radius: 6px;
                 font-weight: bold;
                 text-decoration: none;
                 display: inline-block;
@@ -195,13 +195,30 @@
                 color: white;
                 border-color: #007bff;
             }
+
+            /* Custom styles for delete modal */
+            .delete-modal-header {
+                background-color: #dc3545;
+                color: white;
+            }
+
+            .delete-modal-icon {
+                font-size: 48px;
+                color: #dc3545;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .delete-modal-content {
+                text-align: center;
+            }
         </style>
     </head>
     <body>
         <jsp:include page="Sidebar.jsp" />
         <%
             List<Service> service = (List<Service>) request.getAttribute("service");
-            if (service == null) service = java.util.Collections.emptyList();
+if (service == null) service = java.util.Collections.emptyList();
            String status = request.getParameter("status");
         %>
 
@@ -256,11 +273,17 @@
                                 <td><%= eq.getName() %></td>
                                 <td><%= eq.getPrice() %> VNĐ</td>
                                 <td class="action-buttons">
-                                    <a href="UpdateService.jsp?id=<%= eq.getService_id() %>" class="btn btn-warning">Sửa</a>
-                                    <a href="DeleteService?id=<%= eq.getService_id() %>" class="btn btn-danger"
-                                       onclick="return confirm('Bạn có chắc chắn muốn xóa thiết bị này?');">Xóa</a>
+                                    <button type="button" class="btn btn-warning"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editServiceModal<%= eq.getService_id() %>">
+Sửa
+                                    </button>
+                                    <button type="button" class="btn btn-danger"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteServiceModal<%= eq.getService_id() %>">
+                                        Xóa
+                                    </button>
                                 </td>
-
                             </tr>
                             <% } %>
                         </tbody>
@@ -288,54 +311,132 @@
             </div>
         </div>
 
-    </body>
-    <!-- Modal thêm dịch vụ -->
-    <div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <form action="AddService" method="post" enctype="multipart/form-data">
-                    <div class="modal-header" style="background-color: #007bff; color: white;">
-                        <h5 class="modal-title" id="addServiceLabel">Add Service</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                    </div>
-
-                    <div class="modal-body" style="padding: 20px 30px;">
-                        <div style="margin-bottom: 12px;">
-                            <label style="display: block; margin-bottom: 6px;">Tên dịch vụ</label>
-                            <input type="text" name="name" class="form-control" required />
+        <!-- Modal Sửa dịch vụ cho từng dòng -->
+        <% for (Service eq : service) { %>
+        <div class="modal fade" id="editServiceModal<%= eq.getService_id() %>" tabindex="-1" aria-labelledby="editServiceLabel<%= eq.getService_id() %>" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form action="UpdateService" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="service_id" value="<%= eq.getService_id() %>"/>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editServiceLabel<%= eq.getService_id() %>">Sửa dịch vụ</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
-
-                        <div style="margin-bottom: 12px;">
-                            <label style="display: block; margin-bottom: 6px;">Giá</label>
-                            <input type="number" name="price" class="form-control" required />
-                        </div>
-
-                        <div style="margin-bottom: 12px;">
-                            <label style="display: block; margin-bottom: 6px;">Ảnh dịch vụ</label>
-                            <input type="file" name="image_file" class="form-control" accept="image/*" required />
-                        </div>
-
-
-                        <div style="margin-bottom: 12px;">
-                            <label style="display: block; margin-bottom: 6px;">Mô tả</label>
-                            <textarea name="description" class="form-control" rows="2"></textarea>
-                        </div>
-
-                        <div style="margin-bottom: 12px;">
-                            <label style="display: block; margin-bottom: 6px;">Trạng thái:</label>
-                            <div style="display: flex; gap: 30px;">
-                                <label><input type="radio" name="status" value="Active" checked> Active</label>
-                                <label><input type="radio" name="status" value="Inactive"> Inactive</label>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label>Tên dịch vụ</label>
+                                <input type="text" class="form-control" name="name" value="<%= eq.getName() %>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Giá</label>
+<input type="number" class="form-control" name="price" value="<%= eq.getPrice() %>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Mô tả</label>
+                                <textarea class="form-control" name="description"><%= eq.getDescription() %></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label>Trạng thái</label>
+                                <select name="status" class="form-control">
+                                    <option value="Active" <%= "Active".equals(eq.getStatus()) ? "selected" : "" %>>Active</option>
+                                    <option value="Inactive" <%= "Inactive".equals(eq.getStatus()) ? "selected" : "" %>>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label>Ảnh hiện tại</label><br>
+                                <% if (eq.getImage_url() != null && !eq.getImage_url().isEmpty()) { %>
+                                <img src="<%= request.getContextPath() + "/" + eq.getImage_url() %>" width="100" style="margin-bottom:8px;">
+                                <% } else { %>
+                                <span style="color: #888;">Không có ảnh</span>
+                                <% } %>
+                                <input type="file" class="form-control" name="image_file" accept="image/*">
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Thêm</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    </div>
-                </form>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+        <% } %>
 
+        <!-- Modal Xóa dịch vụ cho từng dòng -->
+        <% for (Service eq : service) { %>
+        <div class="modal fade" id="deleteServiceModal<%= eq.getService_id() %>" tabindex="-1" aria-labelledby="deleteServiceLabel<%= eq.getService_id() %>" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header delete-modal-header">
+                        <h5 class="modal-title" id="deleteServiceLabel<%= eq.getService_id() %>">Xác nhận xóa</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body delete-modal-content">
+                        <div class="delete-modal-icon">⚠️</div>
+                        <h5>Bạn có chắc chắn muốn xóa dịch vụ này?</h5>
+<p><strong>Tên dịch vụ:</strong> <%= eq.getName() %></p>
+                        <p><strong>ID:</strong> <%= eq.getService_id() %></p>
+                        <p class="text-muted">Hành động này không thể hoàn tác!</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <a href="DeleteService?id=<%= eq.getService_id() %>" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Xóa
+                        </a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Hủy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Modal thêm dịch vụ -->
+        <div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form action="AddService" method="post" enctype="multipart/form-data">
+                        <div class="modal-header" style="background-color: #007bff; color: white;">
+                            <h5 class="modal-title" id="addServiceLabel">Add Service</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+
+                        <div class="modal-body" style="padding: 20px 30px;">
+                            <div style="margin-bottom: 12px;">
+                                <label style="display: block; margin-bottom: 6px;">Tên dịch vụ</label>
+                                <input type="text" name="name" class="form-control" required />
+                            </div>
+
+                            <div style="margin-bottom: 12px;">
+                                <label style="display: block; margin-bottom: 6px;">Giá</label>
+                                <input type="number" name="price" class="form-control" required />
+                            </div>
+
+                            <div style="margin-bottom: 12px;">
+                                <label style="display: block; margin-bottom: 6px;">Ảnh dịch vụ</label>
+                                <input type="file" name="image_file" class="form-control" accept="image/*" required />
+                            </div>
+
+                            <div style="margin-bottom: 12px;">
+                                <label style="display: block; margin-bottom: 6px;">Mô tả</label>
+                                <textarea name="description" class="form-control" rows="2"></textarea>
+                            </div>
+
+                            <div style="margin-bottom: 12px;">
+                                <label style="display: block; margin-bottom: 6px;">Trạng thái:</label>
+<div style="display: flex; gap: 30px;">
+                                    <label><input type="radio" name="status" value="Active" checked> Active</label>
+                                    <label><input type="radio" name="status" value="Inactive"> Inactive</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Thêm</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

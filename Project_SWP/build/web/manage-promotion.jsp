@@ -156,7 +156,7 @@
                                                         <div class="modal-content">
                                                             <form action="edit-promotion" method="POST">
                                                                 <div class="modal-header">
-                                                                    <h5 class="modal-title">Sửa khuyến mãi</h5>
+                                                                    <h5 class="modal-title">Sửa khuyến mại</h5>
                                                                     <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
                                                                 </div>
                                                                 <div class="modal-body">
@@ -220,7 +220,7 @@
                         <!-- Pagination -->
                         <ul class="pagination justify-content-center mt-4">
                             <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                <a class="page-link" href="manage-promotion?page=${currentPage - 1}">Previous</a>
+                                <a class="page-link" href="manage-promotion?page=${currentPage - 1}">Trước</a>
                             </li>
                             <c:forEach begin="1" end="${numberOfPages}" var="i">
                                 <li class="page-item ${currentPage == i ? 'active' : ''}">
@@ -228,7 +228,7 @@
                                 </li>
                             </c:forEach>
                             <li class="page-item ${currentPage == numberOfPages ? 'disabled' : ''}">
-                                <a class="page-link" href="manage-promotion?page=${currentPage + 1}">Next</a>
+                                <a class="page-link" href="manage-promotion?page=${currentPage + 1}">Sau</a>
                             </li>
                         </ul>
 
@@ -240,7 +240,7 @@
                                 <div class="modal-content">
                                     <form action="add-promotion" method="POST">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">Thêm khuyến mãi</h5>
+                                            <h5 class="modal-title">Thêm khuyến mại</h5>
                                             <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
                                         </div>
                                         <div class="modal-body">

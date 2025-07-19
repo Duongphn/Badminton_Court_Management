@@ -6,10 +6,9 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<<<<<<< HEAD
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-=======
->>>>>>> 01cf337edfd47836872828a5f0e8a855ccc69a1f
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>

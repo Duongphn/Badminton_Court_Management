@@ -225,7 +225,7 @@
                         <!-- Pagination -->
                         <ul class="pagination justify-content-center mt-4">
                             <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                <a class="page-link" href="view-region?page=${currentPage - 1}">Previous</a>
+                                <a class="page-link" href="view-region?page=${currentPage - 1}">Trước</a>
                             </li>
                             <c:forEach begin="1" end="${numberOfPages}" var="i">
                                 <li class="page-item ${currentPage == i ? 'active' : ''}">
@@ -233,7 +233,7 @@
                                 </li>
                             </c:forEach>
                             <li class="page-item ${currentPage == numberOfPages ? 'disabled' : ''}">
-                                <a class="page-link" href="view-region?page=${currentPage + 1}">Next</a>
+                                <a class="page-link" href="view-region?page=${currentPage + 1}">Sau</a>
                             </li>
                         </ul>
 
