@@ -542,6 +542,53 @@ public class BookingDAO extends DBContext {
         return bookings;
     }
 
+    public List<Bookings> getBookingsForUser(int userId, LocalDate from, LocalDate to, String status) {
+        List<Bookings> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Bookings WHERE user_id = ?");
+        if (from != null) {
+            sql.append(" AND date >= ?");
+        }
+        if (to != null) {
+            sql.append(" AND date <= ?");
+        }
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND status = ?");
+        }
+        sql.append(" ORDER BY date, start_time");
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setInt(idx++, userId);
+            if (from != null) {
+                ps.setDate(idx++, Date.valueOf(from));
+            }
+            if (to != null) {
+                ps.setDate(idx++, Date.valueOf(to));
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(idx++, status);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Bookings b = new Bookings();
+                b.setBooking_id(rs.getInt("booking_id"));
+                b.setUser_id(rs.getInt("user_id"));
+                b.setCourt_id(rs.getInt("court_id"));
+                b.setDate(rs.getDate("date").toLocalDate());
+                b.setStart_time(rs.getTime("start_time"));
+                b.setEnd_time(rs.getTime("end_time"));
+                b.setStatus(rs.getString("status"));
+                b.setRating(rs.getInt("rating"));
+                b.setTotal_price(rs.getDouble("total_price"));
+                list.add(b);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public boolean cancelBookingById(int bookingId) {
         String sql = "UPDATE bookings SET status = ? WHERE booking_id = ?";
         try (

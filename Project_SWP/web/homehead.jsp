@@ -210,6 +210,7 @@
                          ">
                         <a class="nav-item" href="listBranch" style="padding: 12px; display: block; text-decoration: none; color: #222;">Danh Sách Sân Bãi</a>
                         <a class="nav-item" href="booking-list" style="padding: 12px; display: block; text-decoration: none; color: #222;">Danh sách đặt sân</a>
+                        <a class="nav-item" href="booking-calendar" style="padding: 12px; display: block; text-decoration: none; color: #222;">Lịch đặt sân</a>
                         <a class="nav-item" href="HomeCoachList" style="padding: 12px; display: block; text-decoration: none; color: #222;">Danh sách huấn luyện viên</a>
                     </div>
                 </div>
