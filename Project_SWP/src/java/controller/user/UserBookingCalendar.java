@@ -29,20 +29,8 @@ public class UserBookingCalendar extends HttpServlet {
             return;
         }
 
-        String fromStr = request.getParameter("fromDate");
-        String toStr = request.getParameter("toDate");
-        String status = request.getParameter("status");
-        LocalDate from = null;
-        LocalDate to = null;
-        if (fromStr != null && !fromStr.isEmpty()) {
-            from = LocalDate.parse(fromStr);
-        }
-        if (toStr != null && !toStr.isEmpty()) {
-            to = LocalDate.parse(toStr);
-        }
-
         BookingDAO dao = new BookingDAO();
-        List<Bookings> bookings = dao.getBookingsForUser(user.getUser_Id(), from, to, status);
+        List<Bookings> bookings = dao.getBookingsForUser(user.getUser_Id(), null, null, null);
         CourtDAO courtDAO = new CourtDAO();
         List<Courts> courts = courtDAO.getAllCourts();
 
@@ -57,9 +45,6 @@ public class UserBookingCalendar extends HttpServlet {
 
         request.setAttribute("bookings", bookings);
         request.setAttribute("courts", courts);
-        request.setAttribute("fromDate", fromStr);
-        request.setAttribute("toDate", toStr);
-        request.setAttribute("status", status);
         request.getRequestDispatcher("booking_calendar.jsp").forward(request, response);
     }
 }

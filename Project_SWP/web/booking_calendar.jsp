@@ -20,29 +20,6 @@
 <jsp:include page="homehead.jsp" />
 <div class="container mt-4">
     <h2 class="mb-3">Lịch đặt sân của bạn</h2>
-    <form id="filterForm" class="row g-3" method="get" action="booking-calendar">
-        <div class="col-md-3">
-            <label class="form-label">Từ ngày</label>
-            <input type="date" class="form-control" name="fromDate" value="${fromDate}">
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Đến ngày</label>
-            <input type="date" class="form-control" name="toDate" value="${toDate}">
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Trạng thái</label>
-            <select class="form-select" name="status">
-                <option value="" ${empty status ? 'selected' : ''}>Tất cả</option>
-                <option value="pending" ${status=='pending'? 'selected':''}>Chờ xử lý</option>
-                <option value="confirmed" ${status=='confirmed'? 'selected':''}>Đã xác nhận</option>
-                <option value="cancelled" ${status=='cancelled'? 'selected':''}>Đã hủy</option>
-                <option value="completed" ${status=='completed'? 'selected':''}>Hoàn thành</option>
-            </select>
-        </div>
-        <div class="col-md-3 align-self-end">
-            <button type="submit" class="btn btn-primary w-100">Lọc</button>
-        </div>
-    </form>
     <div id='calendar'></div>
 
     <!-- Booking Modal -->
@@ -92,7 +69,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <button type="submit" id="saveButton" class="btn btn-primary">Lưu</button>
                     </div>
                 </form>
             </div>
@@ -113,6 +90,7 @@
         var endTime = document.getElementById('endTime');
         var courtId = document.getElementById('courtId');
         var statusSelect = document.getElementById('status');
+        var saveButton = document.getElementById('saveButton');
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -121,6 +99,12 @@
                 bookingForm.reset();
                 bookingIdField.value = '';
                 bookingDate.value = info.dateStr;
+                bookingDate.readOnly = false;
+                startTime.readOnly = false;
+                endTime.readOnly = false;
+                courtId.disabled = false;
+                statusSelect.disabled = false;
+                saveButton.style.display = 'inline-block';
                 bookingModal.show();
             },
             eventClick: function(info) {
@@ -132,41 +116,21 @@
                 endTime.value = ev.endStr.substring(11,16);
                 courtId.value = ev.extendedProps.courtId;
                 statusSelect.value = ev.extendedProps.status;
+                bookingDate.readOnly = true;
+                startTime.readOnly = true;
+                endTime.readOnly = true;
+                courtId.disabled = true;
+                statusSelect.disabled = true;
+                saveButton.style.display = 'none';
                 bookingModal.show();
             },
-            eventSources: [
-                [
-                    <c:forEach var="b" items="${bookings}" varStatus="loop">
-                    {
-                        id: '${b.booking_id}',
-                        title: 'Sân ${b.court_id} - ${b.status}',
-                        start: '${b.date}T${fn:substring(b.start_time,0,5)}',
-                        end: '${b.date}T${fn:substring(b.end_time,0,5)}',
-                        extendedProps: { courtId: ${b.court_id}, status: '${b.status}' }
-                    }<c:if test="${!loop.last}">,</c:if>
-                    </c:forEach>
-                ],
-                {
-                    url: '<c:url value="/booking-calendar" />',
-                    method: 'POST',
-                    extraParams: function() {
-                        var formData = new FormData(filterForm);
-                        var params = { format: 'json' };
-                        formData.forEach(function(value, key) {
-                            if (value) {
-                                params[key] = value;
-                            }
-                        });
-                        return params;
-                    }
-                }
-            ]
+            eventSources: [{
+                url: '<c:url value="/booking-calendar" />',
+                method: 'GET',
+                extraParams: { format: 'json' }
+            }]
         });
         calendar.render();
-        filterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            calendar.refetchEvents();
-        });
     });
 </script>
 </body>
