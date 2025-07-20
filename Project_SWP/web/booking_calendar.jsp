@@ -6,10 +6,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Lịch đặt sân</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <style>
         #calendar {
             max-width: 900px;
@@ -18,6 +16,7 @@
     </style>
 </head>
 <body>
+
 <jsp:include page="homehead.jsp" />
 <div class="container mt-4">
     <h2 class="mb-3">Lịch đặt sân của bạn</h2>
@@ -101,6 +100,8 @@
     </div>
 </div>
 <jsp:include page="homefooter.jsp" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
@@ -147,7 +148,7 @@
                 ],
                 {
                     url: '<c:url value="/booking-calendar" />',
-                    method: 'GET',
+                    method: 'POST',
                     extraParams: function() {
                         var formData = new FormData(filterForm);
                         var params = { format: 'json' };
