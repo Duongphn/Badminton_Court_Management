@@ -240,24 +240,31 @@ public class AddBookingServlet extends HttpServlet {
                 return;
             }
 
-            int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, date,
-                    startTime, endTime, "pending", finalPrice);
-            if (bookingId == -1) {
-                request.setAttribute("error", "Không thể tạo booking");
-                populateFormData(request, currentUser);
-                loadSlotsAndSelection(request, parsedCourtId, parsedDate);
-                request.getRequestDispatcher("add_booking.jsp").forward(request, response);
-                return;
-            }
-            if (selectedServices != null) {
-                BookingServiceDAO bsDao = new BookingServiceDAO();
-                for (String id : selectedServices) {
-                    try {
-                        bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
-                    } catch (NumberFormatException ignored) { }
+             boolean repeatWeekly = request.getParameter("repeatWeekly") != null;
+            int weeks = repeatWeekly ? 4 : 1;
+            java.util.List<Integer> ids = new java.util.ArrayList<>();
+            LocalDate current = date;
+
+            for (int i = 0; i < weeks; i++) {
+                if (!bookingDAO.checkSlotAvailable(courtId, current, startTime, endTime)
+                        || !bookingDAO.checkContinuousSlotsAvailable(courtId, current, startTime, endTime)) {
+                    current = current.plusWeeks(1);
+                    continue;
                 }
+                int bookingId = bookingDAO.insertBookingWithTotalPrice(userId, courtId, current,
+                        startTime, endTime, "pending", finalPrice);
+                if (bookingId != -1 && selectedServices != null) {
+                    BookingServiceDAO bsDao = new BookingServiceDAO();
+                    for (String id : selectedServices) {
+                        try {
+                            bsDao.addServiceToBooking(bookingId, Integer.parseInt(id));
+                        } catch (NumberFormatException ignored) { }
+                    }
+                }
+                ids.add(bookingId);
+                current = current.plusWeeks(1);
             }
-            String msg = URLEncoder.encode("Đặt sân thành công!", StandardCharsets.UTF_8);
+            String msg = URLEncoder.encode("Đặt sân thành công " + ids.size() + " lượt!", StandardCharsets.UTF_8);
             response.sendRedirect("manager-booking-schedule?msg=" + msg);
         } catch (Exception e) {
             request.setAttribute("error", "Dữ liệu không hợp lệ hoặc lỗi hệ thống!");

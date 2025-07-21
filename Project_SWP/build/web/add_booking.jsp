@@ -437,6 +437,18 @@
                                 </div>
                             </div>
 
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="repeatWeekly" name="repeatWeekly" />
+                                <label class="form-check-label" for="repeatWeekly">
+                                    Đặt lịch cố định hàng tuần trong 1 tháng
+                                </label>
+                            </div>
+
+                            <div id="weeklyPreview" style="display:none;" class="mb-3">
+                                <h5 class="court-name">Lịch đặt</h5>
+                                <ul id="weeklyList" class="mb-2"></ul>
+                            </div>
+
                             <!-- Services Section -->
                             <div class="service-section">
                                 <h5>
