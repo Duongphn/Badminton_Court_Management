@@ -12,6 +12,8 @@ import Model.Courts;
 import Model.Service;
 import Model.User;
 import Model.Promotion;
+import Model.Shift;
+import DAO.ShiftDAO;
 import utils.PasswordUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -199,8 +202,35 @@ public class AddBookingServlet extends HttpServlet {
                 conflicts.add("Một hoặc nhiều slot đã chọn không khả dụng");
             }
 
-            BigDecimal slotPrice = bookingDAO.calculateSlotPriceWithPromotionByShift(courtId, startTime, endTime, promotion);
-            BigDecimal finalPrice = slotPrice.add(BigDecimal.valueOf(serviceTotal));
+            ShiftDAO shiftDAO = new ShiftDAO();
+            List<Shift> shifts = shiftDAO.getShiftsByCourt(courtId);
+
+            BigDecimal slotPrice = BigDecimal.ZERO;
+            LocalTime startLocal = startTime.toLocalTime();
+            LocalTime endLocal = endTime.toLocalTime();
+            for (Shift sh : shifts) {
+                LocalTime shStart = sh.getStartTime().toLocalTime();
+                LocalTime shEnd = sh.getEndTime().toLocalTime();
+                if (endLocal.isAfter(shStart) && startLocal.isBefore(shEnd)) {
+                    slotPrice = slotPrice.add(sh.getPrice());
+                }
+            }
+
+            if (promotion != null) {
+                if (promotion.getDiscountPercent() > 0) {
+                    BigDecimal percent = BigDecimal.valueOf(promotion.getDiscountPercent())
+                            .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+                    slotPrice = slotPrice.subtract(slotPrice.multiply(percent));
+                }
+                if (promotion.getDiscountAmount() > 0) {
+                    slotPrice = slotPrice.subtract(BigDecimal.valueOf(promotion.getDiscountAmount()));
+                }
+            }
+            if (slotPrice.compareTo(BigDecimal.ZERO) < 0) {
+                slotPrice = BigDecimal.ZERO;
+            }
+
+            BigDecimal finalPrice = slotPrice.add(BigDecimal.valueOf(serviceTotal)).setScale(0, RoundingMode.HALF_UP);
 
             if (!conflicts.isEmpty()) {
                 request.setAttribute("error", String.join(", ", conflicts));
