@@ -109,6 +109,13 @@
                     </div>
                     <c:remove var="cancelMessage" scope="session"/>
                 </c:if>
+                <c:if test="${not empty sessionScope.bookingMessage}">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        ${sessionScope.bookingMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <c:remove var="bookingMessage" scope="session"/>
+                </c:if>
             <div class="table-responsive mt-4">
                 <table class="table table-bordered">
                     <thead>

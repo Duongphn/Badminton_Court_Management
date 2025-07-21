@@ -133,15 +133,29 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
 
         // Tiếp tục lưu booking, lưu dịch vụ...
         BookingDAO bookingDAO = new BookingDAO();
-        int bookingId = bookingDAO.insertBooking1(userId, courtId, date, startTime, endTime, "pending", totalPrice);
+        BookingServiceDAO bookingServiceDAO = new BookingServiceDAO();
+        boolean repeatWeekly = request.getParameter("repeatWeekly") != null;
+        int weeks = repeatWeekly ? 4 : 1;
+        java.util.List<Integer> ids = new java.util.ArrayList<>();
+        LocalDate current = date;
 
-        if (selectedServices != null && bookingId != -1) {
-            BookingServiceDAO bookingServiceDAO = new BookingServiceDAO();
-            for (String serviceIdStr : selectedServices) {
-                int serviceId = Integer.parseInt(serviceIdStr);
-                bookingServiceDAO.addServiceToBooking(bookingId, serviceId);
+        for (int i = 0; i < weeks; i++) {
+            if (!bookingDAO.checkSlotAvailable(courtId, current, startTime, endTime)) {
+                current = current.plusWeeks(1);
+                continue;
             }
+            int bookingId = bookingDAO.insertBooking1(userId, courtId, current, startTime, endTime, "pending", totalPrice);
+            if (bookingId != -1 && selectedServices != null) {
+                for (String serviceIdStr : selectedServices) {
+                    int serviceId = Integer.parseInt(serviceIdStr);
+                    bookingServiceDAO.addServiceToBooking(bookingId, serviceId);
+                }
+            }
+            ids.add(bookingId);
+            current = current.plusWeeks(1);
         }
+
+        session.setAttribute("bookingMessage", "Đặt sân thành công " + ids.size() + " lượt.");
 
         response.sendRedirect("booking-list");
 

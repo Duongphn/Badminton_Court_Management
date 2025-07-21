@@ -187,6 +187,19 @@
                         </div>
                     </c:if>
 
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="repeatWeekly" name="repeatWeekly" />
+                        <label class="form-check-label" for="repeatWeekly">
+                            Đặt lịch cố định hàng tuần trong 1 tháng
+                        </label>
+                    </div>
+
+                    <div id="weeklyPreview" style="display:none;" class="mb-3">
+                        <h5 class="court-name">Lịch đặt</h5>
+                        <ul id="weeklyList" class="mb-2"></ul>
+                        <div><strong>Tổng tiền (ước tính):</strong> <span id="weeklyTotal"></span> VNĐ</div>
+                    </div>
+
 
                     <div class="court-info">
                         <h5 class="court-name">Dịch vụ đi kèm</h5>
@@ -208,6 +221,40 @@
                     <button type="submit" class="book-btn">Xác nhận đặt sân</button>
                 </form>
             </div>
+            <script>
+                const repeatBox = document.getElementById('repeatWeekly');
+                const preview = document.getElementById('weeklyPreview');
+                const list = document.getElementById('weeklyList');
+                const totalSpan = document.getElementById('weeklyTotal');
+                const basePrice = parseFloat('${totalPrice}');
+                const start = '${startTime}';
+                const end = '${endTime}';
+                const startDate = new Date('${date}');
+
+                function updatePreview() {
+                    if (!repeatBox.checked) {
+                        preview.style.display = 'none';
+                        list.innerHTML = '';
+                        totalSpan.textContent = '';
+                        return;
+                    }
+                    preview.style.display = 'block';
+                    list.innerHTML = '';
+                    let total = 0;
+                    for (let i = 0; i < 4; i++) {
+                        const d = new Date(startDate.getTime());
+                        d.setDate(d.getDate() + i * 7);
+                        const ds = d.toISOString().split('T')[0];
+                        const li = document.createElement('li');
+                        li.textContent = ds + ' ' + start + ' - ' + end;
+                        list.appendChild(li);
+                        total += basePrice;
+                    }
+                    totalSpan.textContent = total.toFixed(0);
+                }
+
+                repeatBox.addEventListener('change', updatePreview);
+            </script>
         </main>
 
         <!-- Footer -->

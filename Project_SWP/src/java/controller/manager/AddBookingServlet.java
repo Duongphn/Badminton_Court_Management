@@ -216,16 +216,16 @@ public class AddBookingServlet extends HttpServlet {
                 }
             }
 
-            if (promotion != null) {
-                if (promotion.getDiscountPercent() > 0) {
-                    BigDecimal percent = BigDecimal.valueOf(promotion.getDiscountPercent())
-                            .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-                    slotPrice = slotPrice.subtract(slotPrice.multiply(percent));
-                }
-                if (promotion.getDiscountAmount() > 0) {
-                    slotPrice = slotPrice.subtract(BigDecimal.valueOf(promotion.getDiscountAmount()));
-                }
-            }
+            // if (promotion != null) {
+            //     if (promotion.getDiscountPercent() > 0) {
+            //         BigDecimal percent = BigDecimal.valueOf(promotion.getDiscountPercent())
+            //                 .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+            //         slotPrice = slotPrice.subtract(slotPrice.multiply(percent));
+            //     }
+            //     if (promotion.getDiscountAmount() > 0) {
+            //         slotPrice = slotPrice.subtract(BigDecimal.valueOf(promotion.getDiscountAmount()));
+            //     }
+            // }
             if (slotPrice.compareTo(BigDecimal.ZERO) < 0) {
                 slotPrice = BigDecimal.ZERO;
             }
