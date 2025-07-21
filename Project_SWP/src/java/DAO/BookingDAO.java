@@ -24,9 +24,6 @@ import Dal.DBContext;
 import Model.BookingScheduleDTO;
 import Model.Bookings;
 import Model.Courts;
-import Model.Service;
-import DAO.ServiceDAO;
-import DAO.BookingServiceDAO;
 import Model.Promotion;
 import Model.Service;
 import Model.Shift;
@@ -498,7 +495,8 @@ public class BookingDAO extends DBContext {
                 "JOIN Courts c ON b.court_id = c.court_id " +
                 "LEFT JOIN Booking_Services bs ON b.booking_id = bs.booking_id " +
                 "LEFT JOIN BadmintonService s ON bs.service_id = s.service_id " +
-                "WHERE b.user_id = ?";
+                "WHERE b.user_id = ? " +
+                "ORDER BY b.booking_id DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -541,7 +539,7 @@ public class BookingDAO extends DBContext {
 
         return bookings;
     }
-
+    
     public List<Bookings> getBookingsForUser(int userId, LocalDate from, LocalDate to, String status) {
         List<Bookings> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM Bookings WHERE user_id = ?");
@@ -589,6 +587,7 @@ public class BookingDAO extends DBContext {
         return list;
     }
 
+
     public boolean cancelBookingById(int bookingId) {
         String sql = "UPDATE bookings SET status = ? WHERE booking_id = ?";
         try (
@@ -627,7 +626,7 @@ public class BookingDAO extends DBContext {
             sql.append(" AND b.status = ?");
         }
 
-        sql.append(" ORDER BY b.date, b.start_time");
+        sql.append(" ORDER BY b.booking_id DESC");
 
         try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             int paramIndex = 1;
@@ -694,7 +693,7 @@ public class BookingDAO extends DBContext {
         if (status != null && !status.isEmpty()) {
             sql.append(" AND b.status = ?");
         }
-        sql.append(" ORDER BY b.date, b.start_time");
+        sql.append(" ORDER BY b.booking_id DESC");
 
         try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             int idx = 1;
@@ -759,8 +758,6 @@ public class BookingDAO extends DBContext {
             Courts court = new CourtDAO().getCourtById(current.getCourt_id());
             PromotionDAO proDao = new PromotionDAO();
             Promotion pro = court != null ? proDao.getCurrentPromotionForArea(court.getArea_id(), date) : null;
-            BigDecimal pricePerHour = new CourtDAO().getCourtPrice(current.getCourt_id());
-            BigDecimal total1 = calculateSlotPriceWithPromotion(startTime, endTime, pricePerHour, pro);
             BigDecimal total = calculateSlotPriceWithPromotionByShift(current.getCourt_id(), startTime, endTime, pro);
             if (serviceIds != null) {
                 for (int sid : serviceIds) {
