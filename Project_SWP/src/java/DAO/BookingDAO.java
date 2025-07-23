@@ -120,7 +120,7 @@ public class BookingDAO extends DBContext {
         String sql = "SELECT SUM(total_price) FROM Bookings b "
                 + "JOIN Courts c ON b.court_id = c.court_id "
                 + "JOIN Areas a ON c.area_id = a.area_id "
-                + "WHERE a.manager_id = ? AND b.status != 'cancelled' "
+                + "WHERE a.manager_id = ? AND b.status = 'completed' "
                 + "AND b.date >= DATEADD(day,-6, CAST(GETDATE() AS DATE)) "
                 + "AND b.date <= CAST(GETDATE() AS DATE)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

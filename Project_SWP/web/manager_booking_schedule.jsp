@@ -40,6 +40,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             padding: 0.5rem;
+            margin-bottom: 8rem; /* space for floating stats */
         }
         .table thead th {
             background: #667eea;
@@ -101,6 +102,7 @@
         }
         @media (max-width: 992px) {
             .floating-stats { position: static; margin: 1rem 0; }
+            .table-container { margin-bottom: 1rem; }
         }
         @media (max-width: 768px) {
             .main-container, .table-container, .filter-section { padding: 0.5rem; margin: 0.5rem 0; }
