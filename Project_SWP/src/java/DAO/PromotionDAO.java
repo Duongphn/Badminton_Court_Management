@@ -376,7 +376,7 @@ public boolean isDuplicatePromotionForArea(String title, LocalDate startDate, Lo
     String sql = "SELECT COUNT(*) FROM Promotions p " +
                  "JOIN Promotion_Area pa ON p.promotion_id = pa.promotion_id " +
                  "WHERE p.title = ? AND pa.area_id = ? " +
-                 "AND NOT (? > p.end_date OR ? < p.start_date)";
+                 "AND p.start_date <= ? AND p.end_date >= ?";
     try (
          PreparedStatement ps = conn.prepareStatement(sql)) {
         ps.setString(1, title);
@@ -392,6 +392,7 @@ public boolean isDuplicatePromotionForArea(String title, LocalDate startDate, Lo
     }
     return false;
 }
+
 
 
     public static void main(String[] args) {

@@ -104,12 +104,12 @@ if (duration.isNegative() || duration.isZero()) {
     response.sendRedirect("booking-list?error=expired-cancel");
     return;
 } else if (duration.toHours() < 4) {
-    session.setAttribute("cancelMessage", "Không thể hủy đặt sân vì còn dưới 4 tiếng trước giờ chơi.");
+    session.setAttribute("cancelMessage", "Không thể hủy đặt sân vì giờ chơi sắp đến.");
     response.sendRedirect("booking-list?error=late-cancel");
     return;
 }
 
-        // Cập nhật trạng thái
+       
         boolean success = bookingDAO.cancelBookingById(bookingId);
         session.setAttribute("cancelMessage", "Bạn đã huỷ đặt sân thành công! ");
         response.sendRedirect("booking-list?cancel=" + (success ? "success" : "failed"));

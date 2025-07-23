@@ -46,6 +46,7 @@
                                     </ul>
                                 </div>
                                 <a href="book-field?courtId=${court.court_id}" class="btn btn-warning w-100 fw-semibold">⚡ Đặt ngay</a>
+                                
                             </div>
                         </div>
                     </div>
@@ -66,7 +67,9 @@
         </div>
 
 
+
         <jsp:include page="homefooter.jsp" />
 
     </body>
+   
 </html>

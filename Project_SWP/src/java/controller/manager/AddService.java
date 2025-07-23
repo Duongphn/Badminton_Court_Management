@@ -31,18 +31,21 @@ public class AddService extends HttpServlet {
         double price = Double.parseDouble(request.getParameter("price"));
         String description = request.getParameter("description");
         String status = request.getParameter("status");
+        String category = request.getParameter("category");
         if (status == null || status.isEmpty()) {
             status = "Active";
         }
 
-        // Xử lý file ảnh (upload thẳng vào /web/uploads/service_images)
+// Xử lý file ảnh
         Part filePart = request.getPart("image_file");
         String fileName = null;
         if (filePart != null && filePart.getSize() > 0) {
             fileName = System.currentTimeMillis() + "_" + Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
             String uploadPath = getServletContext().getRealPath("/uploads");
             File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
             filePart.write(uploadPath + File.separator + fileName);
         }
 
@@ -51,8 +54,8 @@ public class AddService extends HttpServlet {
             return;
         }
 
-        String imagePath = (fileName != null) ? "uploads" + fileName : null;
-        Service s = new Service(0, name, price, description, imagePath, status);
+        String imagePath = (fileName != null) ? "uploads/" + fileName : null; // có dấu /
+        Service s = new Service(0, name, price, description, imagePath, status, category);
 
         try {
             ServiceDAO.addService(s);
@@ -63,8 +66,11 @@ public class AddService extends HttpServlet {
         }
     }
 
-    @Override
-    public String getServletInfo() {
+        @Override
+        public String getServletInfo
+        
+            () {
         return "Add new equipment service";
-    }
+        }
+    
 }

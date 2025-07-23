@@ -104,11 +104,11 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         Time startTime = Time.valueOf(startTimeStr);
         Time endTime = Time.valueOf(endTimeStr);
 
-        // LẤY totalPrice từ request (giá thuê sân đã tính, đã KM, chưa dịch vụ)
+
         String totalPriceStr = request.getParameter("totalPrice");
         BigDecimal totalPrice = new BigDecimal(totalPriceStr);
 
-        // CỘNG GIÁ DỊCH VỤ (nếu có)
+
         BigDecimal extraServicePrice = BigDecimal.ZERO;
         String[] selectedServices = request.getParameterValues("selectedServices");
         if (selectedServices != null) {
@@ -122,16 +122,16 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             }
         }
 
-        // Tổng cuối cùng
+        
         totalPrice = totalPrice.add(extraServicePrice);
 
-        // Đảm bảo không âm và làm tròn (nếu muốn)
+        
         if (totalPrice.compareTo(BigDecimal.ZERO) < 0) {
             totalPrice = BigDecimal.ZERO;
         }
         totalPrice = totalPrice.setScale(0, BigDecimal.ROUND_HALF_UP);
 
-        // Tiếp tục lưu booking, lưu dịch vụ...
+    
         BookingDAO bookingDAO = new BookingDAO();
         BookingServiceDAO bookingServiceDAO = new BookingServiceDAO();
         boolean repeatWeekly = request.getParameter("repeatWeekly") != null;

@@ -80,13 +80,13 @@
                 <input type="hidden" name="courtId" value="${court.court_id}" />
                 <input type="hidden" name="date" value="${selectedDate}" />
                 <div class="mb-3">
-                    <label class="form-label">Chọn ca chơi:</label>
+                    <label class="form-label">Chọn ca:</label>
                     <c:forEach var="entry" items="${shiftSlots}">
-                        <c:set var="shift" value="${entry.key}" />
                         <div class="mb-2">
                             <b>
-                                Ca: <c:out value="${shift.shiftName}"/> - <c:out value="${shift.price}"/> (VND)
-                                (<c:out value="${shift.startTime}"/> - <c:out value="${shift.endTime}"/> )
+                                Ca chơi: 
+                                <c:out value="${entry.key.shiftName}"/> -   <c:out value="${entry.key.price}(VND/1 ca chơi)"/>
+                                (<c:out value="${entry.key.startTime}"/> - <c:out value="${entry.key.endTime}"/> )
                             </b>
                         </div>
                         <div class="d-flex flex-wrap gap-2 mb-3">
@@ -98,7 +98,7 @@
                                             <input type="hidden" name="date" value="${selectedDate}" />
                                             <input type="hidden" name="startTime" value="${slot.start}" />
                                             <input type="hidden" name="endTime" value="${slot.end}" />
-                                            <input type="hidden" name="shiftId" value="${shift.shiftId}" /> 
+                                            <input type="hidden" name="shiftId" value="${entry.key.shiftId}" />
                                             <button type="submit" class="btn btn-success btn-sm slot-button">
                                                 ${slot.start} - ${slot.end}
                                             </button>

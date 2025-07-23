@@ -109,12 +109,19 @@
                                 <button class="close-btn" onclick="closeNotification()">&times;</button>
                             </div>
                         </c:if>
+                             <c:if test="${not empty sessionScope.error}">
+                            <div id="notification" class="notification success">
+                                <i class="fas fa-check-circle"></i> ${sessionScope.error}
+                                <button class="close-btn" onclick="closeNotification()">&times;</button>
+                            </div>
+                        </c:if>
 
                       
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered">
                                 <thead class="thead-dark">
                                     <tr>
+                                        <th>STT</th>
                                         <th>Tiêu đề</th>
                                         <th>Miêu tả</th>
                                         <th>Giảm (%)</th>
@@ -129,6 +136,7 @@
                                 <tbody>
                                     <c:forEach var="promo" items="${promotionList}" varStatus="loop">
                                         <tr>
+                                             <td>${loop.index + 1}</td>
                                             <td>${promo.title}</td>
                                             <td>${promo.description}</td>
                                             <td>${promo.discountPercent}</td>

@@ -37,7 +37,7 @@ public class PostDAO {
             params.add("%" + keyword + "%");
         }
         if (status != null && !status.isEmpty()) {
-            sql.append(" AND status = ?");
+            sql.append(" AND p.status = ?");
             params.add(status);
         }
         sql.append(" ORDER BY created_at DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");

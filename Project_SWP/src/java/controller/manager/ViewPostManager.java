@@ -98,8 +98,14 @@ public class ViewPostManager extends HttpServlet {
             request.getRequestDispatcher("ManagerPost.jsp").forward(request, response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(500, "Lỗi khi lấy danh sách bài viết");
+//            e.printStackTrace();
+//            response.sendError(500, "Lỗi khi lấy danh sách bài viết");
+response.setContentType("text/html;charset=UTF-8");
+    PrintWriter out = response.getWriter();
+    out.println("<h3 style='color:red'>Lỗi chi tiết:</h3>");
+    out.println("<pre>");
+    e.printStackTrace(out);  // In ra toàn bộ stacktrace (dòng nào lỗi sẽ thấy)
+    out.println("</pre>");
         }
     }
 

@@ -265,7 +265,7 @@
                 </div>
                 <div class="col-md-10" style="margin-left: 280px">
                     <div class="main-content">
-                        <h1 class="page-title">Chi tiết khu vực: ${area_id}</h1>
+                        <h1 class="page-title">Chi tiết khu vực: ${areaDetail.name}</h1>
 
                         <!-- Statistics Cards -->
                         <div class="row mb-4">
@@ -440,12 +440,62 @@
                                                 <td><i class="fas fa-stop text-danger"></i> ${shift.endTime}</td>
                                                 <td><i class="fas fa-stop text-primary"></i> ${shift.price}</td>
                                                 <td>
+                                                    <button type="button"
+                                                            class="btn btn-warning btn-sm"
+                                                            data-toggle="modal"
+                                                            data-target="#editShiftModal${shift.shiftId}">
+                                                        <i class="fas fa-edit"></i> Sửa
+                                                    </button>
                                                     <a href="delete-shift?shiftId=${shift.shiftId}&area_id=${area_id}" 
                                                        onclick="return confirmDelete('ca làm việc này')" 
                                                        class="btn btn-danger-custom">
                                                         <i class="fas fa-trash"></i>
                                                         Xóa
                                                     </a>
+                                                        <div class="modal fade" id="editShiftModal${shift.shiftId}" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <form action="update-shift" method="post" class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="fas fa-edit"></i> Cập nhật ca làm việc</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span style="color: white;">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="shiftId" value="${shift.shiftId}" />
+                            <input type="hidden" name="area_id" value="${area_id}" />
+                            <div class="form-group">
+                                <label>Tên ca</label>
+                                <input type="text" name="shiftName" class="form-control"
+                                       value="${shift.shiftName}" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Thời gian bắt đầu</label>
+                                <input type="time" name="startTime" class="form-control"
+                                       value="${shift.startTime}" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Thời gian kết thúc</label>
+                                <input type="time" name="endTime" class="form-control"
+                                       value="${shift.endTime}" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Giá</label>
+                                <input type="number" name="price" class="form-control"
+                                       value="${shift.price}" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Lưu thay đổi
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Hủy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -550,6 +600,7 @@
                                                         <i class="fas fa-trash"></i>
                                                         Xóa
                                                     </a>
+                                                       
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -593,7 +644,7 @@
                             <input type="time" name="endTime" class="form-control" step="1800" required />
                         </div>
                         <div class="form-group">
-                            <label><i class="fas fa-stop"></i> Thời gian kết thúc</label>
+                            <label><i class="fas fa-stop"></i> Giá </label>
                             <input type="number" name="price" class="form-control"  required />
                         </div>
                     </div>
@@ -610,6 +661,7 @@
                 </form>
             </div>
         </div>
+      
 
         <!-- Add Image Modal -->
         <div class="modal fade" id="addImageModal" tabindex="-1" role="dialog">
@@ -799,7 +851,7 @@
                             }
                         });
 
-                       
+
                         $('form').submit(function () {
                             let isValid = true;
                             $(this).find('input[required], select[required]').each(function () {

@@ -148,11 +148,11 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         dao.addShift(shift);
          String msg = URLEncoder.encode("Thêm ca thành công.", "UTF-8");
                 response.sendRedirect("detailBranch?area_id=" + areaId + "&message" + msg);
-        response.sendRedirect("detailBranch?area_id=" + areaId);
+//        response.sendRedirect("detailBranch?area_id=" + areaId);
 
     } catch (Exception e) {
         e.printStackTrace();
-        response.sendRedirect("error.jsp");
+        response.sendRedirect("login");
     }
 }
 

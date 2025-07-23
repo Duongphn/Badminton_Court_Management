@@ -2,7 +2,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
-<<<<<<< HEAD
+    
     <head>
         <meta charset="UTF-8">
         <title>Đổi mật khẩu</title>
@@ -347,9 +347,7 @@
                                 <c:when test="${error == 'incorrect'}">
                                     Mật khẩu cũ không đúng! Vui lòng kiểm tra lại.
                                 </c:when>
-                                <c:when test="${error == 'mismatch'}">
-                                    Mật khẩu mới không khớp! Vui lòng nhập lại.
-                                </c:when>
+                                
                                 <c:otherwise>
                                     ${error}
                                 </c:otherwise>
@@ -358,9 +356,10 @@
                     </c:if>
                     <c:if test="${not empty success}">
                         <div class="success-message">
-                            Đổi mật khẩu thành công! Chúc bạn chơi cầu lông vui vẻ!
+                            ${success}
                         </div>
                     </c:if>
+
                     <form action="change-pass" method="post" id="changePassForm">
                         <div class="input-group">
                             <label for="username">Tên đăng nhập</label>
@@ -392,7 +391,7 @@
                             </div>
                             <div class="input-container">
                                 <input type="text" class="captcha-input" id="captchaInput" name="captcha" placeholder="Nhập mã xác nhận" required maxlength="6">
-                               
+
                             </div>
                             <div class="captcha-error" id="captchaError">Mã xác nhận không đúng!</div>
                         </div>
@@ -439,31 +438,11 @@
                         strengthBar.classList.add('strength-strong');
                     }
                 });
-                function validatePasswordMatch() {
-                    if (confirmPassword.value && newPassword.value !== confirmPassword.value) {
-                        confirmPassword.style.borderColor = '#ff6b6b';
-                        return false;
-                    } else if (confirmPassword.value) {
-                        confirmPassword.style.borderColor = '#66bb6a';
-                        return true;
-                    }
-                    return true;
-                }
-                confirmPassword.addEventListener('input', validatePasswordMatch);
-                newPassword.addEventListener('input', validatePasswordMatch);
-                form.addEventListener('submit', function (e) {
-                    if (newPassword.value !== confirmPassword.value) {
-                        e.preventDefault();
-                        confirmPassword.style.borderColor = '#ff6b6b';
-                        confirmPassword.focus();
-                        return false;
-                    }
-                    submitBtn.innerHTML = 'Đang xử lý...';
-                });
+              
             });
         </script>
         <script>
-           
+
             let currentCaptcha = '';
 
             function generateCaptcha() {
@@ -488,10 +467,10 @@
                 return userInput === currentCaptcha;
             }
 
-       
+
             updateCaptcha();
 
-          
+
             document.getElementById('refreshCaptcha').addEventListener('click', function () {
                 updateCaptcha();
                 this.style.transform = 'rotate(360deg)';
@@ -500,7 +479,7 @@
                 }, 300);
             });
 
-           
+
             document.getElementById('captchaInput').addEventListener('input', function () {
                 this.value = this.value.toUpperCase();
                 if (this.value.length === 6) {
@@ -517,7 +496,7 @@
                 }
             });
 
-           
+
             document.getElementById('loginForm').addEventListener('submit', function (e) {
                 if (!validateCaptcha()) {
                     e.preventDefault();
@@ -531,7 +510,7 @@
                 btn.classList.add('loading');
                 btn.disabled = true;
 
-                
+
                 const hiddenInput = document.createElement('input');
                 hiddenInput.type = 'hidden';
                 hiddenInput.name = 'captchaCode';
@@ -544,7 +523,7 @@
                 }, 3000);
             });
 
-            
+
             document.querySelectorAll('.form-input, .captcha-input').forEach(input => {
                 input.addEventListener('focus', function () {
                     const label = this.closest('.form-group').querySelector('.form-label');
@@ -561,15 +540,15 @@
                 });
             });
 
-           
+
             setInterval(updateCaptcha, 300000);
 
-       
+
             document.getElementById('captchaCode').addEventListener('contextmenu', function (e) {
                 e.preventDefault();
             });
 
-            
+
             document.getElementById('captchaCode').addEventListener('selectstart', function (e) {
                 e.preventDefault();
             });

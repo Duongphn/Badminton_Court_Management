@@ -60,7 +60,7 @@ public class BookingServiceDAO extends DBContext{
             while (rs.next()) {
                 Service s = new Service(rs.getInt("service_id"), rs.getString("name"),
                         rs.getDouble("price"), rs.getString("description"),
-                        rs.getString("image_url"), rs.getString("status"));
+                        rs.getString("image_url"), rs.getString("status"),rs.getString("category"));
                 services.add(s);
             }
         } catch (SQLException e) {

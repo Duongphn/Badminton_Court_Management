@@ -101,7 +101,11 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             resp.sendRedirect("promotion-admin");
             return; 
         }
-
+        if(discountPercent <0 || discountPercent >100 || discountAmount < 0 ){
+             req.getSession().setAttribute("error", "Nhập sai giá khuyến mại!");
+        resp.sendRedirect("promotion-admin");
+        return;
+        }
         Promotion promotion = new Promotion(promotionId, title, description, discountPercent, discountAmount,
                 startDate, endDate, status, null, java.time.LocalDateTime.now());
 

@@ -353,40 +353,40 @@ public class CourtDAO extends DBContext {
         System.out.println(a);
     }
 
-   public List<AdminDashBoard> getAllCourtReports(String filter) {
+    public List<AdminDashBoard> getAllCourtReports(String filter) {
         List<AdminDashBoard> list = new ArrayList<>();
         String dateCondition = getDateConditionForJoin(filter); // phần ON b.date...
         String dateConditionWhere = getDateConditionForWhere(filter); // phần WHERE
 
-        String sql = "SELECT c.name, u.fullname, " +
-                "ISNULL(SUM(CASE WHEN b.booking_id IS NOT NULL THEN b.total_price END), 0) AS revenue, " +
-                "COUNT(b.booking_id) AS bookings, " +
-                "(SELECT COUNT(DISTINCT b2.user_id) FROM Bookings b2 " +
-                "WHERE b2.court_id = c.court_id " + dateConditionWhere +
-                " AND b2.user_id IN (SELECT user_id FROM Bookings WHERE court_id = c.court_id " + dateConditionWhere +
-                " GROUP BY user_id HAVING COUNT(*) > 1)) AS returningUsers, " +
-                "AVG(CAST(b.rating AS float)) AS avgRating " +
-                "FROM Courts c " +
-                "LEFT JOIN Bookings b ON b.court_id = c.court_id " + dateCondition +
-                "LEFT JOIN Areas a ON c.area_id = a.area_id " +
-                "LEFT JOIN Users u ON a.manager_id = u.user_id " +
-                "GROUP BY c.name, u.fullname";
+        String sql = "SELECT c.court_id, c.court_number, u.fullname, "
+                + "ISNULL(SUM(CASE WHEN b.booking_id IS NOT NULL THEN b.total_price END), 0) AS revenue, "
+                + "COUNT(b.booking_id) AS bookings, "
+                + "(SELECT COUNT(DISTINCT b2.user_id) FROM Bookings b2 "
+                + "WHERE b2.court_id = c.court_id " + dateConditionWhere
+                + " AND b2.user_id IN (SELECT user_id FROM Bookings WHERE court_id = c.court_id " + dateConditionWhere
+                + " GROUP BY user_id HAVING COUNT(*) > 1)) AS returningUsers, "
+                + "AVG(CAST(b.rating AS float)) AS avgRating "
+                + "FROM Courts c "
+                + "LEFT JOIN Bookings b ON b.court_id = c.court_id " + dateCondition
+                + "LEFT JOIN Areas a ON c.area_id = a.area_id "
+                + "LEFT JOIN Users u ON a.manager_id = u.user_id "
+                + "GROUP BY c.court_id, c.court_number, u.fullname";
 
-        try (Connection conn = new DBContext().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 AdminDashBoard a = new AdminDashBoard(
-                    rs.getString(1),
-                    rs.getString(2),
-                    rs.getDouble(3),
-                    rs.getInt(4),
-                    rs.getInt(5),
-                    rs.getDouble(6)
+                        rs.getString(2), // c.court_number
+                        rs.getString(3), // u.fullname
+                        rs.getDouble(4), // revenue
+                        rs.getInt(5), // bookings
+                        rs.getInt(6), // returningUsers
+                        rs.getDouble(7) // avgRating
                 );
                 list.add(a);
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return list;
     }
 

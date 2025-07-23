@@ -214,7 +214,7 @@
                         <a class="nav-item" href="HomeCoachList" style="padding: 12px; display: block; text-decoration: none; color: #222;">Danh sách huấn luyện viên</a>
                     </div>
                 </div>
-                <div class="nav-item"><a href="PostView.jsp">Bài Viết</a></div>
+                <div class="nav-item"><a href="PostView?type=&search=">Bài Viết</a></div>
                 <div class="nav-item"><a href="AboutUs.jsp">Giới Thiệu</a></div>                
                                <div class="nav-item"> <a href="faq-list?for=user">FAQ</a></div>
 

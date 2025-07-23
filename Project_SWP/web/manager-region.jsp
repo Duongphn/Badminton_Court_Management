@@ -105,20 +105,29 @@
                         <h3 class="mb-4 text-primary">🏙 Quản lí khu vực</h3>
 
                         <!-- Search Bar -->
-                        <form action="search-branch" method="POST" class="form-inline mb-4">
+                       
+                        <form action="view-region" method="get" class="form-inline mb-4">
                             <input type="text" name="searchInput" value="${searchKeyword}" class="form-control mr-2 w-50" placeholder="🔍 Tìm kiếm theo tên khu vực">
-                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                            <select name="staffId" class="form-control mr-2" style="width:220px;">
+                                <option value="">-- Lọc theo quản lý --</option>
+                                <c:forEach var="s" items="${staffList}">
+                                    <option value="${s.user_Id}" ${staffId == s.user_Id ? 'selected' : ''}>
+                                        ${s.lastname} ${s.firstname}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                            <button type="submit" class="btn btn-primary">Lọc / Tìm kiếm</button>
                         </form>
-
 
                         <!-- Regions Table -->
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered">
                                 <thead class="thead-dark">
                                     <tr>
+                                        <th>STT</th>
                                         <th>Tên</th>
                                         <th>Địa chỉ</th>
-                                        <th class="col-small">Số lượng sân</th>
+                                      
                                         <th class="col-time">Thời gian mở cửa</th>
                                         <th class="col-time">Thời gian đóng cửa</th>
                                         <th class="col-description">Mô tả</th>
@@ -138,11 +147,11 @@
                                 <tbody>
                                     <c:forEach var="a" items="${area}" varStatus="loop">
                                         <tr>
-                                            <td>${a.name}</td>
+                                            <td>${loop.index +1} </td>
+                                            <td><a href="courts?area_id=${a.area_id}"> ${a.name}</a>
+                                               </td>
                                             <td>${a.location}</td>
-                                            <td>
-                                                <a href="courts?area_id=${a.area_id}">${a.emptyCourt}</a>
-                                            </td>
+                                            
                                             <td>${a.openTime}</td>
                                             <td>${a.closeTime}</td>
                                             <td>${a.description}</td>
@@ -246,13 +255,13 @@
                                 <div class="modal-content">
                                     <form action="add-region" method="POST">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">Add Region</h5>
+                                            <h5 class="modal-title">Thêm khu vực</h5>
                                             <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
                                         </div>
                                         <div class="modal-body">
 
                                             <div class="form-group">
-                                                <label>Tên địa điểm</label>
+                                                <label>Tên khu vực</label>
                                                 <input type="text" name="regionName" class="form-control" required>
                                             </div>
                                             <div class="form-group">
@@ -260,7 +269,7 @@
                                                 <input type="text" name="address" class="form-control">
                                             </div>
 
-                                           
+
 
                                             <div class="form-group">
                                                 <label>Giờ mở cửa</label>

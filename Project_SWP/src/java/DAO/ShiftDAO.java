@@ -135,6 +135,22 @@ public class ShiftDAO extends DBContext{
         return false;
     }
 }
+public boolean updateShift(Shift shift) {
+    String sql = "UPDATE Shift SET area_id = ?, shift_name = ?, start_time = ?, end_time = ?, price = ? WHERE shift_id = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, shift.getAreaId());
+        ps.setString(2, shift.getShiftName());
+        ps.setTime(3, shift.getStartTime());
+        ps.setTime(4, shift.getEndTime());
+        ps.setBigDecimal(5, shift.getPrice());
+        ps.setInt(6, shift.getShiftId()); // Lưu ý vị trí thứ tự tham số
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 
       public void removeShift(int shift_id) {
         String query = "DELETE FROM Shift WHERE shift_id = ?";

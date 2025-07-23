@@ -1,6 +1,7 @@
 package DAO;
 
 import Dal.DBContext;
+import Model.Branch;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -606,6 +607,7 @@ public class UserDAO extends DBContext {
         return false;
     }
 
+
     public List<User> getAllStaff() {
         List<User> staffList = new ArrayList<>();
         String sql = "SELECT * FROM Users WHERE role = 'staff'";
@@ -666,7 +668,7 @@ public class UserDAO extends DBContext {
 
     public static void main(String[] args) {
         UserDAO dao = new UserDAO();
-        dao.deleteUser(1);
+        dao.deleteUser(14);
     }
 
     private String getDateCondition(String filter) {

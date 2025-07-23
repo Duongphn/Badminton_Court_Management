@@ -155,15 +155,15 @@
                     <div><strong>Ngày:</strong> ${date}</div>
                     <div><strong>Giờ bắt đầu:</strong> ${startTime}</div>
                     <div><strong>Giờ kết thúc:</strong> ${endTime}</div>
-                    <div><strong>Giá tiền:</strong> ${totalPrice}</div>
+                    <div><strong>Giá tiền:</strong> ${totalPrice} VNĐ</div>
 
 
 
                 </div>
 
-                <!-- Form xác nhận -->
+              
                 <form action="confirm-booking" method="post" class="p-2">
-                    <!-- Hidden Inputs -->
+                   
                     <input type="hidden" name="courtId" value="${court.court_id}">
                     <input type="hidden" name="areaId" value="${court.area_id}">
                     <input type="hidden" name="shiftId" value="${shift.shiftId}">

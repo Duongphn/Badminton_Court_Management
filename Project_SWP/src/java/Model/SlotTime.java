@@ -20,7 +20,7 @@ public class SlotTime {
     LocalTime current = shift.getStartTime().toLocalTime();
     LocalTime end = shift.getEndTime().toLocalTime();
 
-    // Dừng vòng lặp khi slotEnd (current + slotMinutes) vượt quá end
+  
     while (!current.isAfter(end.minusMinutes(slotMinutes))) {
         LocalTime slotStart = current;
         LocalTime slotEnd = current.plusMinutes(slotMinutes);

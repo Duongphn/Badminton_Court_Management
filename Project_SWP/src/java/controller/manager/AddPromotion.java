@@ -88,7 +88,11 @@ throws ServletException, IOException {
         if(areaIdArr != null){
             for(String s : areaIdArr) areaIds.add(Integer.parseInt(s));
         }
-
+        if(discountPercent <0 || discountPercent >100 || discountAmount < 0 ){
+             req.getSession().setAttribute("error", "Nhập sai giá khuyến mại!");
+        response.sendRedirect("promotion-admin");
+        return;
+        }
         Promotion promotion = new Promotion(0, title, description, discountPercent, discountAmount,
                 startDate, endDate, status, LocalDateTime.now(), null);
 
@@ -97,7 +101,7 @@ throws ServletException, IOException {
        
         for(Integer areaId : areaIds){
     if (dao.isDuplicatePromotionForArea(title, startDate, endDate, areaId)) {
-        req.getSession().setAttribute("success", "Đã tồn tại khuyến mãi với tên này và ngày giao nhau cho khu vực!");
+        req.getSession().setAttribute("success", "Đã tồn tại khuyến mại với tên này và ngày giao nhau cho khu vực!");
         response.sendRedirect("promotion-admin");
         return;
     }
@@ -108,11 +112,11 @@ throws ServletException, IOException {
             dao.insertPromotionArea(newPromotionId, areaId);
         }
 
-        req.getSession().setAttribute("success", "Thêm khuyến mãi thành công!");
+        req.getSession().setAttribute("success", "Thêm khuyến mại thành công!");
         response.sendRedirect("promotion-admin");
     } catch (Exception e) {
         e.printStackTrace();
-        req.getSession().setAttribute("error", "Thêm khuyến mãi thất bại!");
+        req.getSession().setAttribute("error", "Thêm khuyến mại thất bại!");
         response.sendRedirect("promotion-admin");
     }
 }
