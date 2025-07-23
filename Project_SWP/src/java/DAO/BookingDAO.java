@@ -46,6 +46,17 @@ public class BookingDAO extends DBContext {
         }
     }
 
+    public void autoCancelExpiredPendingBookings() {
+        String sql = "UPDATE Bookings SET status = 'cancelled' "
+                + "WHERE status = 'pending' "
+                + "AND DATEADD(MILLISECOND, DATEDIFF(MILLISECOND,0,start_time), CAST(date AS DATETIME)) <= GETDATE()";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int countBookingsByManager(int managerId) {
         String sql = "SELECT COUNT(*) FROM Bookings b "
                 + "JOIN Courts c ON b.court_id = c.court_id "
@@ -484,6 +495,7 @@ public class BookingDAO extends DBContext {
     }
 
     public List<Bookings> getBookingsByUserId(int userId) {
+        autoCancelExpiredPendingBookings();
         List<Bookings> bookings = new ArrayList<>();
 
         String sql = "SELECT b.*, c.court_number, c.area_id, " +
@@ -541,6 +553,7 @@ public class BookingDAO extends DBContext {
     }
     
     public List<Bookings> getBookingsForUser(int userId, LocalDate from, LocalDate to, String status) {
+        autoCancelExpiredPendingBookings();
         List<Bookings> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM Bookings WHERE user_id = ?");
         if (from != null) {
@@ -603,6 +616,7 @@ public class BookingDAO extends DBContext {
 
     public List<BookingScheduleDTO> getManagerBookings(int managerId, Integer areaId,
             LocalDate start, LocalDate end, String status) {
+        autoCancelExpiredPendingBookings();
         List<BookingScheduleDTO> list = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder();
@@ -674,6 +688,7 @@ public class BookingDAO extends DBContext {
      * view every booking in the system without filtering by manager.
      */
     public List<BookingScheduleDTO> getAllBookings(Integer areaId, LocalDate start, LocalDate end, String status) {
+        autoCancelExpiredPendingBookings();
         List<BookingScheduleDTO> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
         sql.append(
